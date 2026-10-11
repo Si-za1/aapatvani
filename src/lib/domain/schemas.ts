@@ -158,6 +158,8 @@ export const Claim = z.object({
     .object({
       text: z.string(),
       verified: z.boolean(),
+      /** Which reporter-written field the excerpt was found in. "transcript" means the AI transcript of the voice note. */
+      field: z.enum(["text", "placeText", "reportedTimeText", "transcript"]).optional(),
       start: z.number().optional(),
       end: z.number().optional(),
     })
@@ -171,7 +173,11 @@ export const Claim = z.object({
     .object({
       text: z.string(),
       romanized: z.string().optional(),
+      kind: z.string().optional(),
       resolved: ResolvedPlace.optional(),
+      /** Equally good gazetteer matches far apart: a reviewer must choose. */
+      ambiguous: z.boolean().optional(),
+      candidates: z.array(ResolvedPlace).optional(),
     })
     .optional(),
   time: z
@@ -307,8 +313,9 @@ export const Suggestion = z.object({
       verdict: SuggestionVerdict,
       rationale: z.string(),
       agreements: z.array(z.object({ text: z.string(), claimIds: z.array(z.string()) })),
-      conflicts: z.array(z.object({ text: z.string(), claimIds: z.array(z.string()) })),
+      conflicts: z.array(z.object({ text: z.string(), claimIds: z.array(z.string()), kind: z.string().optional() })),
       missing: z.array(z.string()),
+      copySignals: z.array(z.string()).optional(),
       model: z.string(),
       promptVersion: z.string(),
       citationsRejected: z.number(),

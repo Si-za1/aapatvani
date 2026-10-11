@@ -16,8 +16,8 @@ We build in chunks and commit at the end of each one.
 |---|---|---|
 | 1 | Foundation: scaffold, design system, region data (OSM extract) | ✅ Done |
 | 2 | Backend core: data model, data/media stores, reviewer auth, evidence checks, gazetteer, Blast Radius engine, unit tests | ✅ Done |
-| 3 | AI layer: Gemini extraction (text, photo, voice), embeddings, report comparison, alert drafting, impact explanation, validation | 🟡 Next |
-| 4 | Matching & incidents: clustering, copy detection, contradiction rules, services, API routes | ⬜ |
+| 3 | AI layer: Gemini extraction (text, photo, voice), embeddings, report comparison, alert drafting, impact explanation, validation | ✅ Done (unit-tested; live Gemini check waits for credentials) |
+| 4 | Matching & incidents: clustering, copy detection, contradiction rules, services, API routes | 🟡 Next |
 | 5 | Public side: welcoming landing page, mobile report form (Nepali/English, photo, voice, location, time) | ⬜ |
 | 6 | Responder side: dashboard + map, review queue, report and incident workspaces | ⬜ |
 | 7 | Impact & alerts UI: blast radius on the map, confirm/dismiss, cited alert drafts with approval | ⬜ |
@@ -25,7 +25,7 @@ We build in chunks and commit at the end of each one.
 | 9 | Finish: Dockerfile, Cloud Run deploy, README, final checks | ⬜ |
 | — | Vision deck (PDF) + 3-minute demo video | ⬜ |
 
-**Checks passing now:** `npm run typecheck`, `npm run lint`, `npm test` (57 tests), `npm run build`.
+**Checks passing now:** `npm run typecheck`, `npm run lint`, `npm test` (91 tests), `npm run build`. Once credentials exist, `npm run check:models` verifies the model IDs, structured output and embeddings against the real key/project.
 
 **Waiting on credentials (not blocking yet):** a Gemini API key, or a GCP project with Agent Platform enabled (for live Gemini calls); later, Firestore, Cloud Storage and Cloud Run in that project.
 
@@ -235,13 +235,14 @@ aapatvani/
 │   ├── lib/
 │   │   ├── domain/schemas.ts     ← Zod schemas and types (the shared contract)
 │   │   ├── geo/                  ← math, graph, blast-radius, gazetteer, dataset loader
+│   │   ├── ai/                   ← Gemini client, schemas, extraction, compare, alerts, explain, guards
 │   │   ├── evidence/             ← aliases, excerpt verification
 │   │   ├── db/ storage/ auth/    ← swappable backends
 │   │   └── env.ts ids.ts time.ts rate-limit.ts firebase-admin.ts
 │   └── proxy.ts                  ← cookie gate for responder pages
 ├── data/regions/nepal/araniko-corridor/   ← dataset.json, network.json, assets.json, gazetteer.json, SOURCE.md
-├── scripts/                      ← prepare-region.ts, overpass/ query
-├── tests/                        ← Vitest unit tests (+ helpers/toy-dataset.ts)
+├── scripts/                      ← prepare-region.ts, check-models.ts, overpass/ query
+├── tests/                        ← Vitest unit tests (+ helpers: toy dataset, fixtures, scripted test model)
 ├── firestore.rules · storage.rules · firebase.json   ← deny-all client rules
 └── .env.example
 ```
@@ -279,12 +280,14 @@ Defined and validated in `src/lib/domain/schemas.ts`. No nested arrays (Firestor
 
 ## 8. Core logic
 
-### 8.1 Extraction and citation checks (chunk 3)
+### 8.1 Extraction and citation checks (built: `src/lib/ai/extraction.ts`)
 - **Prompt context:** the original text, photos and audio; the submission time in Asia/Kathmandu (UTC+05:45); the region's hazard list; and aliases (`R1` for the report, `M1…` for photos, `A1` for the voice note).
 - **Output** (Zod → JSON Schema): language; English translation; transcript; hazard candidates with rationale; claims (type, statement, source alias, verbatim excerpt); place mentions (verbatim + romanised); time mentions (verbatim plus an interpreted window); media notes; missing information; uncertainties.
 - **Server checks:** Zod parse (one retry with the errors fed back); every alias must exist; every excerpt must appear in the original text (`src/lib/evidence/excerpt.ts`, tested with Nepali text); every hazard must be in the region's list; coordinates are never accepted from the model.
 - **Places:** mentions are matched against the gazetteer (`src/lib/geo/gazetteer.ts`): exact English or Nepali names, aliases, small spelling differences, or the model's romanisation (labelled as such). Equally good matches more than 3 km apart are marked ambiguous instead of guessed.
-- **Nepali details:** Devanagari digits, Bikram Sambat dates, relative times like "हिजो राति" (last night). Verbatim text is kept; interpreted times are labelled AI.
+- **Nepali details:** Devanagari digits, Bikram Sambat dates, relative times like "हिजो राति" (last night). Verbatim text is kept; interpreted times are labelled AI, and interpretations after the submission time are discarded.
+- **Origin rules (enforced in code, tested):** a claim is *Reported* only when its excerpt is found in the reporter's text (or, for voice notes, in the AI transcript — labelled as such); otherwise it becomes an *AI interpretation*. Photo and inference claims are always AI. Claims citing unknown aliases or a mismatched source are dropped and counted. People counts survive only if the quoted words state them. The AI's hazard category becomes its own reviewable `hazard` claim. Every model output is validated by the same Zod schema it was generated from, with one corrective retry; failures produce a `failed` extraction record, never a silent patch.
+- **Other Gemini uses (built):** `compare.ts` (pairwise verdict; conflicts must cite both reports), `alerts.ts` (sections of cited sentences; uncited, misplaced or number-unsupported sentences removed; system headline fallback), `explain.ts` (plain-language restatement; rejected if it adds numbers, calls anything safe, or mentions casualties/damage), `gemini.ts` (Agent Platform or API key, 90 s timeout, one retry on the fallback model, normalised 768-d embeddings).
 
 ### 8.2 Matching and copies (chunk 4)
 - **Candidate pairs:** same region, at most 24 h apart, at most 5 km apart (plus both uncertainty radii), compatible hazards (`hazardRelation` in the region config). Starting thresholds, tuned on synthetic data and reported honestly.
@@ -413,12 +416,13 @@ We use the Larcha–Tatopani stretch: a fictional landslide in real geography, l
 
 - **2026-10-11:** Created the repo, `.gitignore`, this tracker and `docs/product-vision.md`. Verified package versions, Gemini model IDs, SDK options and the hackathon rules (see Appendix).
 - **2026-10-11 (chunks 1–2):** Scaffolded Next.js 16.4 with shadcn/ui and the warm theme. Pulled the Nepal-bounded OSM extract (snapshot 2026-10-11T11:22:51Z) and built the corridor dataset: 11,340 nodes, 11,613 edges, 2,525 km of road, 36 health facilities (4 hospitals), 408 schools, 187 settlements, 622 bilingual gazetteer entries. Wrote the domain schemas, swappable data/media/auth backends, evidence checks, gazetteer and the Blast Radius engine. Typecheck, lint, 57 unit tests and the production build pass. First commit.
+- **2026-10-11 (chunk 3):** Built the AI layer: Gemini client with Agent Platform/API-key backends and fallback, Zod → Gemini JSON Schema conversion (only supported keywords, tested), validated structured generation with one corrective retry, multimodal extraction with provenance rules and gazetteer resolution, embeddings, pairwise comparison, cited alert drafting with number checks, impact explanation guard, and `npm run check:models`. 91 unit tests pass (a scripted test model exercises every validation path). Live Gemini calls not yet run — waiting for credentials.
 
 ---
 
 ## 15. Open questions
 
-1. Gemini access: Agent Platform (recommended) or an AI Studio API key? Needed to run live Gemini calls in chunk 3.
+1. Gemini access: Agent Platform (recommended) or an AI Studio API key? The AI layer is built and unit-tested; live calls (and `npm run check:models`) need one of these. Put it in `.env.local` (see `.env.example`).
 2. GCP project ID with billing or hackathon credits — for Firestore, Cloud Storage, Firebase Auth and Cloud Run.
 3. Demo images: use an openly licensed landslide photo (with attribution, labelled as not of this event), or images you provide?
 
