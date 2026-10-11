@@ -1,0 +1,212 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-jakarta), var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* AapatVani palette. Every status colour is always paired with an icon and a text label. */
+  --color-cream: var(--av-cream);
+  --color-sand: var(--av-sand);
+  --color-ink: var(--av-ink);
+  --color-ink-soft: var(--av-ink-soft);
+  --color-butter: var(--av-butter);
+  --color-butter-tint: var(--av-butter-tint);
+  --color-butter-strong: var(--av-butter-strong);
+  --color-rose: var(--av-rose);
+  --color-rose-tint: var(--av-rose-tint);
+  --color-rose-strong: var(--av-rose-strong);
+  --color-sage: var(--av-sage);
+  --color-sage-tint: var(--av-sage-tint);
+  --color-sage-strong: var(--av-sage-strong);
+  --color-sky: var(--av-sky);
+  --color-sky-tint: var(--av-sky-tint);
+  --color-sky-strong: var(--av-sky-strong);
+  --color-river: var(--av-river);
+  --color-river-tint: var(--av-river-tint);
+  --color-river-strong: var(--av-river-strong);
+  --color-clay: var(--av-clay);
+  --color-clay-tint: var(--av-clay-tint);
+  --color-clay-strong: var(--av-clay-strong);
+  --color-stone: var(--av-stone);
+  --color-stone-tint: var(--av-stone-tint);
+  --color-stone-strong: var(--av-stone-strong);
+}
+
+:root {
+  /* Warm cream surfaces, deep pine-teal ink, soft pastels for meaning. */
+  --av-cream: #faf4e8;
+  --av-sand: #f1e8d8;
+  --av-ink: #16302e;
+  --av-ink-soft: #234542;
+
+  --av-butter: #f5d565; /* needs review */
+  --av-butter-tint: #fbefc4;
+  --av-butter-strong: #6e5200;
+  --av-rose: #f2b9d3; /* reported by the community */
+  --av-rose-tint: #fbe5ef;
+  --av-rose-strong: #7e2452;
+  --av-sage: #b2bc75; /* confirmed by a person */
+  --av-sage-tint: #e7eccf;
+  --av-sage-strong: #3e4a15;
+  --av-sky: #b8c7ef; /* AI interpretation */
+  --av-sky-tint: #e5ebfb;
+  --av-sky-strong: #2c4185;
+  --av-river: #9dcfc4; /* computed by deterministic code */
+  --av-river-tint: #dbefea;
+  --av-river-strong: #1b5950;
+  --av-clay: #e9a48c; /* critical warning, always labelled */
+  --av-clay-tint: #f8ded5;
+  --av-clay-strong: #9a2f1c;
+  --av-stone: #ddd5c6; /* rejected / dismissed / neutral */
+  --av-stone-tint: #efeae1;
+  --av-stone-strong: #5b5448;
+
+  --radius: 1rem;
+  --background: var(--av-cream);
+  --foreground: #1e2624;
+  --card: #fffcf7;
+  --card-foreground: #1e2624;
+  --popover: #fffcf7;
+  --popover-foreground: #1e2624;
+  --primary: var(--av-ink);
+  --primary-foreground: #faf4e8;
+  --secondary: var(--av-sand);
+  --secondary-foreground: #1e2624;
+  --muted: var(--av-sand);
+  --muted-foreground: #6b6357;
+  --accent: #ede3d1;
+  --accent-foreground: #1e2624;
+  --destructive: #b4412b;
+  --border: #e6dbc8;
+  --input: #e6dbc8;
+  --ring: #2e6f69;
+  --chart-1: var(--av-river-strong);
+  --chart-2: var(--av-sky-strong);
+  --chart-3: var(--av-rose-strong);
+  --chart-4: var(--av-butter-strong);
+  --chart-5: var(--av-sage-strong);
+  --sidebar: var(--av-ink);
+  --sidebar-foreground: #f3ece0;
+  --sidebar-primary: #faf4e8;
+  --sidebar-primary-foreground: var(--av-ink);
+  --sidebar-accent: var(--av-ink-soft);
+  --sidebar-accent-foreground: #faf4e8;
+  --sidebar-border: #2c4d4a;
+  --sidebar-ring: #8fc3ba;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01" on;
+    line-height: 1.55;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading tracking-tight;
+    text-wrap: balance;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  /* Devanagari needs a little more room for its headline and vowel marks. */
+  :lang(ne) {
+    line-height: 1.7;
+  }
+  ::selection {
+    background: var(--av-butter-tint);
+  }
+}
+
+@layer components {
+  /* Highlight for a claim's source excerpt inside the original report text. */
+  .excerpt-mark {
+    @apply rounded-sm bg-butter-tint px-0.5 text-foreground ring-1 ring-butter;
+  }
+  .excerpt-mark[data-active="true"] {
+    @apply bg-butter ring-butter-strong;
+  }
+}
+
+/* Leaflet: soften the OpenStreetMap basemap so our layers carry the meaning. */
+.av-map .leaflet-tile-pane {
+  filter: saturate(0.55) sepia(0.12) brightness(1.03);
+}
+.av-map.leaflet-container {
+  font-family: var(--font-jakarta), var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  background: var(--av-sand);
+}
+.av-map .leaflet-control-attribution {
+  font-size: 10px;
+  background: rgb(255 252 247 / 0.85);
+}
+.av-map .leaflet-popup-content-wrapper,
+.av-map .leaflet-popup-tip {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgb(22 48 46 / 0.12);
+}
+.av-map .leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.av-div-icon {
+  background: transparent;
+  border: none;
+}

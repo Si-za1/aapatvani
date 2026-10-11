@@ -1,0 +1,50 @@
+{
+  "id": "np-araniko-corridor",
+  "regionId": "np",
+  "name": "Araniko Highway corridor, Sindhupalchok",
+  "nameNe": "अरनिको राजमार्ग क्षेत्र, सिन्धुपाल्चोक",
+  "bbox": [
+    27.62,
+    85.68,
+    28,
+    86.02
+  ],
+  "snapshot": "2026-10-11T11:22:51Z",
+  "preparedAt": "2026-10-11T11:49:21.643Z",
+  "source": "OpenStreetMap contributors, via the Overpass API",
+  "license": "ODbL-1.0",
+  "attribution": "© OpenStreetMap contributors",
+  "query": "scripts/overpass/np-araniko-corridor.overpassql",
+  "includedRoadClasses": [
+    "secondary",
+    "trunk",
+    "primary",
+    "tertiary",
+    "unclassified",
+    "service",
+    "residential",
+    "track",
+    "road"
+  ],
+  "stats": {
+    "nodes": 11340,
+    "edges": 11613,
+    "roadKm": 2524.9,
+    "components": 101,
+    "largestComponentShare": 0.955,
+    "healthFacilities": 36,
+    "hospitals": 4,
+    "schools": 408,
+    "settlements": 187,
+    "gazetteerEntries": 622,
+    "excludedCrossBorder": 0
+  },
+  "knownLimitations": [
+    "Only motorable road classes are included. Footpaths and trails are excluded, so walking access is not analysed.",
+    "Road condition, seasonal closures, vehicle availability and travel time are not modelled. Distances are measured along mapped roads.",
+    "OpenStreetMap coverage in rural Nepal is incomplete. Missing roads or facilities change the results.",
+    "Facility levels come from OSM tags and names and can be wrong (for example, sub-health posts tagged as hospitals).",
+    "Settlement points are approximate centres, not boundaries. Population appears only where OSM has a population tag; it is never estimated.",
+    "Areas across the national border are excluded."
+  ]
+}

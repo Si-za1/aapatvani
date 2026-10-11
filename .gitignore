@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Next.js / build output
+.next/
+.next-docs/
+.vercel/
+.yarn/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment files and credentials (never commit secrets)
+.env*
+!.env.example
+*.pem
+*.key
+service-account*.json
+*-credentials.json
+gha-creds-*.json
+
+# Firebase / Google Cloud local state
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Python (offline data preparation)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local development data store (reports, media) — never commit
+.data/
+
+# Tests and evaluation scratch output
+coverage/
+eval/results/raw/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
