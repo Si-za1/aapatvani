@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/av/logo";
 import { Receipt } from "@/components/report/receipt";
 import { translator } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
@@ -27,10 +28,18 @@ async function Screen({ params }: { params: PageProps<"/report/[id]">["params"] 
 
   return (
     <>
-      <Link href="/report" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
-        <ArrowLeft className="size-4" aria-hidden />
-        {t("common.back")}
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/" className="inline-flex items-center gap-2.5">
+          <Logo className="size-7" />
+          <span className="text-base font-bold tracking-tight" lang={locale}>
+            {locale === "ne" ? "आपतवाणी" : "AapatVani"}
+          </span>
+        </Link>
+        <Link href="/report" className="inline-flex items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
+          <ArrowLeft className="size-4" aria-hidden />
+          {t("common.back")}
+        </Link>
+      </div>
       <Receipt reportId={id} locale={locale} />
     </>
   );

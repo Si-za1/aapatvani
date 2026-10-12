@@ -9,6 +9,7 @@
 
 import Link from "next/link";
 import { Activity, LayoutDashboard, MapPin, Scale } from "lucide-react";
+import { Logo } from "@/components/av/logo";
 import { SignOutButton } from "@/components/av/sign-out-button";
 import { cn } from "@/lib/utils";
 
@@ -31,15 +32,15 @@ export function AppShell({
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-background lg:flex-row">
-      <aside className="flex shrink-0 items-center gap-1 bg-sidebar px-3 py-2 text-sidebar-foreground lg:sticky lg:top-0 lg:h-screen lg:w-[4.75rem] lg:flex-col lg:gap-2 lg:px-3 lg:py-5">
-        {/* The mark is leaf-tinted and the active destination is white, so the two are never
-            mistaken for each other at a glance. */}
-        <Link
-          href="/dashboard"
-          aria-label="AapatVani"
-          className="mr-1 hidden size-10 shrink-0 place-items-center rounded-xl bg-leaf text-[15px] font-bold text-leaf-strong lg:grid"
-        >
-          आ
+      <aside className="flex shrink-0 items-center gap-1 bg-sidebar px-3 py-2 text-sidebar-foreground lg:sticky lg:top-0 lg:h-screen lg:w-[5.5rem] lg:flex-col lg:gap-2 lg:px-3 lg:py-5">
+        {/* The mark and the name together, stacked, because a rail this narrow has no room for a
+            wordmark beside anything. The name is the one piece of type in the rail: everything else
+            is an icon with a tooltip. */}
+        <Link href="/dashboard" className="mr-1 hidden shrink-0 flex-col items-center gap-1.5 lg:flex">
+          <span className="grid size-10 place-items-center rounded-xl bg-leaf text-leaf-strong">
+            <Logo className="size-6" />
+          </span>
+          <span className="text-[10px] leading-none font-bold tracking-tight">AapatVani</span>
         </Link>
 
         <nav

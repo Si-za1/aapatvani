@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Megaphone, TriangleAlert } from "lucide-react";
 import { LanguageToggle } from "@/components/av/language-toggle";
+import { Logo } from "@/components/av/logo";
 import { ReportForm, type HazardOption } from "@/components/report/report-form";
 import { getRegion } from "@/config/regions";
 import { getEnv } from "@/lib/env";
@@ -43,12 +44,19 @@ async function Screen() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
       <div className="flex items-center justify-between gap-4">
-        <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
-          <ArrowLeft className="size-4" aria-hidden />
-          {t("common.back")}
+        <Link href="/" className="inline-flex items-center gap-2.5">
+          <Logo className="size-7" />
+          <span className="text-base font-bold tracking-tight" lang={locale}>
+            {locale === "ne" ? "आपतवाणी" : "AapatVani"}
+          </span>
         </Link>
         <LanguageToggle locale={locale} />
       </div>
+
+      <Link href="/" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
+        <ArrowLeft className="size-4" aria-hidden />
+        {t("common.back")}
+      </Link>
 
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl bg-flame-tint px-5 py-3.5 text-sm text-flame-strong">
         <TriangleAlert className="size-4 shrink-0" aria-hidden />

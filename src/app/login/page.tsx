@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/av/logo";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -32,10 +33,16 @@ async function Screen() {
 
   return (
     <>
-      <Link href="/" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
-        <ArrowLeft className="size-4" aria-hidden />
-        Back to the public site
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/" className="inline-flex items-center gap-2.5">
+          <Logo className="size-7" />
+          <span className="text-base font-bold tracking-tight">AapatVani</span>
+        </Link>
+        <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
+          <ArrowLeft className="size-4" aria-hidden />
+          Public site
+        </Link>
+      </div>
 
       <Card className="gap-5 p-6">
         <div className="flex flex-col gap-1">

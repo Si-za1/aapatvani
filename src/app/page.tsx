@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, TriangleAlert, Users } from "lucide-react";
 import { HazardGlyph } from "@/components/av/hazard-icon";
+import { Logo } from "@/components/av/logo";
 import { LanguageToggle } from "@/components/av/language-toggle";
 import { getRegion } from "@/config/regions";
 import { getEnv } from "@/lib/env";
@@ -43,8 +44,11 @@ async function Landing() {
   return (
     <div className="overflow-hidden rounded-[2rem] bg-card">
       <header className="flex items-center justify-between gap-4 px-6 py-5 sm:px-10">
-        <span className="text-lg font-bold tracking-tight" lang={locale}>
-          {locale === "ne" ? "आपतवाणी" : "AapatVani"}
+        <span className="inline-flex items-center gap-2.5">
+          <Logo className="size-7" />
+          <span className="text-lg font-bold tracking-tight" lang={locale}>
+            {locale === "ne" ? "आपतवाणी" : "AapatVani"}
+          </span>
         </span>
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
