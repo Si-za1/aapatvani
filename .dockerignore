@@ -1,0 +1,40 @@
+# Keep the build context small: the whole repository would otherwise be uploaded to Cloud Build on
+# every deploy, and anything not needed to build the app has no business being in the image.
+
+# Dependencies and build output are produced inside the image.
+node_modules
+.next
+out
+
+# Development data. The container uses Firestore or an empty local store; a developer's seeded
+# reports must never end up in an image.
+.data
+
+# Tests, scripts and docs are not part of the server. The datasets under data/regions are, and so
+# are the saved results under data/eval — the evaluation page has to show measured numbers in the
+# deployed app, which is one of the judging criteria.
+tests
+scripts
+docs
+
+# Version control and tooling noise.
+.git
+.gitignore
+.github
+*.md
+tsconfig.tsbuildinfo
+.vscode
+.idea
+.DS_Store
+
+# Secrets. Nothing here should ever be readable from a build layer.
+.env
+.env.*
+!.env.example
+*.pem
+*service-account*.json
+
+# Cloud Build and Firebase configuration files the server does not read.
+firebase.json
+firestore.rules
+storage.rules
