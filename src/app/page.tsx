@@ -124,7 +124,7 @@ async function Landing() {
           </div>
           <div className="flex flex-col gap-4 sm:mt-10">
             <StepCard {...steps[1]} />
-            <div className="flex flex-1 flex-col gap-4 rounded-3xl bg-primary p-6 text-primary-foreground">
+            <div className="flex flex-col gap-4 rounded-3xl bg-primary p-6 text-primary-foreground">
               {/* A badge, but not a number: this is not a fourth step, and numbering it would say it
                   was. It carries a shield so the card sits in the same rhythm as the three above. */}
               <span className="grid size-7 place-items-center rounded-full bg-white/20">
