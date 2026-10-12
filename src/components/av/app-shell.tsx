@@ -1,7 +1,11 @@
-// The reviewer shell (project.md §3): deep pine-teal "ink" down the side, warm cream content.
+// The reviewer shell.
 //
-// A sidebar on a laptop, a horizontal strip on a phone — a responder in the field is as likely to
-// be on a phone as at a desk, so nothing here assumes width.
+// A narrow, icon-only rail rather than a labelled sidebar: four destinations do not need a column
+// of words competing with the data, and the icons are recognisable after one pass. The active
+// destination is a light rounded square, which is the only strong shape in the rail.
+//
+// On a phone the rail turns into a horizontal strip, because a responder in the field is as likely
+// to be holding a phone as sitting at a desk.
 
 import Link from "next/link";
 import { Activity, LayoutDashboard, MapPin, Scale } from "lucide-react";
@@ -9,7 +13,7 @@ import { SignOutButton } from "@/components/av/sign-out-button";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { href: "/dashboard", label: "Overview", Icon: LayoutDashboard },
   { href: "/reports", label: "Reports", Icon: MapPin },
   { href: "/incidents", label: "Incidents", Icon: Scale },
   { href: "/activity", label: "Activity", Icon: Activity },
@@ -27,16 +31,21 @@ export function AppShell({
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-background lg:flex-row">
-      <aside className="flex shrink-0 flex-col gap-4 bg-sidebar px-4 py-4 text-sidebar-foreground lg:w-60 lg:px-3 lg:py-6">
-        <div className="flex items-center justify-between gap-3 lg:px-2">
-          <Link href="/dashboard" className="flex items-baseline gap-2">
-            {/* Reviewer screens are English, so the Nepali name is a brand mark here, not a label. */}
-            <span className="font-semibold tracking-tight">AapatVani</span>
-          </Link>
-          <span className="hidden text-xs text-sidebar-foreground/60 lg:inline">Reviewer</span>
-        </div>
+      <aside className="flex shrink-0 items-center gap-1 bg-sidebar px-3 py-2 text-sidebar-foreground lg:sticky lg:top-0 lg:h-screen lg:w-[4.75rem] lg:flex-col lg:gap-2 lg:px-3 lg:py-5">
+        {/* The mark is leaf-tinted and the active destination is white, so the two are never
+            mistaken for each other at a glance. */}
+        <Link
+          href="/dashboard"
+          aria-label="AapatVani"
+          className="mr-1 hidden size-10 shrink-0 place-items-center rounded-xl bg-sage text-[15px] font-bold text-sage-strong lg:grid"
+        >
+          आ
+        </Link>
 
-        <nav aria-label="Sections" className="-mx-1 flex gap-1 overflow-x-auto lg:mx-0 lg:flex-col lg:overflow-visible">
+        <nav
+          aria-label="Sections"
+          className="flex flex-1 items-center gap-1 overflow-x-auto lg:mt-4 lg:flex-col lg:gap-2 lg:overflow-visible"
+        >
           {NAV.map(({ href, label, Icon }) => {
             const active = current === href || current.startsWith(`${href}/`);
             return (
@@ -44,25 +53,28 @@ export function AppShell({
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
+                title={label}
                 className={cn(
-                  "inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-colors",
+                  "grid size-10 shrink-0 place-items-center rounded-xl transition-colors",
                   active
                     ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
-                <Icon className="size-4" aria-hidden />
-                {label}
+                <Icon className="size-[18px]" aria-hidden />
+                <span className="sr-only">{label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="mt-auto flex items-center justify-between gap-2 border-t border-sidebar-border pt-4 lg:px-2">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{reviewer.name}</p>
-            <p className="text-xs text-sidebar-foreground/60">Signed in</p>
-          </div>
+        <div className="flex shrink-0 items-center gap-1 lg:mt-auto lg:flex-col lg:gap-2">
+          <span
+            className="hidden size-10 place-items-center rounded-xl bg-sidebar-accent text-sm font-semibold text-sidebar-accent-foreground lg:grid"
+            title={reviewer.name}
+          >
+            {reviewer.name.slice(0, 1).toUpperCase()}
+          </span>
           <SignOutButton />
         </div>
       </aside>
@@ -72,7 +84,10 @@ export function AppShell({
   );
 }
 
-/** Page heading with an optional count and action area, shared by the reviewer pages. */
+/**
+ * The page heading. Big and quiet: one title, one line of explanation, and any controls pushed to
+ * the right edge so the reading column stays intact.
+ */
 export function PageHeader({
   title,
   description,
@@ -83,10 +98,10 @@ export function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border px-5 py-5 sm:px-8">
+    <header className="flex flex-wrap items-start justify-between gap-4 px-6 pt-8 pb-6 sm:px-10">
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold sm:text-2xl">{title}</h1>
-        {description ? <p className="max-w-2xl text-sm text-muted-foreground">{description}</p> : null}
+        <h1 className="text-2xl font-bold tracking-tight sm:text-[28px]">{title}</h1>
+        {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
       </div>
       {children ? <div className="flex flex-wrap items-center gap-2">{children}</div> : null}
     </header>

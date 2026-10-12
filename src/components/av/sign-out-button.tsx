@@ -30,10 +30,10 @@ export function SignOutButton() {
       size="icon"
       onClick={() => void signOut()}
       disabled={pending}
-      className="size-8 rounded-full text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       title="Sign out"
+      className="size-10 shrink-0 rounded-xl text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
     >
-      <LogOut className="size-4" aria-hidden />
+      <LogOut className="size-[18px]" aria-hidden />
       <span className="sr-only">Sign out</span>
     </Button>
   );

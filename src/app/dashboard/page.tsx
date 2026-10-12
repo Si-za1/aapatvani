@@ -1,34 +1,35 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CircleCheck, Clock, MapPin, Scale, TriangleAlert } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/av/app-shell";
-import { DataLabelBadge } from "@/components/av/trust-labels";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
 import { MapPanel } from "@/components/dashboard/map-panel";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { getRegion, hazardLabel } from "@/config/regions";
 import { requireReviewer } from "@/lib/auth";
 import { dashboardData } from "@/lib/dashboard/service";
 import type { IncidentStatus } from "@/lib/domain/schemas";
 import { getEnv } from "@/lib/env";
 import { relativeTime } from "@/lib/time";
+import { cn } from "@/lib/utils";
 
-// The responder dashboard (features M10/S3): counts, a map, the incident list and what has come in.
+// The responder dashboard (features M10/S3).
+//
+// Laid out to be scanned rather than read: four numbers across the top for the state of things, the
+// map and the incident list side by side because they answer the same question two ways, and what
+// has just arrived along the bottom. Nothing here needs a decision to be understood.
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Overview" };
 
-const STATUS_TONE: Record<IncidentStatus, { label: string; className: string }> = {
-  candidate: { label: "Candidate", className: "bg-butter-tint text-butter-strong" },
-  under_review: { label: "Under review", className: "bg-sky-tint text-sky-strong" },
-  verified: { label: "Verified", className: "bg-sage-tint text-sage-strong" },
-  dismissed: { label: "Dismissed", className: "bg-stone-tint text-stone-strong" },
+const STATUS_TONE: Record<IncidentStatus, { label: string; className: string; dot: string }> = {
+  candidate: { label: "Candidate", className: "bg-butter-tint text-butter-strong", dot: "bg-butter" },
+  under_review: { label: "Under review", className: "bg-sky-tint text-sky-strong", dot: "bg-sky" },
+  verified: { label: "Verified", className: "bg-sage-tint text-sage-strong", dot: "bg-sage" },
+  dismissed: { label: "Dismissed", className: "bg-stone-tint text-stone-strong", dot: "bg-stone" },
 };
 
 export default function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   return (
-    <Suspense fallback={<Shell title="Dashboard" />}>
+    <Suspense fallback={<div className="h-96 animate-pulse bg-sand" aria-hidden />}>
       <Screen searchParams={searchParams} />
     </Suspense>
   );
@@ -53,60 +54,29 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
 
   return (
     <AppShell current="/dashboard" reviewer={reviewer}>
-      <PageHeader title="Dashboard" description="What communities have reported, and what is waiting for a person to check.">
+      <PageHeader title="Overview" description="What communities have reported, and what is waiting for a person to check.">
         <DashboardFilters hazards={data.hazardsInUse} regionId={region.id} />
       </PageHeader>
 
-      <div className="flex flex-col gap-6 px-5 py-6 sm:px-8">
-        <section aria-label="Counts" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <Tile
-            icon={<Clock className="size-4" />}
-            tone="bg-butter-tint text-butter-strong"
-            value={stats.awaitingReview}
-            label="Awaiting review"
-            hint="Extracted, not yet checked"
-          />
-          <Tile
-            icon={<Scale className="size-4" />}
-            tone="bg-sky-tint text-sky-strong"
-            value={stats.candidateIncidents}
-            label="Candidate incidents"
-            hint="Grouped by the system"
-          />
-          <Tile
-            icon={<TriangleAlert className="size-4" />}
-            tone="bg-clay-tint text-clay-strong"
-            value={stats.openContradictions}
-            label="Open contradictions"
-            hint="Reports that disagree"
-          />
-          <Tile
-            icon={<CircleCheck className="size-4" />}
-            tone="bg-sage-tint text-sage-strong"
-            value={stats.verifiedIncidents}
-            label="Verified incidents"
-            hint="Confirmed by a reviewer"
-          />
-          <Tile
-            icon={<MapPin className="size-4" />}
-            tone="bg-rose-tint text-rose-strong"
-            value={stats.last24h}
-            label="Reports in 24 h"
-            hint={`${stats.reports} in total`}
-          />
+      <div className="flex flex-col gap-7 px-6 pb-10 sm:px-10">
+        <section aria-label="Counts" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <Tile tone="bg-butter-tint text-butter-strong" value={stats.awaitingReview} label="Awaiting review" hint="Read, not yet checked" />
+          <Tile tone="bg-sky-tint text-sky-strong" value={stats.candidateIncidents} label="Candidate incidents" hint="Grouped by the system" />
+          <Tile tone="bg-clay-tint text-clay-strong" value={stats.openContradictions} label="Contradictions" hint="Reports that disagree" />
+          <Tile tone="bg-sage-tint text-sage-strong" value={stats.verifiedIncidents} label="Verified incidents" hint="Confirmed by a reviewer" />
         </section>
 
         {stats.aiUnavailable > 0 ? (
-          <p className="rounded-2xl bg-butter-tint px-4 py-3 text-sm text-butter-strong">
+          <p className="rounded-2xl bg-butter-tint px-5 py-3.5 text-sm text-butter-strong">
             <strong className="font-semibold">{stats.aiUnavailable}</strong> report
             {stats.aiUnavailable === 1 ? " has" : "s have"} not been read automatically. On this deployment that means
             Gemini is not configured, so a reviewer reads them directly — nothing is lost, it is simply slower.
           </p>
         ) : null}
 
-        <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <div className="grid gap-5 lg:grid-cols-[1.55fr_1fr]">
           <section aria-labelledby="map-heading" className="flex flex-col gap-3">
-            <h2 id="map-heading" className="text-sm font-semibold">
+            <h2 id="map-heading" className="text-lg font-bold tracking-tight">
               Where things are
             </h2>
             <MapPanel
@@ -123,46 +93,51 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
           </section>
 
           <section aria-labelledby="incidents-heading" className="flex flex-col gap-3">
-            <h2 id="incidents-heading" className="flex items-center justify-between text-sm font-semibold">
+            <h2 id="incidents-heading" className="flex items-baseline justify-between text-lg font-bold tracking-tight">
               Incidents
-              <span className="font-normal text-muted-foreground">{data.incidents.length} shown</span>
+              <span className="text-xs font-normal text-muted-foreground">{data.incidents.length} shown</span>
             </h2>
+
             {data.incidents.length === 0 ? (
               <Empty>No incidents match these filters.</Empty>
             ) : (
-              <ul className="flex flex-col gap-2">
-                {data.incidents.slice(0, 8).map((incident) => {
+              <ul className="flex flex-col gap-2.5">
+                {data.incidents.slice(0, 7).map((incident) => {
                   const tone = STATUS_TONE[incident.status];
                   return (
                     <li key={incident.id}>
                       <Link
                         href={`/incidents/${incident.id}`}
-                        className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3.5 transition-colors hover:bg-accent"
+                        className="flex flex-col gap-2 rounded-2xl bg-card p-4 transition-shadow hover:shadow-[0_4px_20px_rgba(28,31,24,0.08)]"
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="text-sm font-medium">{incident.title}</span>
-                          <Badge variant="secondary" className={`shrink-0 rounded-full ${tone.className}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="text-sm font-semibold leading-snug">{incident.title}</span>
+                          <span
+                            className={cn(
+                              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+                              tone.className,
+                            )}
+                          >
+                            <span className={cn("size-1.5 rounded-full", tone.dot)} aria-hidden />
                             {tone.label}
-                          </Badge>
+                          </span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                           <span>{hazardLabel(region, incident.hazard.category)}</span>
                           <span aria-hidden>·</span>
                           <span>
-                            {incident.independentSources} independent source
-                            {incident.independentSources === 1 ? "" : "s"}
+                            {incident.independentSources} independent
                           </span>
                           {incident.openContradictions > 0 ? (
                             <>
                               <span aria-hidden>·</span>
-                              <span className="text-clay-strong">
+                              <span className="font-medium text-clay-strong">
                                 {incident.openContradictions} contradiction
                                 {incident.openContradictions === 1 ? "" : "s"}
                               </span>
                             </>
                           ) : null}
-                          <span aria-hidden>·</span>
-                          <span>{relativeTime(incident.lastReportedAt)}</span>
+                          <span className="ml-auto">{relativeTime(incident.lastReportedAt)}</span>
                         </div>
                       </Link>
                     </li>
@@ -174,88 +149,93 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
         </div>
 
         <section aria-labelledby="incoming-heading" className="flex flex-col gap-3">
-          <h2 id="incoming-heading" className="text-sm font-semibold">
+          <h2 id="incoming-heading" className="text-lg font-bold tracking-tight">
             Coming in
           </h2>
           {data.activity.length === 0 ? (
             <Empty>Nothing has arrived in this window.</Empty>
           ) : (
-            <ul className="flex flex-col divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-              {data.activity.map((entry) => (
-                <li key={entry.id}>
-                  <Link href={`/reports/${entry.id}`} className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-accent">
-                    <span className="font-mono text-xs text-muted-foreground">{entry.referenceCode}</span>
-                    <span className="text-sm font-medium">{entry.hazard ? hazardLabel(region, entry.hazard) : "Hazard not stated"}</span>
-                    <span className="text-sm text-muted-foreground">{entry.place ?? "Location not named"}</span>
-                    <span className="ml-auto flex items-center gap-2">
+            <div className="overflow-hidden rounded-2xl bg-card">
+              <div className="hidden grid-cols-[7rem_1fr_1fr_9rem_5rem] gap-4 px-5 py-2.5 text-xs font-medium text-muted-foreground sm:grid">
+                <span>Reference</span>
+                <span>Hazard</span>
+                <span>Place</span>
+                <span>Status</span>
+                <span className="text-right">When</span>
+              </div>
+              <ul className="divide-y divide-border/70">
+                {data.activity.map((entry) => (
+                  <li key={entry.id}>
+                    <Link
+                      href={`/reports/${entry.id}`}
+                      className="grid grid-cols-2 gap-x-4 gap-y-1 px-5 py-3 text-sm transition-colors hover:bg-sand/60 sm:grid-cols-[7rem_1fr_1fr_9rem_5rem] sm:items-center"
+                    >
+                      <span className="font-mono text-xs text-muted-foreground">{entry.referenceCode}</span>
+                      <span className="text-right font-medium sm:text-left">
+                        {entry.hazard ? hazardLabel(region, entry.hazard) : <span className="text-muted-foreground">Not stated</span>}
+                      </span>
+                      <span className="col-span-2 text-muted-foreground sm:col-span-1">
+                        {entry.place ?? "Location not named"}
+                      </span>
                       <ReportStatusBadge status={entry.status} />
-                      <span className="text-xs text-muted-foreground">{relativeTime(entry.submittedAt)}</span>
-                      <ArrowRight className="size-3.5 text-muted-foreground" aria-hidden />
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                      <span className="text-right text-xs text-muted-foreground">{relativeTime(entry.submittedAt)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </section>
-
-        <p className="flex items-center gap-2 pb-4 text-xs text-muted-foreground">
-          <DataLabelBadge label={env.defaultDataLabel} />
-          The demo runs on synthetic reports over a real OpenStreetMap road network.
-        </p>
       </div>
     </AppShell>
   );
 }
 
 function ReportStatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; className: string }> = {
-    received: { label: "Not read yet", className: "bg-butter-tint text-butter-strong" },
-    extracting: { label: "Reading", className: "bg-sky-tint text-sky-strong" },
-    extracted: { label: "Read", className: "bg-sky-tint text-sky-strong" },
-    extraction_failed: { label: "Read failed", className: "bg-clay-tint text-clay-strong" },
-    ai_unavailable: { label: "Awaiting a person", className: "bg-butter-tint text-butter-strong" },
+  const map: Record<string, { label: string; dot: string; className: string }> = {
+    received: { label: "Not read", dot: "bg-butter", className: "text-butter-strong" },
+    extracting: { label: "Reading", dot: "bg-sky", className: "text-sky-strong" },
+    extracted: { label: "Read", dot: "bg-sky", className: "text-sky-strong" },
+    extraction_failed: { label: "Read failed", dot: "bg-clay", className: "text-clay-strong" },
+    ai_unavailable: { label: "Awaiting a person", dot: "bg-butter", className: "text-butter-strong" },
   };
   const tone = map[status] ?? map.received;
-  return <Badge variant="secondary" className={`rounded-full text-xs ${tone.className}`}>{tone.label}</Badge>;
+  return (
+    <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium", tone.className)}>
+      <span className={cn("size-1.5 rounded-full", tone.dot)} aria-hidden />
+      {tone.label}
+    </span>
+  );
 }
 
 function Tile({
-  icon,
   tone,
   value,
   label,
   hint,
 }: {
-  icon: React.ReactNode;
   tone: string;
   value: number;
   label: string;
   hint: string;
 }) {
+  // The tile itself carries the colour, as in the reference: a soft wash of the state's own hue,
+  // with the number as the loudest thing in it.
   return (
-    <Card className="gap-2 p-4">
-      <span className={`inline-flex size-8 items-center justify-center rounded-full ${tone}`} aria-hidden>
-        {icon}
-      </span>
-      <p className="text-2xl font-semibold tabular-nums">{value}</p>
+    <div className={cn("flex flex-col gap-4 rounded-2xl p-5", tone)}>
       <div className="flex flex-col">
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <p className="text-[32px] font-bold leading-none tracking-tight tabular-nums">{value}</p>
+        <p className="mt-1.5 text-sm font-semibold">{label}</p>
       </div>
-    </Card>
+      <p className="text-xs opacity-70">{hint}</p>
+    </div>
   );
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="rounded-2xl border border-dashed border-border bg-card px-4 py-6 text-center text-sm text-muted-foreground">{children}</p>;
-}
-
-function Shell({ title }: { title: string }) {
   return (
-    <div className="flex min-h-screen flex-col gap-6 p-8">
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      <div className="h-64 animate-pulse rounded-2xl bg-sand" aria-hidden />
-    </div>
+    <p className="flex items-center justify-center rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+      {children}
+    </p>
   );
 }

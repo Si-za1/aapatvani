@@ -48,95 +48,100 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* AapatVani palette. Every status colour is always paired with an icon and a text label. */
+  /* AapatVani palette. Every status colour is always paired with an icon and a text label.
+     Rose/sky/river/sage/butter/clay keep their meanings; the hues are the new palette. */
   --color-cream: var(--av-cream);
   --color-sand: var(--av-sand);
   --color-ink: var(--av-ink);
   --color-ink-soft: var(--av-ink-soft);
-  --color-butter: var(--av-butter);
-  --color-butter-tint: var(--av-butter-tint);
-  --color-butter-strong: var(--av-butter-strong);
-  --color-rose: var(--av-rose);
-  --color-rose-tint: var(--av-rose-tint);
-  --color-rose-strong: var(--av-rose-strong);
-  --color-sage: var(--av-sage);
-  --color-sage-tint: var(--av-sage-tint);
-  --color-sage-strong: var(--av-sage-strong);
-  --color-sky: var(--av-sky);
-  --color-sky-tint: var(--av-sky-tint);
-  --color-sky-strong: var(--av-sky-strong);
-  --color-river: var(--av-river);
-  --color-river-tint: var(--av-river-tint);
-  --color-river-strong: var(--av-river-strong);
-  --color-clay: var(--av-clay);
-  --color-clay-tint: var(--av-clay-tint);
-  --color-clay-strong: var(--av-clay-strong);
+  --color-butter: var(--av-amber);
+  --color-butter-tint: var(--av-amber-tint);
+  --color-butter-strong: var(--av-amber-strong);
+  --color-rose: var(--av-coral);
+  --color-rose-tint: var(--av-coral-tint);
+  --color-rose-strong: var(--av-coral-strong);
+  --color-sage: var(--av-leaf);
+  --color-sage-tint: var(--av-leaf-tint);
+  --color-sage-strong: var(--av-leaf-strong);
+  --color-sky: var(--av-violet);
+  --color-sky-tint: var(--av-violet-tint);
+  --color-sky-strong: var(--av-violet-strong);
+  --color-river: var(--av-moss);
+  --color-river-tint: var(--av-moss-tint);
+  --color-river-strong: var(--av-moss-strong);
+  --color-clay: var(--av-flame);
+  --color-clay-tint: var(--av-flame-tint);
+  --color-clay-strong: var(--av-flame-strong);
   --color-stone: var(--av-stone);
   --color-stone-tint: var(--av-stone-tint);
   --color-stone-strong: var(--av-stone-strong);
 }
 
 :root {
-  /* Warm cream surfaces, deep pine-teal ink, soft pastels for meaning. */
-  --av-cream: #faf4e8;
-  --av-sand: #f1e8d8;
-  --av-ink: #16302e;
-  --av-ink-soft: #234542;
+  /* Minimal, clean surfaces. Near-white base, one warm neutral, and a deep green ink. */
+  --av-cream: #fefefe;
+  --av-sand: #f2e8df;
+  --av-ink: #415111;
+  --av-ink-soft: #5c6b28;
 
-  --av-butter: #f5d565; /* needs review */
-  --av-butter-tint: #fbefc4;
-  --av-butter-strong: #6e5200;
-  --av-rose: #f2b9d3; /* reported by the community */
-  --av-rose-tint: #fbe5ef;
-  --av-rose-strong: #7e2452;
-  --av-sage: #b2bc75; /* confirmed by a person */
-  --av-sage-tint: #e7eccf;
-  --av-sage-strong: #3e4a15;
-  --av-sky: #b8c7ef; /* AI interpretation */
-  --av-sky-tint: #e5ebfb;
-  --av-sky-strong: #2c4185;
-  --av-river: #9dcfc4; /* computed by deterministic code */
-  --av-river-tint: #dbefea;
-  --av-river-strong: #1b5950;
-  --av-clay: #e9a48c; /* critical warning, always labelled */
-  --av-clay-tint: #f8ded5;
-  --av-clay-strong: #9a2f1c;
-  --av-stone: #ddd5c6; /* rejected / dismissed / neutral */
-  --av-stone-tint: #efeae1;
-  --av-stone-strong: #5b5448;
+  /* The trust model keeps its meanings (project.md §3); these are the new hues for them.
+     Every one is always paired with an icon and a word, which is what makes olive and leaf
+     usable side by side. */
+  --av-coral: #fb8159; /* reported by the community */
+  --av-coral-tint: #fee7de;
+  --av-coral-strong: #9a3a1c;
+  --av-violet: #c4c3e3; /* AI interpretation */
+  --av-violet-tint: #eeedf7;
+  --av-violet-strong: #504e76;
+  --av-moss: #a3b565; /* computed by deterministic code */
+  --av-moss-tint: #eaeeda;
+  --av-moss-strong: #4c5a1c;
+  --av-leaf: #d2e186; /* confirmed by a person */
+  --av-leaf-tint: #f1f6dd;
+  --av-leaf-strong: #415111;
+  --av-amber: #fcdd9d; /* needs review */
+  --av-amber-tint: #fdf0d5;
+  --av-amber-strong: #7a5410;
+  --av-flame: #f1642e; /* critical warning, always labelled */
+  --av-flame-tint: #fde3d8;
+  --av-flame-strong: #a83a12;
+  --av-stone: #ddd5cb; /* rejected / dismissed / neutral */
+  --av-stone-tint: #f4efe9;
+  --av-stone-strong: #6b6357;
 
-  --radius: 1rem;
-  --background: var(--av-cream);
-  --foreground: #1e2624;
-  --card: #fffcf7;
-  --card-foreground: #1e2624;
-  --popover: #fffcf7;
-  --popover-foreground: #1e2624;
+  --radius: 1.15rem;
+  /* The page sits a shade warmer than the cards, so a card reads as a card without needing a border. */
+  --background: #f8f5f0;
+  --foreground: #1c1f18;
+  --card: #ffffff;
+  --card-foreground: #1c1f18;
+  --popover: #ffffff;
+  --popover-foreground: #1c1f18;
   --primary: var(--av-ink);
-  --primary-foreground: #faf4e8;
+  --primary-foreground: #fefefe;
   --secondary: var(--av-sand);
-  --secondary-foreground: #1e2624;
+  --secondary-foreground: #1c1f18;
   --muted: var(--av-sand);
-  --muted-foreground: #6b6357;
-  --accent: #ede3d1;
-  --accent-foreground: #1e2624;
-  --destructive: #b4412b;
-  --border: #e6dbc8;
-  --input: #e6dbc8;
-  --ring: #2e6f69;
-  --chart-1: var(--av-river-strong);
-  --chart-2: var(--av-sky-strong);
-  --chart-3: var(--av-rose-strong);
-  --chart-4: var(--av-butter-strong);
-  --chart-5: var(--av-sage-strong);
+  --muted-foreground: #7d7669;
+  --accent: #efe7dd;
+  --accent-foreground: #1c1f18;
+  --destructive: var(--av-flame-strong);
+  --border: #ece4da;
+  --input: #e6ddd1;
+  --ring: #7d8f3f;
+  --chart-1: var(--av-moss-strong);
+  --chart-2: var(--av-violet-strong);
+  --chart-3: var(--av-coral-strong);
+  --chart-4: var(--av-amber-strong);
+  --chart-5: var(--av-leaf-strong);
   --sidebar: var(--av-ink);
-  --sidebar-foreground: #f3ece0;
-  --sidebar-primary: #faf4e8;
+  --sidebar-foreground: #f3f4e9;
+  --sidebar-primary: #fefefe;
   --sidebar-primary-foreground: var(--av-ink);
-  --sidebar-accent: var(--av-ink-soft);
-  --sidebar-accent-foreground: #faf4e8;
-  --sidebar-border: #2c4d4a;
-  --sidebar-ring: #8fc3ba;
+  --sidebar-accent: #52632a;
+  --sidebar-accent-foreground: #fefefe;
+  --sidebar-border: #52632a;
+  --sidebar-ring: #d2e186;
 }
 
 @layer base {
@@ -182,9 +187,11 @@
   }
 }
 
-/* Leaflet: soften the OpenStreetMap basemap so our layers carry the meaning. */
+/* Leaflet: calm the OpenStreetMap basemap just enough to sit under our layers. The previous sepia
+   pass pushed the whole map olive and fought the page palette; a light desaturation is enough to
+   keep our markers the loudest thing on the map. */
 .av-map .leaflet-tile-pane {
-  filter: saturate(0.55) sepia(0.12) brightness(1.03);
+  filter: saturate(0.72) brightness(1.04) contrast(0.96);
 }
 .av-map.leaflet-container {
   font-family: var(--font-jakarta), var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
