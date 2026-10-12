@@ -9,6 +9,7 @@
 
 import { divIcon } from "leaflet";
 import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip } from "react-leaflet";
+import { ClientOnlyMap } from "@/components/av/client-only-map";
 import type { ImpactAssessment, ImpactCandidate } from "@/lib/domain/schemas";
 
 /** Candidate findings, each with its own shape and words. Colour never stands alone. */
@@ -55,73 +56,75 @@ export default function ImpactMap({ assessment, incident, center, zoom, tileUrl,
   return (
     <div className="flex flex-col gap-2">
       <div className={`av-map overflow-hidden rounded-2xl border border-border ${className ?? "h-[24rem]"}`}>
-        <MapContainer center={center} zoom={zoom} scrollWheelZoom className="h-full w-full">
-          <TileLayer url={tileUrl} attribution={attribution} />
+        <ClientOnlyMap placeholder={<div className="h-full w-full animate-pulse bg-sand" aria-hidden />}>
+          <MapContainer center={center} zoom={zoom} scrollWheelZoom className="h-full w-full">
+            <TileLayer url={tileUrl} attribution={attribution} />
 
-          {/* The assumed blocked segment: the only thing here that is an assumption, not a measurement. */}
-          {assessment.blockedRoads.map((road) => {
-            const candidate = shown.find((c) => c.kind === "road_segment" && c.edgeIds?.includes(road.edge));
-            const positions = toPositions(candidate?.geometry);
-            if (positions.length < 2) return null;
-            return (
-              <Polyline
-                key={`blocked-${road.edge}`}
-                positions={positions}
-                pathOptions={{ color: "#16302e", weight: 6, opacity: 0.75, dashArray: "1 7", lineCap: "round" }}
-              >
-                <Tooltip>
-                  Assumed blocked: {road.name} ({Math.round(road.lengthM)} m)
-                </Tooltip>
-              </Polyline>
-            );
-          })}
+            {/* The assumed blocked segment: the only thing here that is an assumption, not a measurement. */}
+            {assessment.blockedRoads.map((road) => {
+              const candidate = shown.find((c) => c.kind === "road_segment" && c.edgeIds?.includes(road.edge));
+              const positions = toPositions(candidate?.geometry);
+              if (positions.length < 2) return null;
+              return (
+                <Polyline
+                  key={`blocked-${road.edge}`}
+                  positions={positions}
+                  pathOptions={{ color: "#16302e", weight: 6, opacity: 0.75, dashArray: "1 7", lineCap: "round" }}
+                >
+                  <Tooltip>
+                    Assumed blocked: {road.name} ({Math.round(road.lengthM)} m)
+                  </Tooltip>
+                </Polyline>
+              );
+            })}
 
-          {/* Baseline routes to care for the places that keep one: context for what changed. */}
-          {shown
-            .filter((c) => c.kind === "settlement_access" && c.finding === "longer_route")
-            .slice(0, 12)
-            .map((candidate) => (
-              <Polyline
-                key={`route-${candidate.id}`}
-                positions={toPositions(candidate.geometry)}
-                pathOptions={{ color: "#6e5200", weight: 3, opacity: 0.5 }}
-              />
-            ))}
+            {/* Baseline routes to care for the places that keep one: context for what changed. */}
+            {shown
+              .filter((c) => c.kind === "settlement_access" && c.finding === "longer_route")
+              .slice(0, 12)
+              .map((candidate) => (
+                <Polyline
+                  key={`route-${candidate.id}`}
+                  positions={toPositions(candidate.geometry)}
+                  pathOptions={{ color: "#6e5200", weight: 3, opacity: 0.5 }}
+                />
+              ))}
 
-          {shown.map((candidate) => {
-            const style = FINDING_STYLE[candidate.finding];
-            const reviewed = candidate.review.status === "confirmed";
-            return (
-              <CircleMarker
-                key={candidate.id}
-                center={[candidate.lat, candidate.lng]}
-                radius={style.radius}
-                pathOptions={{
-                  color: style.stroke,
-                  fillColor: style.fill,
-                  fillOpacity: reviewed ? 0.95 : 0.6,
-                  weight: reviewed ? 3 : 1.5,
-                }}
-              >
-                <Popup>
-                  <strong className="block text-[13px]">{candidate.name}</strong>
-                  <span className="block text-xs text-muted-foreground">{style.label}</span>
-                  <span className="block text-xs">{candidate.explanation}</span>
-                  <span className="mt-1 block text-xs">
-                    {reviewed ? "Confirmed by a reviewer" : candidate.review.status === "unreviewed" ? "Not yet reviewed" : candidate.review.status}
-                  </span>
-                </Popup>
-              </CircleMarker>
-            );
-          })}
+            {shown.map((candidate) => {
+              const style = FINDING_STYLE[candidate.finding];
+              const reviewed = candidate.review.status === "confirmed";
+              return (
+                <CircleMarker
+                  key={candidate.id}
+                  center={[candidate.lat, candidate.lng]}
+                  radius={style.radius}
+                  pathOptions={{
+                    color: style.stroke,
+                    fillColor: style.fill,
+                    fillOpacity: reviewed ? 0.95 : 0.6,
+                    weight: reviewed ? 3 : 1.5,
+                  }}
+                >
+                  <Popup>
+                    <strong className="block text-[13px]">{candidate.name}</strong>
+                    <span className="block text-xs text-muted-foreground">{style.label}</span>
+                    <span className="block text-xs">{candidate.explanation}</span>
+                    <span className="mt-1 block text-xs">
+                      {reviewed ? "Confirmed by a reviewer" : candidate.review.status === "unreviewed" ? "Not yet reviewed" : candidate.review.status}
+                    </span>
+                  </Popup>
+                </CircleMarker>
+              );
+            })}
 
-          <Marker position={[incident.lat, incident.lng]} icon={INCIDENT_ICON}>
-            <Popup>
-              <strong className="block text-[13px]">{incident.label}</strong>
-              <span className="block text-xs text-muted-foreground">Reported incident location</span>
-            </Popup>
-          </Marker>
-        </MapContainer>
+            <Marker position={[incident.lat, incident.lng]} icon={INCIDENT_ICON}>
+              <Popup>
+                <strong className="block text-[13px]">{incident.label}</strong>
+                <span className="block text-xs text-muted-foreground">Reported incident location</span>
+              </Popup>
+            </Marker>
+          </MapContainer>
+        </ClientOnlyMap>
       </div>
 
       <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">

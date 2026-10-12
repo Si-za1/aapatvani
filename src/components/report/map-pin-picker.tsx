@@ -5,6 +5,7 @@
 
 import { divIcon } from "leaflet";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+import { ClientOnlyMap } from "@/components/av/client-only-map";
 import type { LatLng } from "@/lib/domain/schemas";
 
 function ClickCatcher({ onPick }: { onPick: (point: LatLng) => void }) {
@@ -40,11 +41,13 @@ export interface MapPinPickerProps {
 export default function MapPinPicker({ center, zoom, value, onPick, tileUrl, attribution, label }: MapPinPickerProps) {
   return (
     <div className="av-map h-64 w-full overflow-hidden rounded-2xl border border-border" role="application" aria-label={label}>
-      <MapContainer center={value ? [value.lat, value.lng] : center} zoom={zoom} scrollWheelZoom className="h-full w-full">
-        <TileLayer url={tileUrl} attribution={attribution} />
-        <ClickCatcher onPick={onPick} />
-        {value ? <Marker position={[value.lat, value.lng]} icon={PIN_ICON} /> : null}
-      </MapContainer>
+      <ClientOnlyMap placeholder={<div className="h-full w-full animate-pulse bg-sand" aria-hidden />}>
+        <MapContainer center={value ? [value.lat, value.lng] : center} zoom={zoom} scrollWheelZoom className="h-full w-full">
+          <TileLayer url={tileUrl} attribution={attribution} />
+          <ClickCatcher onPick={onPick} />
+          {value ? <Marker position={[value.lat, value.lng]} icon={PIN_ICON} /> : null}
+        </MapContainer>
+      </ClientOnlyMap>
     </div>
   );
 }

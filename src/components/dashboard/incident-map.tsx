@@ -10,6 +10,7 @@
 
 import { divIcon } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { ClientOnlyMap } from "@/components/av/client-only-map";
 import type { MapPoint } from "@/lib/dashboard/service";
 
 const TONE_STYLE: Record<MapPoint["tone"], { fill: string; ring: string; label: string; shape: "circle" | "square" }> = {
@@ -54,6 +55,9 @@ export default function IncidentMap({ points, center, zoom, tileUrl, attribution
   return (
     <div className="flex flex-col gap-2">
       <div className={`av-map overflow-hidden rounded-2xl border border-border ${className ?? "h-[26rem]"}`}>
+      <ClientOnlyMap
+        placeholder={<div className="h-full w-full animate-pulse bg-sand" aria-hidden />}
+      >
         <MapContainer center={center} zoom={zoom} scrollWheelZoom className="h-full w-full">
           <TileLayer url={tileUrl} attribution={attribution} />
           {points.map((point) => (
@@ -69,6 +73,7 @@ export default function IncidentMap({ points, center, zoom, tileUrl, attribution
             </Marker>
           ))}
         </MapContainer>
+      </ClientOnlyMap>
       </div>
 
       <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">

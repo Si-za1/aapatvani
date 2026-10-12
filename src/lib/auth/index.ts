@@ -1,13 +1,22 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import type { Actor } from "@/lib/domain/schemas";
 import { SESSION_COOKIE, verifySessionToken, type Reviewer } from "./session";
 
 export type { Reviewer } from "./session";
 
-/** The signed-in reviewer, or null. Reads the session cookie, so call it inside a Suspense boundary. */
+/**
+ * The signed-in reviewer, or null.
+ *
+ * Reading the session is request-time work twice over: it depends on a cookie, and it compares the
+ * token's expiry against the current time. Saying so explicitly stops Next.js from attempting to
+ * prerender a page that contains it — without this the clock read inside session verification is
+ * reported as an unstable value during prerendering and the render is thrown away.
+ */
 export async function getReviewer(): Promise<Reviewer | null> {
+  await connection();
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   return verifySessionToken(token);
 }
