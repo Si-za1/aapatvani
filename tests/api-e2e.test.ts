@@ -47,6 +47,7 @@ const { POST: draftAlert } = await import("@/app/api/incidents/[id]/alert/route"
 const { POST: reviewClaim } = await import("@/app/api/claims/[id]/review/route");
 const { POST: decideSuggestion } = await import("@/app/api/suggestions/[id]/decision/route");
 const { GET: getMedia } = await import("@/app/api/media/[reportId]/[mediaId]/route");
+const { GET: getReceipt } = await import("@/app/api/reports/[id]/receipt/route");
 
 const { getDb } = await import("@/lib/db");
 
@@ -76,6 +77,7 @@ async function signIn(passcode = "test-passcode"): Promise<Response> {
 
 let reportId = "";
 let secondReportId = "";
+let submitToken = "";
 let claimId = "";
 let incidentId = "";
 let suggestionId = "";
@@ -135,6 +137,7 @@ describe("public intake", () => {
     expect(body.referenceCode).toMatch(/^AV-/);
     expect(body.submitToken).toBeTruthy();
     reportId = body.id;
+    submitToken = body.submitToken;
 
     const stored = await getDb().reports.get(reportId);
     expect(stored?.status).toBe("received");
@@ -300,6 +303,52 @@ describe("review workflow", () => {
   it("rejects an unknown claim with a 404 rather than a silent success", async () => {
     const response = await reviewClaim(json({ status: "confirmed" }) as never, ctx({ id: "clm_nope" }));
     expect(response.status).toBe(404);
+  });
+});
+
+describe("the reporter's own receipt", () => {
+  const receiptRequest = (token?: string) =>
+    new NextRequest(`http://localhost:3000/api/reports/${reportId}/receipt`, {
+      headers: token ? { "x-submit-token": token } : {},
+    }) as never;
+
+  it("is readable by the browser that sent the report", async () => {
+    const response = await getReceipt(receiptRequest(submitToken), ctx({ id: reportId }));
+    const body = await readJson<{ report: { referenceCode: string; text: string }; claims: unknown[]; aiAvailable: boolean }>(response);
+
+    expect(response.status).toBe(200);
+    expect(body.report.referenceCode).toMatch(/^AV-/);
+    expect(body.report.text).toContain("पहिरो");
+  });
+
+  it("refuses a request with no token, or the wrong one", async () => {
+    expect((await getReceipt(receiptRequest(), ctx({ id: reportId }))).status).toBe(403);
+    expect((await getReceipt(receiptRequest("not-the-token"), ctx({ id: reportId }))).status).toBe(403);
+  });
+
+  it("shows the reporter nothing that belongs to the reviewer", async () => {
+    // The receipt is a different view, not the reviewer's view with fields hidden. A public page
+    // must never carry incident grouping, reviewer identity, similarity scores or a submit hash.
+    const response = await getReceipt(receiptRequest(submitToken), ctx({ id: reportId }));
+    const raw = await response.text();
+
+    expect(raw).not.toContain("incidentId");
+    expect(raw).not.toContain("submitTokenHash");
+    expect(raw).not.toContain("reporterToken");
+    expect(raw).not.toMatch(/similarity|score/i);
+    const body = JSON.parse(raw) as { report: Record<string, unknown>; claims: unknown[] };
+    expect(Object.keys(body.report)).toEqual(
+      expect.not.arrayContaining(["incidentId", "reporterToken", "submitTokenHash", "scenario"]),
+    );
+    // Claims carry only the plain statement, never the reviewer's private note.
+    const claims = body.claims as Array<Record<string, unknown>>;
+    for (const claim of claims) expect(claim).not.toHaveProperty("review");
+  });
+
+  it("does not accept a reviewer session in place of the token", async () => {
+    // A signed-in reviewer reads the report through /api/reports/[id]. The receipt is the
+    // reporter's door, and it opens only with the token they were given.
+    expect((await getReceipt(receiptRequest(), ctx({ id: reportId }))).status).toBe(403);
   });
 });
 
