@@ -105,7 +105,7 @@ export function buildAlertPrompt(input: AlertInput) {
   for (const claim of input.claims.filter((c) => CONFIRMED.has(c.review.status))) {
     const reportedAt = input.reportTimes?.[claim.reportId];
     const alias = aliases.register("K", { type: "claim", id: claim.id, claim, reportedAt });
-    const original = claim.statement !== claim.statementEn ? ` — original: "${claim.statement}"` : "";
+    const original = claim.statement !== claim.statementEn ? `, original: "${claim.statement}"` : "";
     lines.push(`[${alias}] (${claim.type}) ${claim.editedStatement ?? claim.statementEn}${original}${reportedAt ? ` (reported ${formatDateTime(reportedAt, tz)})` : ""}`);
   }
   const impacts = input.impacts.filter((i) => i.review.status === "confirmed");
@@ -157,7 +157,7 @@ export async function draftAlert(input: AlertInput, llm: Llm | null): Promise<Al
     const { valid, rejected } = checkCitations(prompt.aliases, s.citations);
     const reject = (why: string) => {
       removed++;
-      warnings.push(`Removed from "${SECTION_TITLES[key]}": "${s.text.slice(0, 80)}" — ${why}.`);
+      warnings.push(`Removed from "${SECTION_TITLES[key]}": "${s.text.slice(0, 80)}", ${why}.`);
       return null;
     };
     if (rejected.length) warnings.push(`Ignored unknown references ${rejected.join(", ")}.`);
@@ -198,7 +198,7 @@ export async function draftAlert(input: AlertInput, llm: Llm | null): Promise<Al
     const label = hazardLabel(input.region, input.incident.hazard.category);
     sections[0].sentences = [
       {
-        text: `Possible ${label.toLowerCase()}${input.locationLabel ? ` near ${input.locationLabel}` : ""} — reports under review.`,
+        text: `Possible ${label.toLowerCase()}${input.locationLabel ? ` near ${input.locationLabel}` : ""}, reports under review.`,
         citations: hazardClaim ? [{ type: "claim", id: hazardClaim.id }] : [],
       },
     ];

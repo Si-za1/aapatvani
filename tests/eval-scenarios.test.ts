@@ -26,7 +26,7 @@ describe("evaluation scenarios", () => {
   });
 
   it("quotes every expected excerpt from its own report text", () => {
-    // If an excerpt is not in the text, the pipeline will correctly mark it unverified — and the
+    // If an excerpt is not in the text, the pipeline will correctly mark it unverified, and the
     // scenario would then be asserting something the system cannot possibly do.
     const problems: string[] = [];
     for (const scenario of SCENARIOS) {

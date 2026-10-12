@@ -2,7 +2,7 @@
 //
 // Trust model: every claim and finding carries an ORIGIN (who produced it) and a
 // REVIEW STATUS (what a person decided). "Confirmed" only ever comes from a human action.
-// Firestore note: no nested arrays — polylines are flat [lat, lng, ...] number arrays.
+// Firestore note: no nested arrays, polylines are flat [lat, lng, ...] number arrays.
 
 import { z } from "zod";
 
@@ -88,7 +88,7 @@ export const Report = z.object({
   /** Verbatim text from the reporter. Never modified. */
   text: z.string(),
   uiLanguage: z.enum(["en", "ne"]),
-  /** Hazard the reporter picked themselves, if any — a reporter claim, not an AI output. */
+  /** Hazard the reporter picked themselves, if any, a reporter claim, not an AI output. */
   reporterHazard: z.string().optional(),
   location: ReportLocation,
   timeHint: TimeHint.optional(),

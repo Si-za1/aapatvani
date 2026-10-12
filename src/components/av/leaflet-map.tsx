@@ -6,7 +6,7 @@
 // update that has not committed when the first effect runs. Under React's development double-mount
 // the cleanup therefore runs with `context` still null, does nothing, and leaves Leaflet's internal
 // `_leaflet_id` on the container node. The remount then calls `new Map(node)` on a node that already
-// has one, and Leaflet throws "Map container is being reused by another instance" — every layer
+// has one, and Leaflet throws "Map container is being reused by another instance", every layer
 // failing behind it with "appendChild of undefined".
 //
 // Here the map reference lives in a ref that the cleanup always sees, so `map.remove()` always runs
@@ -14,7 +14,7 @@
 // which is exactly what development does to it.
 //
 // Layers are drawn imperatively through `draw`. That keeps one code path for markers, polylines and
-// popups, and it is cheap at this scale — a few dozen features at most.
+// popups, and it is cheap at this scale, a few dozen features at most.
 
 import { useEffect, useRef } from "react";
 import * as L from "leaflet";
@@ -71,7 +71,7 @@ export function LeafletMap({ center, zoom, tileUrl, attribution, className, aria
     mapRef.current = map;
     groupRef.current = L.layerGroup().addTo(map);
 
-    // Always runs, so the node is always released — this is the whole point of the component.
+    // Always runs, so the node is always released, this is the whole point of the component.
     return () => {
       map.remove();
       mapRef.current = null;

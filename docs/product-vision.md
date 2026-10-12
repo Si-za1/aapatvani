@@ -1,6 +1,6 @@
 <!-- Original product brief, as shared by the team on 2026-10-11. The working plan, decisions and status live in ../project.md. -->
 
-# AapatVani AI — Project Introduction & Product Vision
+# AapatVani AI, Project Introduction & Product Vision
 
 ## 1. What We Are Building
 

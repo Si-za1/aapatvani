@@ -35,7 +35,7 @@ export function incidentTitle(hazard: string | undefined, report: Report, region
   const hazardText = hazard ? hazardLabel(region, hazard) : "Reported incident";
   const place = report.location.placeText?.trim();
   if (place) return `${hazardText} near ${place}`;
-  return point ? `${hazardText} — mapped location, place not named` : `${hazardText} — location not yet established`;
+  return point ? `${hazardText} (mapped location, place not named)` : `${hazardText} (location not established)`;
 }
 
 export async function createCandidateIncident(input: IncidentDraftInput): Promise<Incident> {

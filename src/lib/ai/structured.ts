@@ -2,7 +2,7 @@ import type { z } from "zod";
 import { AiOutputError, type Llm, type LlmRequest, type LlmUsage } from "./types";
 
 // Calls the model for JSON, validates it with Zod, and retries once with the validation
-// problems fed back. Anything that still fails is rejected — never patched up silently.
+// problems fed back. Anything that still fails is rejected, never patched up silently.
 
 export interface StructuredResult<T> {
   data: T;

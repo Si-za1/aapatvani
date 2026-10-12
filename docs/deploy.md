@@ -6,7 +6,7 @@ in `project.md` §13.
 
 **Nothing here has been executed yet.** The commands are written from the documented behaviour of
 each service, and the sections marked *verify* are the parts that must be checked against the real
-project — they are assumptions until then.
+project, they are assumptions until then.
 
 ---
 
@@ -24,7 +24,7 @@ gcloud services enable run.googleapis.com firestore.googleapis.com storage.googl
 
 ## 1. Confirm model access first
 
-Do this before anything else. It is the cheapest step and the one most likely to surprise us — a
+Do this before anything else. It is the cheapest step and the one most likely to surprise us, a
 model ID that does not exist in this project's region, or a structured-output rejection, is far
 better found now than on demo day.
 
@@ -41,7 +41,7 @@ npm run check:models
 npm run eval -- --mode gemini     # produces the real extraction numbers
 ```
 
-`npm run eval -- --mode gemini` writes a new result into `data/eval/`. **Commit it** — the deployed
+`npm run eval -- --mode gemini` writes a new result into `data/eval/`. **Commit it**, the deployed
 `/evaluation` page reads from that directory, and a Gemini-mode result is the one the judging
 criteria are about.
 
@@ -111,7 +111,7 @@ gcloud run services update aapatvani --region asia-south1 \
 ```
 
 The container runs as an unprivileged user and the service account needs `roles/datastore.user` and
-`roles/storage.objectAdmin` on the bucket — nothing wider.
+`roles/storage.objectAdmin` on the bucket, nothing wider.
 
 ---
 
@@ -126,7 +126,7 @@ URL=$(gcloud run services describe aapatvani --region asia-south1 --format='valu
 curl -s -o /dev/null -w '%{http_code}\n' "$URL/report"     # 200
 curl -s -o /dev/null -w '%{http_code}\n' "$URL/api/incidents"  # 401
 
-# The dataset made it into the image — the failure this would otherwise hide.
+# The dataset made it into the image, the failure this would otherwise hide.
 # Sign in, submit a report from the phone, then:
 #   /dashboard   → the map draws tiles and the incident appears
 #   /evaluation  → measured numbers, not an empty page
@@ -134,7 +134,7 @@ curl -s -o /dev/null -w '%{http_code}\n' "$URL/api/incidents"  # 401
 
 Then, by hand:
 
-1. Open the URL in a **private window** — nothing cached, no session.
+1. Open the URL in a **private window**, nothing cached, no session.
 2. Submit a report **from a phone**: photo from the camera, a voice note, location from GPS.
 3. Sign in as a reviewer and confirm the report appears with its claims.
 4. Run the impact analysis on the incident and see the blast radius on the map.
@@ -149,7 +149,7 @@ Cold starts are the one thing that will make the app feel broken to a judge open
 gcloud run services update aapatvani --region asia-south1 --min-instances=1
 ```
 
-**Set a budget alert before doing this** — `min-instances=1` bills for an idle instance around the
+**Set a budget alert before doing this**, `min-instances=1` bills for an idle instance around the
 clock. In the Google Cloud console: Billing → Budgets & alerts → create a budget on this project with
 an alert at a low threshold. Turn `min-instances` back to 0 after Nov 6.
 

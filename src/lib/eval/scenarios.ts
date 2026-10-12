@@ -3,8 +3,8 @@
 // Each scenario is a small set of reports over the real Araniko corridor, plus what the system
 // *should* conclude about them. Two things this buys us:
 //
-//   • the deterministic half of the pipeline — grouping, copy detection, contradictions, road
-//     impact — can be measured exactly, right now, with no model involved ("oracle mode": the
+//   • the deterministic half of the pipeline, grouping, copy detection, contradictions, road
+//     impact, can be measured exactly, right now, with no model involved ("oracle mode": the
 //     expected claims are fed in as if extraction had produced them);
 //   • the same file is the answer key for measuring extraction itself once Gemini credentials
 //     exist, so nothing has to be relabelled later.
@@ -54,7 +54,7 @@ export interface ScenarioExpectations {
   groups: string[][];
   /** Pairs that must NOT be grouped, and must never be suggested. */
   mustNotMerge: Array<[string, string]>;
-  /** [copy, original] — the copy must be flagged and must not count as an independent source. */
+  /** [copy, original], the copy must be flagged and must not count as an independent source. */
   copies: Array<[string, string]>;
   contradictions: Array<{ kind: ContradictionKind; between: [string, string] }>;
   /** Checked after the road-blockage claims are confirmed and the analysis is run. */
@@ -67,7 +67,7 @@ export interface Scenario {
   id: string;
   name: string;
   summary: string;
-  /** Real geography, synthetic reports — the label every record carries. */
+  /** Real geography, synthetic reports, the label every record carries. */
   baseTime: string;
   reports: ScenarioReport[];
   expectations: ScenarioExpectations;
@@ -370,5 +370,5 @@ export function getScenario(id: string): Scenario | undefined {
   return SCENARIOS.find((scenario) => scenario.id === id);
 }
 
-/** The demo scenario the seed script uses — the biggest one, so the UI has something to show. */
+/** The demo scenario the seed script uses, the biggest one, so the UI has something to show. */
 export const DEMO_SCENARIO_ID = "larcha-main";

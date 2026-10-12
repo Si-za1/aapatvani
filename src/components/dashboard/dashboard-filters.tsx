@@ -1,7 +1,7 @@
 "use client";
 
 // Dashboard filters (should-have S3). State lives in the URL, not in component state, so a filtered
-// view can be linked to a colleague or reopened after a refresh — which matters when someone is
+// view can be linked to a colleague or reopened after a refresh, which matters when someone is
 // handing over a shift.
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

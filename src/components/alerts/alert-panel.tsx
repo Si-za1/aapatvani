@@ -4,7 +4,7 @@
 //
 // Three things this screen has to make obvious, because they are the promise the product makes:
 //   • a draft is built only from confirmed facts;
-//   • every sentence shows the sources it rests on, and the app — not the model — decides what
+//   • every sentence shows the sources it rests on, and the app, not the model, decides what
 //     those sources are;
 //   • approving records a person's name, and nothing is ever sent anywhere.
 
@@ -32,7 +32,7 @@ export interface AlertPanelProps {
 }
 
 const STATUS_TONE: Record<AlertDraft["status"], { label: string; className: string }> = {
-  draft: { label: "Draft — not approved", className: "bg-amber-tint text-amber-strong" },
+  draft: { label: "Draft, not approved", className: "bg-amber-tint text-amber-strong" },
   approved: { label: "Approved by a reviewer", className: "bg-leaf-tint text-leaf-strong" },
   rejected: { label: "Rejected", className: "bg-stone-tint text-stone-strong" },
   superseded: { label: "Superseded", className: "bg-stone-tint text-stone-strong" },
@@ -139,7 +139,7 @@ export function AlertPanel({
         {confirmedClaims === 1 ? "" : "s"}, {confirmedImpacts} confirmed impact finding
         {confirmedImpacts === 1 ? "" : "s"}
         {openContradictions > 0 ? `, and ${openContradictions} unresolved contradiction${openContradictions === 1 ? "" : "s"}` : ""}. Every
-        sentence below cites its sources. Approving records a decision — this app never sends an alert.
+        sentence below cites its sources. Approving records a decision, this app never sends an alert.
       </p>
 
       {!canRunModel ? (
@@ -265,7 +265,7 @@ export function AlertPanel({
       ) : (
         <p className="rounded-2xl border border-dashed border-border bg-card px-4 py-5 text-sm text-muted-foreground">
           No draft yet. Once claims are confirmed, drafting produces a short situation summary with a citation on every
-          sentence — anything the checks cannot trace back to a confirmed fact is dropped before you see it.
+          sentence, anything the checks cannot trace back to a confirmed fact is dropped before you see it.
         </p>
       )}
     </section>

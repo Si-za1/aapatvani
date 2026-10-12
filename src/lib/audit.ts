@@ -1,7 +1,7 @@
 import "server-only";
 
 // Append-only audit trail (feature M5). Every action that changes state is recorded once, with the
-// actor that caused it — a person, the model, or the system. Events are never edited or deleted, so
+// actor that caused it, a person, the model, or the system. Events are never edited or deleted, so
 // the trail can answer "who decided this, and on what did they base it?".
 
 import { getDb } from "@/lib/db";

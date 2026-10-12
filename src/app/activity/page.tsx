@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 // The audit trail (feature M5). Append-only: nothing here is ever edited or deleted, so the page can
 // answer "who decided this, and when?" long after the decision.
 //
-// The three actor kinds are kept visibly apart — a model's output and a person's decision must never
+// The three actor kinds are kept visibly apart, a model's output and a person's decision must never
 // look like the same kind of statement. That is the whole trust model in one screen.
 
 export const metadata: Metadata = { title: "Activity" };

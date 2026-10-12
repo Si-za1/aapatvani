@@ -1,6 +1,6 @@
 # AapatVani AI · आपतवाणी
 
-Community disaster reports — in Nepali, English, or a voice note — turned into structured, traceable
+Community disaster reports, in Nepali, English, or a voice note, turned into structured, traceable
 incident records, with a road-access analysis of what a blockage would mean for the communities
 around it. Every claim shows where it came from, and a person confirms every fact.
 
@@ -109,7 +109,7 @@ This split is the design, not an implementation detail.
 
 | Stage | Gemini | Deterministic code | People |
 |---|---|---|---|
-| Intake | — | Store the original, hash media, read EXIF | Reporter submits |
+| Intake |, | Store the original, hash media, read EXIF | Reporter submits |
 | Extraction | Reads text, photos and voice; proposes claims with cited excerpts | Schema validation, alias→ID mapping, excerpt verification, gazetteer lookup | Confirm / correct / reject |
 | Matching | Embeddings; "same incident?" judgement citing claims | Distance, time gap, hazard compatibility, copy detection, score breakdown | Merge / separate |
 | Contradictions | Semantic conflicts ("road open" vs "road blocked") | Field conflicts (place, time, hazard, counts, photo metadata) | Resolve |
@@ -150,7 +150,7 @@ Results are saved with the mode, model and date, and shown at `/evaluation`.
 > should be read from it.
 
 The road-impact engine additionally has exact expectations on a hand-built toy graph, checked in
-`tests/blast-radius.test.ts` — that is where the routing arithmetic is pinned down.
+`tests/blast-radius.test.ts`, that is where the routing arithmetic is pinned down.
 
 ---
 
@@ -158,7 +158,7 @@ The road-impact engine additionally has exact expectations on a hand-built toy g
 
 | Source | Use | Licence |
 |---|---|---|
-| **OpenStreetMap** via the Overpass API | The road network, health facilities, schools and settlements for the Araniko corridor | ODbL 1.0 — see `data/regions/nepal/araniko-corridor/SOURCE.md`. Attribution is shown on every map. |
+| **OpenStreetMap** via the Overpass API | The road network, health facilities, schools and settlements for the Araniko corridor | ODbL 1.0, see `data/regions/nepal/araniko-corridor/SOURCE.md`. Attribution is shown on every map. |
 | OpenStreetMap standard tiles | Basemap in the interface | © OpenStreetMap contributors. Light demo use; `MAP_TILE_URL` switches provider. |
 
 The demo area covers Dolalghat–Chautara–Bahrabise–Tatopani–Kodari inside Nepal's border: 11,340 nodes,
@@ -183,7 +183,7 @@ No real report, and no real person's data, is in this repository.
   model multiple simultaneous blockages.
 - **Copies are judged on wording and media.** A paraphrase of someone else's report is not a copy by
   this definition.
-- **The demo area has a Philippines configuration** marked "no geographic dataset loaded — not
+- **The demo area has a Philippines configuration** marked "no geographic dataset loaded, not
   validated": the region switch works, the geography does not.
 
 ---

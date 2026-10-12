@@ -5,7 +5,7 @@
 //
 // Why this exists: without Gemini, extraction produces no claims, so the reviewer screens would have
 // nothing to show and could not be checked. This writes the reports *and* the claims an extraction
-// would have produced — the same records the pipeline builds — so the review, incident and impact
+// would have produced, the same records the pipeline builds, so the review, incident and impact
 // screens can be exercised end to end without credentials.
 //
 // The scenario itself lives in lib/eval/scenarios.ts, shared with the evaluation, so the demo and
@@ -57,7 +57,7 @@ async function seed(): Promise<void> {
   );
   for (const incident of incidents) {
     console.log(
-      `  · ${incident.title} — ${incident.members.length} members, ${incident.independentSources} independent source(s), ${incident.openContradictions} open`,
+      `  · ${incident.title}, ${incident.members.length} members, ${incident.independentSources} independent source(s), ${incident.openContradictions} open`,
     );
   }
 

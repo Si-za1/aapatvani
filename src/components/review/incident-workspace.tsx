@@ -5,7 +5,7 @@
 // to do about a contradiction.
 //
 // The score breakdown is shown next to every suggestion, because the rule is that a similarity
-// number never merges anything on its own — a person has to see why the system thinks two reports
+// number never merges anything on its own, a person has to see why the system thinks two reports
 // are related before deciding.
 
 import { useState } from "react";
@@ -145,7 +145,7 @@ export function IncidentWorkspace({
                 {member.copyOf ? (
                   <Badge variant="secondary" className="rounded-full bg-stone-tint text-xs text-stone-strong">
                     <Copy className="size-3" aria-hidden />
-                    Copy — not an independent source
+                    Copy, not an independent source
                   </Badge>
                 ) : null}
                 <span className="ml-auto text-xs text-muted-foreground">
@@ -214,7 +214,7 @@ export function IncidentWorkspace({
 
         {!canRunModel ? (
           <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
-            Gemini is not configured, so these suggestions were made on computed features alone — distance, time, wording
+            Gemini is not configured, so these suggestions were made on computed features alone, distance, time, wording
             and hazard. The comparison half is absent rather than guessed.
           </p>
         ) : null}

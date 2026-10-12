@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DICTIONARIES, LOCALES, isLocale, t } from "@/lib/i18n";
 
 // The failure this guards against is silent. A missing Nepali string falls back to English rather
-// than throwing, so it would ship as an English sentence in the middle of a Nepali form — on the
+// than throwing, so it would ship as an English sentence in the middle of a Nepali form, on the
 // one screen where the reader may not read English at all.
 
 const placeholders = (text: string): string[] => (text.match(/\{(\w+)\}/g) ?? []).sort();
@@ -63,7 +63,7 @@ describe("translation lookup", () => {
   });
 
   it("falls back to English rather than showing nothing when a translation is missing", () => {
-    // Unreachable with the dictionaries as they stand — the completeness test above guarantees that.
+    // Unreachable with the dictionaries as they stand, the completeness test above guarantees that.
     // This checks the safety net itself, by taking one key away from the dictionary `t` really reads
     // and putting it back afterwards.
     const dictionary = DICTIONARIES.ne as Record<string, string>;

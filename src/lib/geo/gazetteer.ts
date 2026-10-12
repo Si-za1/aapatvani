@@ -58,7 +58,7 @@ export type PlaceResolution = {
 
 /**
  * Matches a mention (verbatim text plus an optional romanised form) against the gazetteer.
- * Returns `ambiguous` when equally good matches are more than 3 km apart — the caller must
+ * Returns `ambiguous` when equally good matches are more than 3 km apart, the caller must
  * then ask a reviewer instead of picking one.
  */
 export function resolvePlace(

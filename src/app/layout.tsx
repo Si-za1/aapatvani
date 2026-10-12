@@ -21,7 +21,7 @@ const mukta = Mukta({
 export const metadata: Metadata = {
   title: { default: "AapatVani AI", template: "%s · AapatVani AI" },
   description:
-    "Community disaster reports, organised into traceable incidents and potential impacts — always reviewed by people.",
+    "Community disaster reports, organised into traceable incidents and potential impacts, always reviewed by people.",
   applicationName: "AapatVani AI",
 };
 

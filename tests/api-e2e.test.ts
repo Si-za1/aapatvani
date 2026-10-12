@@ -4,7 +4,7 @@ import path from "node:path";
 import { NextRequest } from "next/server";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-// End-to-end through the HTTP route handlers on the local store — the gate for this chunk.
+// End-to-end through the HTTP route handlers on the local store, the gate for this chunk.
 // Every call below goes through a real route handler: validation, the session check, the service
 // layer and the file-backed store. Only `next/headers` is faked, because cookies need a request
 // context that a unit test does not have.

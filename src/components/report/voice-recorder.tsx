@@ -36,7 +36,7 @@ function detectSupport(): boolean {
 }
 
 // Nothing to subscribe to: a browser does not gain a microphone mid-session. The third argument is
-// the server snapshot, which is `null` — "not known yet" — so the first paint shows the recorder
+// the server snapshot, which is `null`, "not known yet", so the first paint shows the recorder
 // rather than briefly telling a reporter their phone cannot record.
 const noSubscribe = () => () => {};
 

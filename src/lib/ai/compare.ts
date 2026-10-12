@@ -77,7 +77,7 @@ function statusLabel(c: Claim): string {
 function describeSide(label: string, side: CompareSide, aliases: AliasRegistry<Claim>, region: RegionConfig): string {
   const r = side.report;
   const lines = [
-    `Report ${label} — submitted ${formatDateTime(r.submittedAt, region.timezone)} local time · form language ${r.uiLanguage === "ne" ? "Nepali" : "English"}`,
+    `Report ${label}, submitted ${formatDateTime(r.submittedAt, region.timezone)} local time · form language ${r.uiLanguage === "ne" ? "Nepali" : "English"}`,
     `Location given: ${r.location.source === "none" ? "none" : r.location.source.replace("_", " ")}${r.location.placeText ? ` ("${r.location.placeText}")` : ""}${r.reporterHazard ? ` · reporter picked hazard: ${hazardLabel(region, r.reporterHazard)}` : ""}`,
     "Claims:",
   ];
@@ -86,7 +86,7 @@ function describeSide(label: string, side: CompareSide, aliases: AliasRegistry<C
   for (const c of usable) {
     const alias = aliases.register(label, c);
     const statement = c.editedStatement ?? c.statementEn;
-    const quote = c.excerpt?.verified ? ` — original words: "${c.excerpt.text}"` : "";
+    const quote = c.excerpt?.verified ? `, original words: "${c.excerpt.text}"` : "";
     lines.push(`[${alias}] (${c.type}; ${statusLabel(c)}) ${statement}${quote}`);
   }
   return lines.join("\n");

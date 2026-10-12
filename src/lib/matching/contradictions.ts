@@ -1,14 +1,14 @@
 // Contradiction detection (project.md §8.3). Two independent kinds of check:
 //
-//   • rules  — deterministic field conflicts over the structured claims (this file)
-//   • Gemini — semantic conflicts such as "road fully blocked" vs "one lane open"
+//   • rules , deterministic field conflicts over the structured claims (this file)
+//   • Gemini, semantic conflicts such as "road fully blocked" vs "one lane open"
 //
 // Everything here is a *flag for a reviewer*. Nothing is resolved automatically, and a flag is not a
 // statement about which report is right. Contradictions are only looked for between reports that
 // already sit in the same incident (by system suggestion or reviewer action): two reports that were
 // never linked are simply two different events, not a contradiction.
 //
-// The hazard rule is therefore mainly a guard on human merges — the candidate filter already keeps
+// The hazard rule is therefore mainly a guard on human merges, the candidate filter already keeps
 // reports with incompatible hazards from being suggested as one incident.
 
 import type { Claim, ContradictionKind, Report } from "@/lib/domain/schemas";
@@ -27,7 +27,7 @@ export const EXIF_TIME_OLDER_HOURS = 24;
 /** A photo taken further than this from the reported location is flagged. */
 export const EXIF_LOCATION_FAR_M = 5_000;
 
-/** Road statuses that mean "you cannot drive through" — the opposite of `passable`. */
+/** Road statuses that mean "you cannot drive through", the opposite of `passable`. */
 const OBSTRUCTED = new Set(["blocked", "partially_blocked", "damaged"]);
 
 export interface ContradictionDraft {
@@ -155,7 +155,7 @@ export function pairContradictions(a: ReportContext, b: ReportContext, features:
         detectedBy: "rule",
         reportIds: pair,
         claimIds: placeClaims.map((c) => c.id),
-        description: `The two reported locations are ${km(metres)} apart — more than their stated accuracy allows for.`,
+        description: `The two reported locations are ${km(metres)} apart, more than their stated accuracy allows for.`,
       });
     }
   }

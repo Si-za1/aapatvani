@@ -4,7 +4,7 @@
 // which settlements keep a road route to a health facility, and which lose one.
 //
 // Everything drawn here is *computed* from the road dataset, so it is tinted river teal and labelled
-// as such. The map never shows a flood extent, a runout or a damage estimate — it shows which
+// as such. The map never shows a flood extent, a runout or a damage estimate, it shows which
 // mapped routes change when one segment is assumed blocked.
 
 import * as L from "leaflet";
@@ -17,7 +17,7 @@ const FINDING_STYLE: Record<ImpactCandidate["finding"], { label: string; stroke:
   lost_access: { label: "Loses road access to care", stroke: "#7e2452", fill: "#f2b9d3", radius: 8 },
   longer_route: { label: "Route to care much longer", stroke: "#6e5200", fill: "#f5d565", radius: 7 },
   catchment_affected: { label: "Health facility whose catchment changed", stroke: "#2c4185", fill: "#b8c7ef", radius: 7 },
-  nearby: { label: "Nearby — not assumed affected", stroke: "#5b5448", fill: "#ddd5c6", radius: 5 },
+  nearby: { label: "Nearby, not assumed affected", stroke: "#5b5448", fill: "#ddd5c6", radius: 5 },
 };
 
 const INCIDENT_ICON = L.divIcon({

@@ -7,11 +7,11 @@ const DEVANAGARI_DIGITS: Record<string, string> = {
 const PUNCT_EQUIV: Record<string, string> = {
   "‘": "'", "’": "'", "‚": "'", "‛": "'",
   "“": '"', "”": '"', "„": '"', "«": '"', "»": '"',
-  "–": "-", "—": "-", "−": "-",
+  "–": "-", "-": "-", "−": "-",
   "…": "...",
 };
 const ZERO_WIDTH = /[​-‍⁠﻿]/;
-const EDGE_PUNCT = /^[\s.,;:!?'"()\[\]{}।॥\-–—…]+|[\s.,;:!?'"()\[\]{}।॥\-–—…]+$/g;
+const EDGE_PUNCT = /^[\s.,;:!?'"()\[\]{}।॥\-‐-―…]+|[\s.,;:!?'"()\[\]{}।॥\-‐-―…]+$/g;
 
 export function canonicalText(text: string): string {
   return text.normalize("NFC");
@@ -58,7 +58,7 @@ export type ExcerptLocation = { verified: boolean; start?: number; end?: number 
 
 /**
  * Finds `excerpt` inside `original`. Tolerates differences in whitespace, quote style, letter case,
- * Devanagari vs ASCII digits and surrounding punctuation — nothing else.
+ * Devanagari vs ASCII digits and surrounding punctuation, nothing else.
  */
 export function locateExcerpt(original: string, excerpt: string): ExcerptLocation {
   const cleaned = excerpt.replace(EDGE_PUNCT, "");

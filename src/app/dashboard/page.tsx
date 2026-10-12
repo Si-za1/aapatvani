@@ -70,7 +70,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
           <p className="rounded-2xl bg-amber-tint px-5 py-3.5 text-sm text-amber-strong">
             <strong className="font-semibold">{stats.aiUnavailable}</strong> report
             {stats.aiUnavailable === 1 ? " has" : "s have"} not been read automatically. On this deployment that means
-            Gemini is not configured, so a reviewer reads them directly — nothing is lost, it is simply slower.
+            Gemini is not configured, so a reviewer reads them directly, nothing is lost, it is simply slower.
           </p>
         ) : null}
 
@@ -88,7 +88,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
             />
             <p className="text-xs text-muted-foreground">
               {data.points.length} point{data.points.length === 1 ? "" : "s"} shown. Places outside the analysis area
-              are not necessarily safe — they have not been checked.
+              are not necessarily safe, they have not been checked.
             </p>
           </section>
 

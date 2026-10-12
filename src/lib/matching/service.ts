@@ -3,7 +3,7 @@ import "server-only";
 // Runs matching for one report (project.md §6 step 3, §8.2, §8.3).
 //
 // Order of work:
-//   1. deterministic candidate filter (region, time, distance, hazard) — cheap, no model calls
+//   1. deterministic candidate filter (region, time, distance, hazard), cheap, no model calls
 //   2. lexical + embedding similarity and copy detection
 //   3. one Gemini comparison per surviving pair (skipped when Gemini is not configured)
 //   4. incident assignment
@@ -252,7 +252,7 @@ export async function runMatchingForReport(
 
 /**
  * Puts the report into an incident. If a candidate match points at a report that is already in a
- * candidate incident, this report joins it — as a suggestion, never as a decision. The best-scoring
+ * candidate incident, this report joins it, as a suggestion, never as a decision. The best-scoring
  * link wins when several incidents compete.
  */
 async function assignIncident(

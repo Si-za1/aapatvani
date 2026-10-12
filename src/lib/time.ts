@@ -1,7 +1,7 @@
 // Time formatting. Stored times are ISO-8601 UTC; display uses the region's time zone.
 
 export function formatDateTime(iso: string | undefined, timeZone = "Asia/Kathmandu"): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return new Intl.DateTimeFormat("en-GB", {
@@ -16,14 +16,14 @@ export function formatDateTime(iso: string | undefined, timeZone = "Asia/Kathman
 }
 
 export function formatTime(iso: string | undefined, timeZone = "Asia/Kathmandu"): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hour12: false }).format(
     new Date(iso),
   );
 }
 
 export function formatDate(iso: string | undefined, timeZone = "Asia/Kathmandu"): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Intl.DateTimeFormat("en-GB", { timeZone, day: "numeric", month: "short", year: "numeric" }).format(
     new Date(iso),
   );
@@ -34,7 +34,7 @@ export function formatDate(iso: string | undefined, timeZone = "Asia/Kathmandu")
  * at the call site so that server components can render it without reading the clock mid-render.
  */
 export function relativeTime(iso: string | undefined, now: number = Date.now()): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const diff = now - new Date(iso).getTime();
   const abs = Math.abs(diff);
   const minute = 60_000;
@@ -49,4 +49,14 @@ export function relativeTime(iso: string | undefined, now: number = Date.now()):
 
 export function hoursBetween(a: string, b: string): number {
   return Math.abs(new Date(a).getTime() - new Date(b).getTime()) / 3_600_000;
+}
+
+/**
+ * Whether a timestamp falls inside the last N hours. The clock is read here rather than at the call
+ * site so a server component can filter by time without reading it mid-render, which the renderer
+ * treats as an unstable value.
+ */
+export function isWithinHours(iso: string | undefined, hours: number): boolean {
+  if (!iso) return false;
+  return Date.parse(iso) >= Date.now() - hours * 3_600_000;
 }

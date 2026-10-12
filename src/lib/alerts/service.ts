@@ -17,7 +17,7 @@ import { newId } from "@/lib/ids";
 import { confirmedCandidates, latestAssessment } from "@/lib/impact/service";
 import type { Reviewer } from "@/lib/review/service";
 
-/** Claims a draft may use: the reporter's, the model's, or a reviewer's — but only once confirmed. */
+/** Claims a draft may use: the reporter's, the model's, or a reviewer's, but only once confirmed. */
 const CONFIRMED = new Set(["confirmed", "edited"]);
 
 export class AlertNotReadyError extends Error {}
@@ -50,7 +50,7 @@ export async function draftAlertForIncident(input: DraftAlertInput): Promise<Ale
   ]);
   const openContradictions = contradictions.filter((c) => c.status === "open");
 
-  // What the reports themselves say is still missing — the honest "we do not know yet" list.
+  // What the reports themselves say is still missing, the honest "we do not know yet" list.
   const unknowns: string[] = [];
   for (const report of reports) {
     if (!report.latestExtractionId) continue;
@@ -111,7 +111,7 @@ export async function draftAlertForIncident(input: DraftAlertInput): Promise<Ale
 }
 
 /**
- * A reviewer approves or rejects a draft. Approval marks it approved for the record — it is still
+ * A reviewer approves or rejects a draft. Approval marks it approved for the record, it is still
  * never sent anywhere, and the incident keeps the citation trail.
  */
 export async function decideAlert(

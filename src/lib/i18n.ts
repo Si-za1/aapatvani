@@ -1,6 +1,6 @@
 // Public-facing strings, in the reporter's own language.
 //
-// This covers the pages anyone can reach without signing in — the landing page, the report form and
+// This covers the pages anyone can reach without signing in, the landing page, the report form and
 // the receipt. Reviewer-facing screens stay in English (the brief asks for English docs and UI), so
 // the dictionary is a plain object rather than a framework: two locales, one file, no runtime
 // negotiation to get wrong on a phone with a weak connection.
@@ -31,7 +31,7 @@ const en = {
   "landing.responderHint": "Sign in to review reports and see possible impacts.",
   "landing.hazardsTitle": "What you can report",
   "landing.howTitle": "How it works",  "landing.step1.title": "You send what you know",
-  "landing.step1.body": "Words, a photo or a voice note — in Nepali or English. A rough location is enough.",
+  "landing.step1.body": "Words, a photo or a voice note, in Nepali or English. A rough location is enough.",
   "landing.step2.title": "We organise it",
   "landing.step2.body": "Reports about the same event are grouped, and anything unclear is flagged rather than guessed.",
   "landing.step3.title": "A person checks it",
@@ -86,11 +86,11 @@ const en = {
   "form.submitting": "Sending…",
   "form.errorTitle": "The report was not sent",
   "form.errorGeneric": "Something went wrong while sending. Please try again.",
-  "form.errorOffline": "You appear to be offline. Your report was not sent — please try again when you have a connection.",
+  "form.errorOffline": "You appear to be offline. Your report was not sent, please try again when you have a connection.",
   "form.required": "Please write something, add a photo, or record a voice note.",
   "form.tooManyFiles": "You can attach up to {n} files.",
 
-  "receipt.title": "Thank you — your report was received",
+  "receipt.title": "Thank you, your report was received",
   "receipt.reference": "Your reference code",
   "receipt.referenceHint": "Keep this code. It is how we refer to your report.",
   "receipt.status.received": "Received. The system is reading it now.",
@@ -105,7 +105,7 @@ const en = {
   "receipt.nextBody": "A reviewer reads your report and checks it against others. Nothing is published or sent without a person deciding.",
   "receipt.originalTitle": "Your report, as you sent it",
   "receipt.another": "Send another report",
-  "receipt.notFound": "We could not find that report on this device. If you have your reference code, keep it — a reviewer can find your report with it.",
+  "receipt.notFound": "We could not find that report on this device. If you have your reference code, keep it, a reviewer can find your report with it.",
   "receipt.loading": "Loading your report…",
   "receipt.origin.reporter": "Your words",
   "receipt.origin.ai": "Read by AI",
@@ -132,7 +132,7 @@ const ne: Record<PublicStringKey, string> = {
   "landing.hazardsTitle": "तपाईं के रिपोर्ट गर्न सक्नुहुन्छ",
   "landing.howTitle": "यो कसरी काम गर्छ",
   "landing.step1.title": "तपाईंले जानेको कुरा पठाउनुहुन्छ",
-  "landing.step1.body": "शब्द, फोटो वा आवाज — नेपाली वा अंग्रेजीमा। ठाउँको अनुमानित जानकारी भए पुग्छ।",
+  "landing.step1.body": "शब्द, फोटो वा आवाज, नेपाली वा अंग्रेजीमा। ठाउँको अनुमानित जानकारी भए पुग्छ।",
   "landing.step2.title": "हामी व्यवस्थित गर्छौं",
   "landing.step2.body": "एउटै घटनाका रिपोर्टहरू एकै ठाउँमा राखिन्छन्, र अस्पष्ट कुरा अनुमान नगरी छुट्टै देखाइन्छ।",
   "landing.step3.title": "एक जनाले जाँच्छ",
@@ -189,11 +189,11 @@ const ne: Record<PublicStringKey, string> = {
   "form.submitting": "पठाइँदै…",
   "form.errorTitle": "रिपोर्ट पठाइएन",
   "form.errorGeneric": "पठाउँदा केही समस्या भयो। कृपया फेरि प्रयास गर्नुहोस्।",
-  "form.errorOffline": "तपाईं अनलाइनमा हुनुहुन्न जस्तो छ। रिपोर्ट पठाइएन — इन्टरनेट जोडेर फेरि प्रयास गर्नुहोस्।",
+  "form.errorOffline": "तपाईं अनलाइनमा हुनुहुन्न जस्तो छ। रिपोर्ट पठाइएन, इन्टरनेट जोडेर फेरि प्रयास गर्नुहोस्।",
   "form.required": "कृपया केही लेख्नुहोस्, फोटो थप्नुहोस्, वा आवाज सन्देश रेकर्ड गर्नुहोस्।",
   "form.tooManyFiles": "तपाईं बढीमा {n} फाइल थप्न सक्नुहुन्छ।",
 
-  "receipt.title": "धन्यवाद — तपाईंको रिपोर्ट प्राप्त भयो",
+  "receipt.title": "धन्यवाद, तपाईंको रिपोर्ट प्राप्त भयो",
   "receipt.reference": "तपाईंको सन्दर्भ कोड",
   "receipt.referenceHint": "यो कोड सुरक्षित राख्नुहोस्। यही कोडले तपाईंको रिपोर्ट चिनिन्छ।",
   "receipt.status.received": "प्राप्त भयो। अहिले प्रणालीले पढ्दैछ।",
@@ -208,7 +208,7 @@ const ne: Record<PublicStringKey, string> = {
   "receipt.nextBody": "एक समीक्षकले तपाईंको रिपोर्ट पढी अरूसँग भिडाउँछन्। कुनै व्यक्तिले निर्णय नगरी कुनै कुरा प्रकाशित वा पठाइँदैन।",
   "receipt.originalTitle": "तपाईंले पठाउनुभएको रिपोर्ट",
   "receipt.another": "अर्को रिपोर्ट पठाउनुहोस्",
-  "receipt.notFound": "यो यन्त्रमा त्यो रिपोर्ट भेटिएन। तपाईंसँग सन्दर्भ कोड छ भने राख्नुहोस् — समीक्षकले त्यसैबाट रिपोर्ट भेट्टाउन सक्छन्।",
+  "receipt.notFound": "यो यन्त्रमा त्यो रिपोर्ट भेटिएन। तपाईंसँग सन्दर्भ कोड छ भने राख्नुहोस्, समीक्षकले त्यसैबाट रिपोर्ट भेट्टाउन सक्छन्।",
   "receipt.loading": "तपाईंको रिपोर्ट लोड हुँदैछ…",
   "receipt.origin.reporter": "तपाईंका शब्द",
   "receipt.origin.ai": "एआईले पढेको",

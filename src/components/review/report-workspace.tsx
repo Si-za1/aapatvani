@@ -3,7 +3,7 @@
 // The report workspace (feature M4): the original on the left, what was read from it on the right.
 //
 // Hovering or focusing a claim highlights the words in the original it was drawn from, which is the
-// whole point of the screen — a reviewer should be able to check a claim against the reporter's own
+// whole point of the screen, a reviewer should be able to check a claim against the reporter's own
 // words without hunting for them.
 
 import { useMemo, useState } from "react";

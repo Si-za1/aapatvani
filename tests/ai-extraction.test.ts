@@ -60,7 +60,7 @@ describe("extraction prompt", () => {
   it("uses aliases and never exposes record ids or asks for coordinates", () => {
     const prompt = buildExtractionPrompt(input());
     const text = [prompt.system, ...prompt.parts.map((p) => ("text" in p ? p.text : ""))].join("\n");
-    expect(text).toContain("R1 — report text, verbatim");
+    expect(text).toContain("R1, report text, verbatim");
     expect(text).toContain("- M1: photo");
     expect(text).not.toContain("rep_TESTREPORT0001");
     expect(text).not.toContain("med_PHOTO0001");

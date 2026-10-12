@@ -272,7 +272,7 @@ export function analyzeBlastRadius(input: BlastRadiusInput): BlastRadiusResult {
   const candidates: ComputedCandidate[] = [];
   const uncertainty = Math.max(0, incident.uncertaintyM);
 
-  // 1. Road segment possibly blocked — only when a claim describes a blockage.
+  // 1. Road segment possibly blocked, only when a claim describes a blockage.
   let blockedEdges: BlastRadiusResult["blockedEdges"] = [];
   let otherNearbyRoads: BlastRadiusResult["otherNearbyRoads"] = [];
   let status: BlastRadiusResult["status"] = "proximity_only";

@@ -2,12 +2,12 @@
 
 // Reviewer sign-in (feature M12). Two modes, chosen by the deployment:
 //
-//   • firebase  — production. Email and password through the Firebase client SDK; the ID token goes
+//   • firebase , production. Email and password through the Firebase client SDK; the ID token goes
 //                 to the server, which exchanges it for an httpOnly session cookie.
-//   • passcode  — development and demos without a Firebase project. A shared passcode, checked on
+//   • passcode , development and demos without a Firebase project. A shared passcode, checked on
 //                 the server, producing the same kind of session.
 //
-// The password never touches our server in Firebase mode — only the token does.
+// The password never touches our server in Firebase mode, only the token does.
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

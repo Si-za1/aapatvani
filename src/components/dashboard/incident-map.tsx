@@ -5,7 +5,7 @@
 //
 // The design rule from project.md §3 rule 5 is that reported locations, impact candidates and
 // confirmed information must stay visually distinct, and every colour is paired with an icon and a
-// text label — hence the legend, which names each shape rather than relying on the map alone.
+// text label, hence the legend, which names each shape rather than relying on the map alone.
 
 import * as L from "leaflet";
 import { LeafletMap, popupHtml } from "@/components/av/leaflet-map";
@@ -20,8 +20,8 @@ const TONE_STYLE: Record<MapPoint["tone"], { fill: string; ring: string; label: 
 
 /**
  * Markers are hand-built rather than Leaflet's default: the default icon resolves a PNG by a
- * relative URL that bundlers rewrite, and it 404s in production. Shape carries meaning too — square
- * for a loose report, round for an incident — so the two layers are tellable apart without colour.
+ * relative URL that bundlers rewrite, and it 404s in production. Shape carries meaning too, square
+ * for a loose report, round for an incident, so the two layers are tellable apart without colour.
  */
 function markerIcon(tone: MapPoint["tone"]): L.DivIcon {
   const style = TONE_STYLE[tone];

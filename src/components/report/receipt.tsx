@@ -213,7 +213,7 @@ export function Receipt({ reportId, locale }: { reportId: string; locale: Locale
           lang={report.uiLanguage}
           className="whitespace-pre-wrap rounded-2xl border border-border bg-card px-4 py-3.5 text-sm"
         >
-          {report.text || <span className="text-muted-foreground">—</span>}
+          {report.text || <span className="text-muted-foreground">-</span>}
         </blockquote>
         {report.media.length > 0 ? (
           <p className="text-xs text-muted-foreground">

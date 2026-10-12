@@ -33,7 +33,7 @@ export interface ClaimReviewInput {
 
 /**
  * Confirms, edits, rejects or asks for more information on one claim. The original model output and
- * the reporter's words are never modified — a reviewer's correction lives in `editedStatement`.
+ * the reporter's words are never modified, a reviewer's correction lives in `editedStatement`.
  */
 export async function reviewClaim(claimId: string, input: ClaimReviewInput, reviewer: Reviewer): Promise<Claim> {
   const db = getDb();
@@ -210,7 +210,7 @@ export async function decideContradiction(
 
 /**
  * Puts a report into an incident by hand, or takes it out. This is the reviewer's override, so it
- * bypasses every candidate rule — including the hazard compatibility test, which is exactly why the
+ * bypasses every candidate rule, including the hazard compatibility test, which is exactly why the
  * contradiction check re-runs afterwards.
  */
 export async function placeReport(

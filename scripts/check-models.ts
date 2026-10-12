@@ -35,7 +35,7 @@ async function main() {
       available.add(name.split("/").pop() ?? name);
     }
     console.log(`\nModels listed for this key/project: ${available.size}`);
-    for (const id of wanted) console.log(`  ${available.has(id) ? "✓" : "?"} ${id}${available.has(id) ? "" : "  (not in the list — the test call below is the real check)"}`);
+    for (const id of wanted) console.log(`  ${available.has(id) ? "✓" : "?"} ${id}${available.has(id) ? "" : "  (not in the list, the test call below is the real check)"}`);
   } catch (err) {
     console.warn(`Could not list models (${(err as Error).message}); continuing with test calls.`);
   }

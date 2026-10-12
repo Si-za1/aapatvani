@@ -47,7 +47,7 @@ export function toGeminiSchema(schema: z.ZodType): Record<string, unknown> {
   return sanitize(json) as Record<string, unknown>;
 }
 
-/** Every key used anywhere in a schema — used by tests to prove only supported keywords appear. */
+/** Every key used anywhere in a schema, used by tests to prove only supported keywords appear. */
 export function schemaKeys(node: unknown, keys = new Set<string>()): Set<string> {
   if (Array.isArray(node)) node.forEach((n) => schemaKeys(n, keys));
   else if (node && typeof node === "object") {

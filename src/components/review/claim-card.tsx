@@ -2,7 +2,7 @@
 
 // One extracted claim with its review actions (feature M4).
 //
-// The claim text shown is the model's or the reporter's — never a rewritten one. A reviewer's
+// The claim text shown is the model's or the reporter's, never a rewritten one. A reviewer's
 // correction goes into `editedStatement`, which sits beside the original rather than replacing it,
 // so the difference between "what was said" and "what a person concluded" survives in the record.
 

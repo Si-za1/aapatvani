@@ -4,10 +4,10 @@ import "server-only";
 //
 // Two modes, and the difference matters when reading the numbers:
 //
-//   oracle  — the expected claims are written in as if extraction had produced them. Nothing is
-//             invented and no model is called, so this measures the deterministic half — grouping,
-//             copy detection, contradictions, road impact — exactly, and can run today.
-//   gemini  — the real extraction runs against Gemini. This is the only mode that can say anything
+//   oracle , the expected claims are written in as if extraction had produced them. Nothing is
+//             invented and no model is called, so this measures the deterministic half, grouping,
+//             copy detection, contradictions, road impact, exactly, and can run today.
+//   gemini , the real extraction runs against Gemini. This is the only mode that can say anything
 //             about how well Nepali and English reports are read, and it needs credentials.
 //
 // Every number below is a count of cases we wrote by hand. The set is small on purpose, and the
@@ -84,7 +84,7 @@ function precisionRecall(tp: number, fp: number, fn: number): { precision: numbe
  * Points the store at a throwaway directory for the duration of the run.
  *
  * The services resolve their store through `getDb()`, which reads the environment once, so the
- * evaluation cannot hand them a private database — it has to move the room they are standing in.
+ * evaluation cannot hand them a private database, it has to move the room they are standing in.
  * Must be called before the first store access. Each scenario starts by clearing the directory,
  * because the file store reads from disk on every call.
  */
@@ -120,7 +120,7 @@ function buildReport(scenario: Scenario, spec: ScenarioReport): Report {
   };
 }
 
-/** Writes the answer key in as a completed extraction — the "oracle" half of oracle mode. */
+/** Writes the answer key in as a completed extraction, the "oracle" half of oracle mode. */
 async function seedExpectedClaims(db: Database, report: Report, spec: ScenarioReport): Promise<Claim[]> {
   const extractionId = newId("ext");
   await db.extractions.create({
@@ -190,7 +190,7 @@ async function extractWithModel(
 /**
  * Writes a scenario's reports and their expected claims into a store, and returns the maps that
  * connect report keys to stored ids. Oracle mode uses this so that nothing has to be invented, and
- * the demo seed uses it too — one definition of the scenario, so the two cannot drift apart.
+ * the demo seed uses it too, one definition of the scenario, so the two cannot drift apart.
  */
 export async function seedScenario(
   scenario: Scenario,

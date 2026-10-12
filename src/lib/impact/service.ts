@@ -251,7 +251,7 @@ export async function latestAssessment(incidentId: string): Promise<ImpactAssess
   return db.impacts.get(incident.latestImpactId);
 }
 
-/** Impact candidates a reviewer has confirmed — the only ones an alert draft may cite. */
+/** Impact candidates a reviewer has confirmed, the only ones an alert draft may cite. */
 export function confirmedCandidates(assessment: ImpactAssessment | null): ImpactCandidate[] {
   if (!assessment) return [];
   return assessment.candidates.filter((c) => c.review.status === "confirmed" || c.review.status === "edited");

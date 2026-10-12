@@ -12,7 +12,7 @@ export type { Reviewer } from "./session";
  *
  * Reading the session is request-time work twice over: it depends on a cookie, and it compares the
  * token's expiry against the current time. Saying so explicitly stops Next.js from attempting to
- * prerender a page that contains it — without this the clock read inside session verification is
+ * prerender a page that contains it, without this the clock read inside session verification is
  * reported as an unstable value during prerendering and the render is thrown away.
  */
 export async function getReviewer(): Promise<Reviewer | null> {

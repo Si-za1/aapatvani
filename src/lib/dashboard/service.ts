@@ -4,7 +4,7 @@ import "server-only";
 //
 // The reviewer pages read the store directly rather than through the HTTP API: they are server
 // components, so a fetch to our own origin would be a round trip to ourselves. The API routes stay
-// for what only a client can do — mutations and polling.
+// for what only a client can do, mutations and polling.
 
 import { getDb } from "@/lib/db";
 import type { Incident, IncidentStatus, Report } from "@/lib/domain/schemas";

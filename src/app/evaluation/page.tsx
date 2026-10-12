@@ -76,8 +76,8 @@ async function Screen() {
                 ) : (
                   <>
                     No model was called. The expected claims were fed in as if extraction had produced them, which
-                    measures the deterministic half of the pipeline — grouping, copy detection, contradictions and road
-                    impact — exactly. It says nothing about how well Gemini reads a report; run{" "}
+                    measures the deterministic half of the pipeline, grouping, copy detection, contradictions and road
+                    impact, exactly. It says nothing about how well Gemini reads a report; run{" "}
                     <code className="rounded bg-sand px-1.5 py-0.5">npm run eval -- --mode gemini</code> for that once
                     credentials exist.
                   </>
@@ -108,7 +108,7 @@ async function Screen() {
                 <Metric
                   label="False merges"
                   value={String(shown.report.totals.grouping.falseMerges)}
-                  hint="Reports joined that should not have been — the costliest error"
+                  hint="Reports joined that should not have been, the costliest error"
                   tone="alert"
                 />
                 <Metric label="Missed matches" value={String(shown.report.totals.grouping.missed)} hint="Pairs left apart that belong together" />
@@ -197,7 +197,7 @@ async function Screen() {
                     ) : null}
                     {scenario.impact?.ran && !scenario.impact.ok ? (
                       <p className="text-xs text-flame-strong">
-                        Impact mismatch — blocked road found: {scenario.impact.blockedRoadFound ?? "none"}; expected{" "}
+                        Impact mismatch, blocked road found: {scenario.impact.blockedRoadFound ?? "none"}; expected{" "}
                         {scenario.impact.expectedLostAccess.join(", ")} to lose access, found{" "}
                         {scenario.impact.foundLostAccess.join(", ") || "none"}.
                       </p>
@@ -227,7 +227,7 @@ async function Screen() {
               <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
               <span>
                 The road-impact engine also has exact expectations on a hand-built toy graph, checked by the unit test
-                suite rather than by these scenarios — that is where the routing arithmetic is pinned down. See{" "}
+                suite rather than by these scenarios, that is where the routing arithmetic is pinned down. See{" "}
                 <code className="rounded bg-card px-1.5 py-0.5">tests/blast-radius.test.ts</code>.
               </span>
             </p>

@@ -122,7 +122,7 @@ describe("alert drafting", () => {
   it("falls back to a system headline when the model's headline fails the checks", async () => {
     const llm = new FakeLlm([{ headline: S("Huge disaster!", []), known: [S("Road blocked.", ["K1"])], whereWhen: [], impacts: [], unconfirmed: [] }]);
     const out = await draftAlert(baseInput(["en"]), llm);
-    expect(out.sections[0].sentences[0].text).toBe("Possible landslide near Larcha — reports under review.");
+    expect(out.sections[0].sentences[0].text).toBe("Possible landslide near Larcha, reports under review.");
     expect(out.validation.warnings.join(" ")).toContain("written by the system");
     expect(out.sections.find((s) => s.key === "known")?.sentences[0].textNe).toBeUndefined();
   });

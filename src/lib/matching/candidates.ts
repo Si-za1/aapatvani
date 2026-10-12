@@ -2,7 +2,7 @@
 //
 // Cheap deterministic filters run first (region, time, distance, hazard), because a model call per
 // pair is expensive and most pairs in a busy region are obviously unrelated. Coordinates come only
-// from GPS, a map pin or a gazetteer match — never from the model (see project.md §3).
+// from GPS, a map pin or a gazetteer match, never from the model (see project.md §3).
 
 import { hazardRelation, type RegionConfig } from "@/config/regions";
 import type { Claim, Report } from "@/lib/domain/schemas";
@@ -26,7 +26,7 @@ export interface ReportPoint {
 }
 
 /**
- * Where a report is, as far as our data goes. Returns null when nothing places it — a report with
+ * Where a report is, as far as our data goes. Returns null when nothing places it, a report with
  * no GPS, no pin and no recognisable place name. Such a report is deliberately not compared:
  * guessing a location is exactly what the trust model forbids, so the pair is left for a reviewer.
  */
@@ -115,7 +115,7 @@ export type CandidateVerdict = { candidate: true } | { candidate: false; reason:
 /**
  * The candidate rule (project.md §8.2): same region, at most 24 h apart, at most 5 km apart plus
  * both uncertainty radii, and hazards that are not known to be different.
- * Copies are excluded here — they are found separately and linked, not compared as independent
+ * Copies are excluded here, they are found separately and linked, not compared as independent
  * evidence.
  */
 export function candidateVerdict(a: PairContext, b: PairContext, region: RegionConfig, features: PairFeatures): CandidateVerdict {

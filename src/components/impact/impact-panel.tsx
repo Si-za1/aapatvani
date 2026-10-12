@@ -6,7 +6,7 @@
 //
 // Two rules show up in the layout. Every finding carries its own caveats next to it, not in a
 // footnote, because "this road is unmapped" changes how much the finding is worth. And the
-// plain-language summary is labelled as an AI restatement that may have been rejected — it can
+// plain-language summary is labelled as an AI restatement that may have been rejected, it can
 // never add a finding of its own.
 
 import { useState } from "react";
@@ -41,7 +41,7 @@ const FINDING_LABEL: Record<ImpactCandidate["finding"], string> = {
   lost_access: "Places that lose road access to care",
   longer_route: "Places whose route to care becomes much longer",
   catchment_affected: "Health facilities whose catchment changes",
-  nearby: "Nearby — being close does not mean affected",
+  nearby: "Nearby, being close does not mean affected",
 };
 
 export interface ImpactPanelProps {
@@ -364,7 +364,7 @@ function CandidateCard({
               </span>
               {access.beforeM !== null || access.afterM !== null ? (
                 <span className="text-muted-foreground">
-                  before {access.beforeM === null ? "—" : `${(access.beforeM / 1000).toFixed(1)} km`} · after{" "}
+                  before {access.beforeM === null ? "-" : `${(access.beforeM / 1000).toFixed(1)} km`} · after{" "}
                   {access.afterM === null ? "no route" : `${(access.afterM / 1000).toFixed(1)} km`}
                   {access.beforeFacilityName ? ` · nearest was ${access.beforeFacilityName}` : ""}
                 </span>

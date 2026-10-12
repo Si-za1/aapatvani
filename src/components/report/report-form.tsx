@@ -3,7 +3,7 @@
 // The public report form (feature M1). Design decisions worth knowing:
 //
 //   • Nothing is required except something to say. A reporter in a hurry can send three words.
-//   • No personal data is asked for anywhere — there is no name, phone or email field at all.
+//   • No personal data is asked for anywhere, there is no name, phone or email field at all.
 //   • The one call to action is "Send report"; everything else is optional and labelled as such.
 //   • On success the browser is sent straight to the receipt. Extraction runs afterwards, from the
 //     receipt page, so a slow model call never holds up the person who is standing in the rain.
@@ -39,7 +39,7 @@ export const SUBMIT_TOKEN_PREFIX = "av:submit:";
 /**
  * A location mode with nothing in it is not a location. If someone taps "drop a pin" or "type a
  * place name" and then does not, the report is sent with no location rather than a source that
- * claims one — otherwise the server rejects the whole submission over a field the reporter never
+ * claims one, otherwise the server rejects the whole submission over a field the reporter never
  * meant to fill.
  */
 function settledLocation(location: LocationValue): LocationValue {

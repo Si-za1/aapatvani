@@ -2,7 +2,7 @@
 //
 // Two things every data point in this app carries: who produced it (origin) and what a person
 // decided about it (review status). The house rule is that colour never carries meaning alone, so
-// each of these renders an icon and words as well as a tint — a reviewer reading a printed
+// each of these renders an icon and words as well as a tint, a reviewer reading a printed
 // screenshot, or with any form of colour blindness, gets the same information.
 
 import {
@@ -27,7 +27,7 @@ const ORIGIN: Record<Origin, { label: string; className: string; Icon: typeof Bo
 };
 
 /**
- * Who said it. `Reported` means the words are in the reporter's own text — never that they are
+ * Who said it. `Reported` means the words are in the reporter's own text, never that they are
  * true, and never that a person has checked them.
  */
 export function OriginBadge({ origin, className }: { origin: Origin; className?: string }) {

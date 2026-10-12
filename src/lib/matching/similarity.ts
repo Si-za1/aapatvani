@@ -27,14 +27,14 @@ export function cosineSimilarity(a: number[] | undefined, b: number[] | undefine
 
 /**
  * Normalised form for n-gram comparison: NFC, lower case, Devanagari digits folded to ASCII,
- * punctuation, zero-width characters and all whitespace removed. What survives is the letters —
+ * punctuation, zero-width characters and all whitespace removed. What survives is the letters -
  * so "Road is BLOCKED!" and "road is blocked" compare as the same text.
  */
 export function normalizeForShingles(text: string): string {
   let out = "";
   for (const raw of text.normalize("NFC").toLowerCase()) {
     if (/[​-‏⁠﻿]/.test(raw)) continue;
-    if (/[\s.,;:!?'"()[\]{}।॥\-–—_/\\|*#@+=<>~`$%^&]/.test(raw)) continue;
+    if (/[\s.,;:!?'"()[\]{}।॥\-‐-―_/\\|*#@+=<>~`$%^&]/.test(raw)) continue;
     out += DEVANAGARI_DIGITS[raw] ?? raw;
   }
   return out;
@@ -64,7 +64,7 @@ export function shingleSimilarity(a: string, b: string, n = 5): number {
 }
 
 /**
- * The reporter's own words, verbatim — the text a copy would duplicate.
+ * The reporter's own words, verbatim, the text a copy would duplicate.
  *
  * The English translation is deliberately *not* used here, even though it would make two reports in
  * different languages comparable. Comparing translations breaks copy detection: a forwarded report

@@ -1,5 +1,5 @@
 // Every hazard gets an icon as well as its name. The design rule in project.md §3 is that colour
-// never carries meaning on its own — an icon and a text label always come with it — and this is
+// never carries meaning on its own, an icon and a text label always come with it, and this is
 // where the icon half is decided.
 
 import {
