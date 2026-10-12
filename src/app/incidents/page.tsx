@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Scale } from "lucide-react";
+import { Scale } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/av/app-shell";
 import { DataLabelBadge } from "@/components/av/trust-labels";
-import { Badge } from "@/components/ui/badge";
 import { getRegion, hazardLabel } from "@/config/regions";
 import { requireReviewer } from "@/lib/auth";
 import { getDb } from "@/lib/db";
@@ -18,9 +17,9 @@ import { relativeTime } from "@/lib/time";
 export const metadata: Metadata = { title: "Incidents" };
 
 const TONE: Record<IncidentStatus, { label: string; className: string }> = {
-  candidate: { label: "Candidate — needs review", className: "bg-amber-tint text-amber-strong" },
+  candidate: { label: "Needs review", className: "bg-amber-tint text-amber-strong" },
   under_review: { label: "Under review", className: "bg-violet-tint text-violet-strong" },
-  verified: { label: "Verified by a reviewer", className: "bg-leaf-tint text-leaf-strong" },
+  verified: { label: "Verified", className: "bg-leaf-tint text-leaf-strong" },
   dismissed: { label: "Dismissed", className: "bg-stone-tint text-stone-strong" },
 };
 
@@ -65,48 +64,45 @@ async function Screen() {
           <ul className="flex flex-col gap-2">
             {incidents.map((incident) => {
               const tone = TONE[incident.status];
+              const count = byIncident.get(incident.id) ?? incident.reportIds.length;
               return (
                 <li key={incident.id}>
                   <Link
                     href={`/incidents/${incident.id}`}
-                    className="flex flex-col gap-2.5 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-accent"
+                    className="grid gap-x-6 gap-y-2 rounded-2xl bg-card px-5 py-4 transition-shadow hover:shadow-[0_4px_20px_rgba(28,31,24,0.08)] lg:grid-cols-[1fr_11rem_10rem_5rem] lg:items-center"
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <span className="text-sm font-semibold">{incident.title}</span>
-                      <Badge variant="secondary" className={`shrink-0 rounded-full ${tone.className}`}>
-                        {tone.label}
-                      </Badge>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm font-semibold leading-snug">{incident.title}</span>
+                      {incident.verification ? (
+                        <span className="text-xs text-leaf-strong">
+                          Verified by {incident.verification.byName} · {relativeTime(incident.verification.at)}
+                        </span>
+                      ) : null}
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                      <span>{hazardLabel(region, incident.hazard.category)}</span>
-                      <span aria-hidden>·</span>
+
+                    {/* Aligned columns rather than a flowing line, so rows can be scanned down. */}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground lg:flex-col lg:items-start lg:gap-0.5">
+                      <span className="font-medium text-foreground">{hazardLabel(region, incident.hazard.category)}</span>
                       <span>
-                        {byIncident.get(incident.id) ?? incident.reportIds.length} report
-                        {(byIncident.get(incident.id) ?? incident.reportIds.length) === 1 ? "" : "s"}
-                      </span>
-                      <span aria-hidden>·</span>
-                      <span>
-                        {incident.independentSources} independent source
-                        {incident.independentSources === 1 ? "" : "s"}
+                        {count} report{count === 1 ? "" : "s"} · {incident.independentSources} independent
                       </span>
                       {incident.openContradictions > 0 ? (
-                        <>
-                          <span aria-hidden>·</span>
-                          <span className="text-flame-strong">
-                            {incident.openContradictions} open contradiction
-                            {incident.openContradictions === 1 ? "" : "s"}
-                          </span>
-                        </>
+                        <span className="font-medium text-flame-strong">
+                          {incident.openContradictions} contradiction
+                          {incident.openContradictions === 1 ? "" : "s"}
+                        </span>
                       ) : null}
-                      <span aria-hidden>·</span>
-                      <span>last report {relativeTime(incident.lastReportedAt)}</span>
-                      <ArrowRight className="ml-auto size-3.5" aria-hidden />
                     </div>
-                    {incident.verification ? (
-                      <p className="text-xs text-leaf-strong">
-                        Verified by {incident.verification.byName} · {relativeTime(incident.verification.at)}
-                      </p>
-                    ) : null}
+
+                    <span
+                      className={`inline-flex w-fit items-center rounded-full px-2.5 py-1 text-xs font-medium ${tone.className}`}
+                    >
+                      {tone.label}
+                    </span>
+
+                    <span className="text-xs text-muted-foreground lg:text-right">
+                      {relativeTime(incident.lastReportedAt)}
+                    </span>
                   </Link>
                 </li>
               );
