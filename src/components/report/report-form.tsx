@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoaderCircle, Send, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { HazardGlyph } from "@/components/av/hazard-icon";
 import { translator, type Locale } from "@/lib/i18n";
@@ -138,7 +139,7 @@ export function ReportForm({
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-7" lang={locale} noValidate>
+    <form onSubmit={submit} className="flex flex-col gap-8" lang={locale} noValidate>
       <Field label={t("form.whatHappened")} hint={t("form.whatHappenedHint")}>
         <Textarea
           value={text}
@@ -146,7 +147,7 @@ export function ReportForm({
           placeholder={t("form.whatHappenedPlaceholder")}
           rows={5}
           maxLength={4000}
-          className="min-h-32 rounded-2xl bg-card p-4 text-base"
+          className="min-h-36 rounded-2xl border-border bg-background p-4 text-base leading-relaxed"
         />
       </Field>
 
@@ -164,13 +165,13 @@ export function ReportForm({
                 aria-pressed={active}
                 onClick={() => setHazard(active ? null : option.id)}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-colors",
+                  "inline-flex items-center gap-2.5 rounded-2xl border px-4 py-3 text-sm font-semibold transition-colors",
                   active
                     ? "border-transparent bg-primary text-primary-foreground"
                     : "border-border bg-card hover:bg-accent",
                 )}
               >
-                <HazardGlyph icon={option.icon} className="size-4" />
+                <HazardGlyph icon={option.icon} className="size-4.5" />
                 <span lang={locale}>{label}</span>
               </button>
             );
@@ -199,7 +200,7 @@ export function ReportForm({
               aria-pressed={timeHint === hint}
               onClick={() => setTimeHint(timeHint === hint ? null : hint)}
               className={cn(
-                "rounded-full border px-3.5 py-2 text-sm font-medium transition-colors",
+                "rounded-2xl border px-4 py-2.5 text-sm font-semibold transition-colors",
                 timeHint === hint
                   ? "border-transparent bg-primary text-primary-foreground"
                   : "border-border bg-card hover:bg-accent",
@@ -209,25 +210,27 @@ export function ReportForm({
             </button>
           ))}
         </div>
-        <Textarea
+        <Input
           value={timeText}
           onChange={(event) => setTimeText(event.target.value)}
           placeholder={t("form.when.detailPlaceholder")}
-          rows={2}
           maxLength={200}
           aria-label={t("form.when.detail")}
-          className="min-h-0 rounded-xl bg-card text-base"
+          className="h-12 rounded-2xl border-border bg-background text-base"
         />
       </Field>
 
-      <Field label={t("form.photo")} optional={t("form.optional")}>
-        <PhotoField locale={locale} photo={photo} onPhoto={setPhoto} onRemove={() => setPhoto(null)} />
-      </Field>
+      {/* Photo and voice sit side by side: they are two ways of doing the same optional thing, and
+          putting them together says that neither is expected. */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        <Field label={t("form.photo")} optional={t("form.optional")}>
+          <PhotoField locale={locale} photo={photo} onPhoto={setPhoto} onRemove={() => setPhoto(null)} />
+        </Field>
 
-      <Field label={t("form.voice")} optional={t("form.optional")}>
-        <VoiceRecorder locale={locale} note={voice} onNote={setVoice} />
-        <p className="text-xs text-muted-foreground">{t("form.attachments", { n: MAX_FILES, mb: MAX_MB })}</p>
-      </Field>
+        <Field label={t("form.voice")} optional={t("form.optional")}>
+          <VoiceRecorder locale={locale} note={voice} onNote={setVoice} />
+        </Field>
+      </div>
 
       {error ? (
         <p role="alert" className="flex items-start gap-2 rounded-2xl bg-flame-tint px-4 py-3 text-sm text-flame-strong">
@@ -239,10 +242,16 @@ export function ReportForm({
         </p>
       ) : null}
 
-      <Button type="submit" size="lg" disabled={submitting} className="h-14 rounded-full text-base">
-        {submitting ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : <Send className="size-5" aria-hidden />}
-        {submitting ? t("form.submitting") : t("form.submit")}
-      </Button>
+      {/* The one action, with the reassurance beside it rather than buried above. */}
+      <div className="flex flex-col-reverse items-center gap-4 border-t border-border pt-6 sm:flex-row sm:justify-between">
+        <p className="text-xs text-muted-foreground">
+          {t("form.attachments", { n: MAX_FILES, mb: MAX_MB })}
+        </p>
+        <Button type="submit" size="lg" disabled={submitting} className="h-13 w-full rounded-full px-8 text-base sm:w-auto">
+          {submitting ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : <Send className="size-5" aria-hidden />}
+          {submitting ? t("form.submitting") : t("form.submit")}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -134,16 +134,18 @@ export function PhotoField({
           </div>
         </div>
       ) : (
-        <Button
+        <button
           type="button"
-          variant="outline"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
-          className="h-12 justify-start rounded-xl border-dashed text-base"
+          className="flex w-full flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background px-4 py-8 text-center transition-colors hover:border-ink-soft/40 hover:bg-accent/50 disabled:opacity-60"
         >
-          {busy ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Camera className="size-4" aria-hidden />}
-          {t("form.photoAdd")}
-        </Button>
+          <span className="grid size-10 place-items-center rounded-full bg-sand">
+            {busy ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : <Camera className="size-5 text-ink-soft" aria-hidden />}
+          </span>
+          <span className="text-sm font-semibold">{t("form.photoAdd")}</span>
+          <span className="text-xs text-muted-foreground">JPEG or PNG, up to 8 MB</span>
+        </button>
       )}
       <p className="text-xs text-muted-foreground">{t("form.photoHint")}</p>
       <input ref={inputRef} type="file" accept="image/*" capture="environment" onChange={pick} className="sr-only" tabIndex={-1} />

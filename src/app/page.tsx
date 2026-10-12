@@ -58,15 +58,15 @@ async function Landing() {
         </div>
       </header>
 
-      <section className="grid gap-7 px-6 pt-3 pb-6 sm:px-10 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pt-6">
+      <section className="grid gap-9 px-6 pt-6 pb-10 sm:px-10 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pt-6">
         {/* Left: what this is, and the one thing to do. */}
-        <div className="flex flex-col gap-5">
-          <h1 className="max-w-xl text-[2rem] font-bold leading-[1.06] tracking-[-0.02em] sm:text-[2.45rem]" lang={locale}>
+        <div className="flex flex-col gap-7">
+          <h1 className="max-w-xl text-[2.1rem] font-bold leading-[1.08] tracking-[-0.02em] sm:text-[2.75rem]" lang={locale}>
             {t("app.tagline")}
           </h1>
 
           <div className="flex flex-col gap-4">
-            <p className="max-w-md text-[14px] leading-relaxed text-muted-foreground" lang={locale}>
+            <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground" lang={locale}>
               {t("app.intro")}
             </p>
 
@@ -83,19 +83,19 @@ async function Landing() {
 
           {/* Below the button: what can actually be reported. Each icon sits in its own soft badge
               rather than floating next to the word, which is what makes the row read as a set. */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
               {t("landing.hazardsTitle")}
             </h2>
-            <ul className="flex flex-wrap gap-1.5">
+            <ul className="flex flex-wrap gap-2">
               {hazards.map((hazard) => (
                 <li
                   key={hazard.id}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card py-1 pr-3 pl-1 text-[11px] font-medium"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card py-1.5 pr-4 pl-1.5 text-xs font-semibold"
                   title={locale === "ne" ? hazard.labelLocal : hazard.label}
                 >
-                  <span className="grid size-5 shrink-0 place-items-center rounded-full bg-sand">
-                    <HazardGlyph icon={hazard.icon} className="size-3 text-ink-soft" />
+                  <span className="grid size-7 shrink-0 place-items-center rounded-xl bg-sand">
+                    <HazardGlyph icon={hazard.icon} className="size-4 text-ink-soft" />
                   </span>
                   <span lang={locale}>{locale === "ne" ? hazard.labelLocal : hazard.label}</span>
                 </li>
@@ -117,14 +117,14 @@ async function Landing() {
         </div>
 
         {/* Right: how it works, as cards. Two staggered columns so the eye moves down the flow. */}
-        <div className="grid gap-3 sm:grid-cols-2 lg:pt-1">
-          <div className="flex flex-col gap-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:pt-2">
+          <div className="flex flex-col gap-4">
             <StepCard {...steps[0]} />
             <StepCard {...steps[2]} />
           </div>
-          <div className="flex flex-col gap-3 sm:mt-8">
+          <div className="flex flex-col gap-4 sm:mt-10">
             <StepCard {...steps[1]} />
-            <div className="flex flex-col justify-between gap-6 rounded-3xl bg-primary p-5 text-primary-foreground">
+            <div className="flex flex-1 flex-col gap-4 rounded-3xl bg-primary p-6 text-primary-foreground">
               {/* A badge, but not a number: this is not a fourth step, and numbering it would say it
                   was. It carries a shield so the card sits in the same rhythm as the three above. */}
               <span className="grid size-7 place-items-center rounded-full bg-white/20">
@@ -153,7 +153,7 @@ async function Landing() {
 
       {/* A wide gap rather than a tight line: the footer is a different kind of information from the
           page above it, and the space is what says so. */}
-      <footer className="mt-8 flex flex-col gap-3 border-t border-border px-6 pt-7 pb-6 sm:px-10">
+      <footer className="mt-10 flex flex-col gap-3 border-t border-border px-6 pt-8 pb-7 sm:px-10">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
           {/* No build or render time is read here on purpose: anything that changes between
               renders is reported by Next.js as an unstable value during prerendering. */}
@@ -176,7 +176,7 @@ function StepCard({ n, title, body, tone }: { n: number; title: string; body: st
   // Sized to its content rather than stretched: a card with empty space at the bottom reads as a
   // mistake, and the steps are deliberately different lengths.
   return (
-    <div className={`flex flex-col gap-2.5 rounded-3xl p-5 ${tone}`}>
+    <div className={`flex flex-col gap-3 rounded-3xl p-6 ${tone}`}>
       <span className="grid size-7 place-items-center rounded-full bg-white/55 text-xs font-bold">{n}</span>
       <h3 className="text-base font-semibold leading-snug">{title}</h3>
       <p className="text-[13px] leading-relaxed opacity-80">{body}</p>

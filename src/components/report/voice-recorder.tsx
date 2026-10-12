@@ -173,15 +173,17 @@ export function VoiceRecorder({
           {t("form.voiceStop")} · {formatSeconds(seconds)}
         </Button>
       ) : (
-        <Button
+        <button
           type="button"
-          variant="outline"
           onClick={() => void start()}
-          className="h-12 justify-start rounded-xl border-dashed text-base"
+          className="flex w-full flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background px-4 py-8 text-center transition-colors hover:border-ink-soft/40 hover:bg-accent/50"
         >
-          <Mic className="size-4" aria-hidden />
-          {t("form.voiceStart")}
-        </Button>
+          <span className="grid size-10 place-items-center rounded-full bg-sand">
+            <Mic className="size-5 text-ink-soft" aria-hidden />
+          </span>
+          <span className="text-sm font-semibold">{t("form.voiceStart")}</span>
+          <span className="text-xs text-muted-foreground">Audio, up to 8 MB</span>
+        </button>
       )}
 
       {recording ? (
