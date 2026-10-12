@@ -25,12 +25,17 @@ export interface IncidentDraftInput {
   createdBy: string;
 }
 
-/** A short, plain title. Reviewers can change it later; it is a label, not a finding. */
-export function incidentTitle(hazard: string | undefined, report: Report, regionId: string): string {
+/**
+ * A short, plain title. Reviewers can change it later; it is a label, not a finding.
+ * "Mapped location" and "location not yet established" are deliberately different: having
+ * coordinates and being able to name the place are not the same thing.
+ */
+export function incidentTitle(hazard: string | undefined, report: Report, regionId: string, point: ReportPoint | null): string {
   const region = getRegion(regionId);
   const hazardText = hazard ? hazardLabel(region, hazard) : "Reported incident";
   const place = report.location.placeText?.trim();
-  return place ? `${hazardText} near ${place}` : `${hazardText} — location not yet established`;
+  if (place) return `${hazardText} near ${place}`;
+  return point ? `${hazardText} — mapped location, place not named` : `${hazardText} — location not yet established`;
 }
 
 export async function createCandidateIncident(input: IncidentDraftInput): Promise<Incident> {
@@ -42,7 +47,7 @@ export async function createCandidateIncident(input: IncidentDraftInput): Promis
     id: newId("inc"),
     regionId: input.regionId,
     dataLabel: input.dataLabel,
-    title: incidentTitle(input.hazard, report, input.regionId),
+    title: incidentTitle(input.hazard, report, input.regionId, point),
     hazard: { category: input.hazard ?? "unclear", source: report.reporterHazard ? "reporter" : "ai" },
     status: "candidate",
     members: [
