@@ -64,15 +64,19 @@ export function shingleSimilarity(a: string, b: string, n = 5): number {
 }
 
 /**
- * The text that stands for a report when comparing reports: the English translation when the
- * model produced one (so a Nepali and an English report about the same place can meet), otherwise
- * the reporter's own words. Verbatim report text is never modified.
+ * The reporter's own words, verbatim — the text a copy would duplicate.
+ *
+ * The English translation is deliberately *not* used here, even though it would make two reports in
+ * different languages comparable. Comparing translations breaks copy detection: a forwarded report
+ * is identical to its original only in the language it was written in, and comparing translations
+ * makes two identical copies look different whenever just one of them has been through extraction
+ * yet. Cross-lingual similarity is the embedding's job.
  */
-export function reportComparableText(report: Report, extraction: Extraction | undefined): string {
-  const translated = extraction?.translationEn?.trim();
-  const transcript = extraction?.transcript?.text?.trim();
-  const base = translated || report.text.trim();
-  return [base, transcript].filter(Boolean).join("\n").trim();
+export function reportVerbatimText(report: Report, extraction: Extraction | undefined): string {
+  const own = report.text.trim();
+  if (own) return own;
+  // A voice-only report has no text, so the transcript stands in for it.
+  return extraction?.transcript?.text?.trim() ?? "";
 }
 
 /** Reviewer-rejected claims never take part in matching or contradiction checks. */

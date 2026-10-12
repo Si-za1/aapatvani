@@ -29,7 +29,11 @@ export function formatDate(iso: string | undefined, timeZone = "Asia/Kathmandu")
   );
 }
 
-export function relativeTime(iso: string | undefined, now: number): string {
+/**
+ * "3 h ago", relative to a reference moment that defaults to now. The default lives here rather than
+ * at the call site so that server components can render it without reading the clock mid-render.
+ */
+export function relativeTime(iso: string | undefined, now: number = Date.now()): string {
   if (!iso) return "—";
   const diff = now - new Date(iso).getTime();
   const abs = Math.abs(diff);

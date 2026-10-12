@@ -33,7 +33,7 @@ import {
 } from "./contradictions";
 import { detectCopy } from "./copies";
 import { scorePair } from "./scoring";
-import { cosineSimilarity, reportComparableText, shingleSimilarity, usableClaims } from "./similarity";
+import { cosineSimilarity, reportVerbatimText, shingleSimilarity, usableClaims } from "./similarity";
 
 export interface SkippedPair {
   reportId: string;
@@ -127,8 +127,8 @@ export async function runMatchingForReport(
     }
 
     const lexical = shingleSimilarity(
-      reportComparableText(report, own.extraction),
-      reportComparableText(other, side.extraction),
+      reportVerbatimText(report, own.extraction),
+      reportVerbatimText(other, side.extraction),
     );
     const semantic = cosineSimilarity(own.extraction?.embedding, side.extraction?.embedding);
     const scored = scorePair({ ...features, semanticSimilarity: semantic }, lexical);

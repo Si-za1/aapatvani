@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { nepal } from "@/config/regions/nepal";
-import type { Claim } from "@/lib/domain/schemas";
+import type { Claim, Extraction } from "@/lib/domain/schemas";
 import { candidateVerdict, pairContext, pairFeatures, reportPoint } from "@/lib/matching/candidates";
 import { detectCopy } from "@/lib/matching/copies";
 import {
@@ -10,7 +10,7 @@ import {
   contradictionId,
 } from "@/lib/matching/contradictions";
 import { scorePair } from "@/lib/matching/scoring";
-import { cosineSimilarity, shingleSimilarity } from "@/lib/matching/similarity";
+import { cosineSimilarity, shingleSimilarity, reportVerbatimText } from "@/lib/matching/similarity";
 import { makeClaim, makeReport } from "./helpers/fixtures";
 
 const LARCHA = { lat: 27.93309, lng: 85.93534 };
@@ -41,6 +41,52 @@ describe("similarity", () => {
     expect(cosineSimilarity([1, 0], [1, 0, 0])).toBeNull();
     expect(cosineSimilarity(undefined, [1, 0])).toBeNull();
     expect(cosineSimilarity([0, 0], [1, 0])).toBeNull();
+  });
+});
+
+describe("verbatim text for copy detection", () => {
+  // Regression: the comparable text used to prefer the English translation, which made a forwarded
+  // copy look different from its original whenever only one of them had been through extraction.
+  const extraction = (overrides: Partial<Extraction> = {}): Extraction =>
+    ({
+      id: "ext",
+      reportId: "r",
+      createdAt: "2026-07-14T01:31:00.000Z",
+      model: "m",
+      promptVersion: "p",
+      status: "ok",
+      hazardCandidates: [],
+      missingInformation: [],
+      uncertaintyNotes: [],
+      mediaNotes: [],
+      claimIds: [],
+      validation: { errors: [], warnings: [], droppedClaims: 0, unverifiedExcerpts: 0, citationsChecked: 0, citationsRejected: 0 },
+      ...overrides,
+    }) as Extraction;
+
+  it("uses the reporter's own words, not the translation", () => {
+    const report = makeReport({ id: "a", text: "बाटो पूरै बन्द छ" });
+    const withTranslation = extraction({ translationEn: "The road is completely blocked" });
+
+    expect(reportVerbatimText(report, withTranslation)).toBe("बाटो पूरै बन्द छ");
+    // The same report compares identically whether or not extraction has run yet.
+    expect(reportVerbatimText(report, withTranslation)).toBe(reportVerbatimText(report, undefined));
+  });
+
+  it("falls back to the transcript for a voice-only report", () => {
+    const report = makeReport({ id: "a", text: "" });
+    expect(reportVerbatimText(report, extraction({ transcript: { mediaId: "m1", text: "पहिरो खस्यो" } }))).toBe("पहिरो खस्यो");
+  });
+
+  it("flags a copy even when only one side has been extracted", () => {
+    const text = "आज बिहान लार्चा नजिक अरनिको राजमार्गमा ठूलो पहिरो खस्यो। बाटो पूरै बन्द छ, सवारी अड्किएका छन्।";
+    const original = makeReport({ id: "a", text });
+    const forwarded = makeReport({ id: "b", text });
+    const extracted = extraction({ translationEn: "A big landslide came down on the Arniko Highway." });
+
+    const score = shingleSimilarity(reportVerbatimText(original, extracted), reportVerbatimText(forwarded, undefined));
+    expect(score).toBe(1);
+    expect(detectCopy(original, forwarded, score, { distanceKm: 1, effectiveDistanceKm: 1, hoursApart: 1, hazardMatch: "same", semanticSimilarity: null, sharedMedia: false, sameReporter: false }).suspected).toBe(true);
   });
 });
 

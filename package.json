@@ -12,7 +12,9 @@
     "test:watch": "vitest",
     "data:fetch": "tsx scripts/prepare-region.ts --fetch",
     "data:prepare": "tsx scripts/prepare-region.ts --input",
-    "check:models": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/check-models.ts"
+    "check:models": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/check-models.ts",
+    "seed": "tsx --conditions=react-server scripts/seed-demo.ts",
+    "seed:reset": "rm -rf .data/db .data/media"
   },
   "dependencies": {
     "@google/genai": "^2.28.0",
