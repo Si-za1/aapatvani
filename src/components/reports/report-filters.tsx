@@ -48,7 +48,9 @@ export function ReportFilters({ hazards, regionId, total }: { hazards: string[];
     });
 
   return (
-    <div className="flex flex-col items-end gap-3">
+    // The panel floats over the page rather than sitting in the flow: in the flow it made the header
+    // tall, which pushed every card down the page and left a band of empty space beside it.
+    <div className="relative">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -64,53 +66,62 @@ export function ReportFilters({ hazards, regionId, total }: { hazards: string[];
       </button>
 
       {open ? (
-        <div className="flex w-full flex-col gap-4 rounded-2xl bg-card p-5 sm:w-[26rem]">
-          <Group label="Show">
-            {STATUSES.map((option) => (
-              <Chip
-                key={option.value}
-                active={status === option.value}
-                onClick={() => setParam("status", option.value, "awaiting")}
-                label={option.label}
-              />
-            ))}
-          </Group>
+        <>
+          {/* Click anywhere else to dismiss, which is what a panel like this should do. */}
+          <button
+            type="button"
+            aria-label="Close filters"
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-10 cursor-default"
+          />
+          <div className="absolute top-full right-0 z-20 mt-2 flex w-[19rem] flex-col gap-4 rounded-2xl bg-card p-5 shadow-[0_10px_40px_rgba(28,31,24,0.14)] sm:w-[24rem]">
+            <Group label="Show">
+              {STATUSES.map((option) => (
+                <Chip
+                  key={option.value}
+                  active={status === option.value}
+                  onClick={() => setParam("status", option.value, "awaiting")}
+                  label={option.label}
+                />
+              ))}
+            </Group>
 
-          <Group label="Hazard">
-            <Chip active={!hazard} onClick={() => setParam("hazard", null)} label="Any" />
-            {hazards.map((id) => (
-              <Chip
-                key={id}
-                active={hazard === id}
-                onClick={() => setParam("hazard", id)}
-                label={hazardLabel(getRegion(regionId), id)}
-              />
-            ))}
-          </Group>
+            <Group label="Hazard">
+              <Chip active={!hazard} onClick={() => setParam("hazard", null)} label="Any" />
+              {hazards.map((id) => (
+                <Chip
+                  key={id}
+                  active={hazard === id}
+                  onClick={() => setParam("hazard", id)}
+                  label={hazardLabel(getRegion(regionId), id)}
+                />
+              ))}
+            </Group>
 
-          <Group label="When">
-            <Chip active={!window} onClick={() => setParam("window", null)} label="Any time" />
-            {WINDOWS.map((option) => (
-              <Chip
-                key={option.value}
-                active={window === option.value}
-                onClick={() => setParam("window", option.value)}
-                label={option.label}
-              />
-            ))}
-          </Group>
+            <Group label="When">
+              <Chip active={!window} onClick={() => setParam("window", null)} label="Any time" />
+              {WINDOWS.map((option) => (
+                <Chip
+                  key={option.value}
+                  active={window === option.value}
+                  onClick={() => setParam("window", option.value)}
+                  label={option.label}
+                />
+              ))}
+            </Group>
 
-          {active ? (
-            <button
-              type="button"
-              onClick={() => router.push(pathname)}
-              className="inline-flex w-fit items-center gap-1.5 text-xs font-medium text-muted-foreground hover:underline"
-            >
-              <X className="size-3.5" aria-hidden />
-              Clear all filters
-            </button>
-          ) : null}
-        </div>
+            {active ? (
+              <button
+                type="button"
+                onClick={() => router.push(pathname)}
+                className="inline-flex w-fit items-center gap-1.5 text-xs font-medium text-muted-foreground hover:underline"
+              >
+                <X className="size-3.5" aria-hidden />
+                Clear all filters
+              </button>
+            ) : null}
+          </div>
+        </>
       ) : null}
     </div>
   );

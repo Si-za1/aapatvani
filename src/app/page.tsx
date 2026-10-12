@@ -125,11 +125,13 @@ async function Landing() {
           <div className="flex flex-col gap-3 sm:mt-8">
             <StepCard {...steps[1]} />
             <div className="flex flex-col justify-between gap-6 rounded-3xl bg-primary p-5 text-primary-foreground">
+              {/* A badge, but not a number: this is not a fourth step, and numbering it would say it
+                  was. It carries a shield so the card sits in the same rhythm as the three above. */}
+              <span className="grid size-7 place-items-center rounded-full bg-white/20">
+                <ShieldCheck className="size-4" aria-hidden />
+              </span>
               <p className="text-[15px] font-semibold leading-relaxed" lang={locale}>
                 {t("landing.trustDo")}
-              </p>
-              <p className="text-xs text-primary-foreground/60" lang={locale}>
-                {region.name} · OpenStreetMap
               </p>
             </div>
           </div>
@@ -137,10 +139,16 @@ async function Landing() {
       </section>
 
       {/* The emergency line, without a panel behind it: the flame icon and colour carry the weight,
-          and a red block on a calm page is its own kind of alarm. */}
-      <p className="flex gap-2.5 px-6 text-sm text-flame-strong sm:px-10" lang={locale}>
-        <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+          and a red block on a calm page is its own kind of alarm. The numbers are here, not just on
+          the report form, because this is the line someone reads when they are frightened. */}
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 px-6 text-sm text-flame-strong sm:px-10" lang={locale}>
+        <TriangleAlert className="size-4 shrink-0" aria-hidden />
         <span>{t("landing.emergency")}</span>
+        <span className="font-semibold">
+          {region.emergencyNumbers
+            .map((line) => `${locale === "ne" ? line.labelLocal : line.label} ${line.number}`)
+            .join(" · ")}
+        </span>
       </p>
 
       {/* A wide gap rather than a tight line: the footer is a different kind of information from the
