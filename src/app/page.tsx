@@ -81,7 +81,8 @@ async function Landing() {
             </Link>
           </div>
 
-          {/* Below the button: what can actually be reported, as a quiet icon row. */}
+          {/* Below the button: what can actually be reported. Each icon sits in its own soft badge
+              rather than floating next to the word, which is what makes the row read as a set. */}
           <div className="flex flex-col gap-3">
             <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
               {t("landing.hazardsTitle")}
@@ -90,19 +91,22 @@ async function Landing() {
               {hazards.map((hazard) => (
                 <li
                   key={hazard.id}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-sand px-3 py-1.5 text-xs font-medium"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card py-1.5 pr-3.5 pl-1.5 text-xs font-medium"
                   title={locale === "ne" ? hazard.labelLocal : hazard.label}
                 >
-                  <HazardGlyph icon={hazard.icon} className="size-3.5 text-ink-soft" />
+                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-sand">
+                    <HazardGlyph icon={hazard.icon} className="size-3.5 text-ink-soft" />
+                  </span>
                   <span lang={locale}>{locale === "ne" ? hazard.labelLocal : hazard.label}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* And what we will not do, in a line or two rather than a panel. */}
-          <p className="flex items-start gap-2.5 max-w-lg rounded-2xl bg-sand px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame-strong" aria-hidden />
+          {/* What we will not do, stated plainly — no panel, because a box would make it look like a
+              feature rather than a boundary. */}
+          <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame" aria-hidden />
             <span lang={locale}>{t("landing.trustDont")}</span>
           </p>
 
@@ -132,12 +136,12 @@ async function Landing() {
         </div>
       </section>
 
-      <section className="mx-6 mb-8 rounded-2xl bg-flame-tint px-5 py-4 sm:mx-10">
-        <p className="flex gap-2.5 text-sm text-flame-strong" lang={locale}>
-          <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-          <span>{t("landing.emergency")}</span>
-        </p>
-      </section>
+      {/* The emergency line, without a panel behind it: the flame icon and colour carry the weight,
+          and a red block on a calm page is its own kind of alarm. */}
+      <p className="flex gap-2.5 px-6 text-sm text-flame-strong sm:px-10" lang={locale}>
+        <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <span>{t("landing.emergency")}</span>
+      </p>
 
       <footer className="flex flex-col gap-4 border-t border-border px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10">
         <Link
