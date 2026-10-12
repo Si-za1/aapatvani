@@ -2,9 +2,12 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, MapPin, Sparkles } from "lucide-react";
-import { AppShell, ComingSoon, PageHeader } from "@/components/av/app-shell";
+import { ArrowLeft, MapPin } from "lucide-react";
+import { AppShell, PageHeader } from "@/components/av/app-shell";
+import { AlertPanel } from "@/components/alerts/alert-panel";
 import { DataLabelBadge, ReviewBadge } from "@/components/av/trust-labels";
+import { ImpactMapPanel } from "@/components/impact/impact-map-panel";
+import { ImpactPanel } from "@/components/impact/impact-panel";
 import {
   IncidentWorkspace,
   type ContradictionView,
@@ -12,16 +15,19 @@ import {
   type SuggestionView,
 } from "@/components/review/incident-workspace";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { getRegion, hazardLabel } from "@/config/regions";
 import { aiStatus } from "@/lib/ai/gemini";
+import { alertReadiness } from "@/lib/ai/alerts";
+import { latestAlert } from "@/lib/alerts/service";
 import { requireReviewer } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import type { IncidentStatus } from "@/lib/domain/schemas";
+import { getEnv } from "@/lib/env";
+import { confirmedCandidates, latestAssessment } from "@/lib/impact/service";
 import { formatDateTime } from "@/lib/time";
 
-// The incident workspace (feature M4). One screen for settling a grouping: the reports in it, the
-// matches the system proposed, and anything the reports disagree about.
+// The incident workspace (features M4/M9/M11). One screen for settling a grouping, analysing what a
+// blocked road would mean, and drafting a cited alert for a person to approve.
 
 export const metadata: Metadata = { title: "Incident" };
 
@@ -49,11 +55,15 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
   if (!incident) notFound();
 
   const region = getRegion(incident.regionId);
-  const [reports, claims, allSuggestions, contradictions] = await Promise.all([
+  const env = getEnv();
+  const [reports, claims, allSuggestions, contradictions, assessment, alert, assessments] = await Promise.all([
     db.reports.getMany(incident.reportIds),
     db.claims.list({ where: [{ field: "reportId", op: "in", value: incident.reportIds }] }),
     db.suggestions.list({ where: [{ field: "regionId", op: "==", value: incident.regionId }] }),
     db.contradictions.list({ where: [{ field: "incidentId", op: "==", value: incident.id }] }),
+    latestAssessment(incident.id),
+    latestAlert(incident.id),
+    db.impacts.list({ where: [{ field: "incidentId", op: "==", value: incident.id }] }),
   ]);
 
   const reportIds = new Set(incident.reportIds);
@@ -162,20 +172,52 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
         canRunModel={aiStatus().configured}
       />
 
-      <div className="flex flex-col gap-3 px-5 pb-8 sm:px-8">
-        {incident.status === "verified" ? null : (
-          <Card className="gap-2 border-dashed p-4">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <Sparkles className="size-4 text-ink-soft" aria-hidden />
-              Settling this incident
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Marking an incident verified confirms that these reports describe one event, and confirms every
-              membership with it. Route actions that change state live on each card above.
-            </p>
-          </Card>
-        )}
-        <ComingSoon what="The Blast Radius panel, per-finding confirm and dismiss, and cited alert drafts" chunk="chunk 7" />
+      <div className="flex flex-col gap-8 border-t border-border px-5 py-8 sm:px-8">
+        <ImpactPanel
+          incidentId={incident.id}
+          assessment={assessment}
+          history={assessments
+            .slice()
+            .sort((a, b) => b.version - a.version)
+            .map((entry) => ({
+              id: entry.id,
+              version: entry.version,
+              createdAt: entry.createdAt,
+              createdBy: entry.createdBy.name,
+              status: entry.status,
+              candidates: entry.candidates.length,
+            }))}
+          timeZone={region.timezone}
+          canRunModel={aiStatus().configured}
+          map={
+            assessment && incident.location ? (
+              <ImpactMapPanel
+                assessment={assessment}
+                incident={{ lat: incident.location.lat, lng: incident.location.lng, label: incident.title }}
+                center={[incident.location.lat, incident.location.lng]}
+                zoom={13}
+                tileUrl={env.map.tileUrl}
+                attribution={env.map.attribution}
+              />
+            ) : null
+          }
+        />
+
+        <AlertPanel
+          incidentId={incident.id}
+          draft={alert}
+          readiness={alertReadiness({ claims })}
+          confirmedClaims={claims.filter((c) => c.review.status === "confirmed" || c.review.status === "edited").length}
+          confirmedImpacts={confirmedCandidates(assessment).length}
+          openContradictions={contradictions.filter((c) => c.status === "open").length}
+          citationLabels={Object.fromEntries([
+            ...claims.map((claim) => [claim.id, (claim.editedStatement ?? claim.statementEn).slice(0, 60)]),
+            ...(assessment?.candidates ?? []).map((candidate) => [candidate.id, candidate.name.slice(0, 60)]),
+            ...contradictions.map((contradiction) => [contradiction.id, contradiction.kind.replace("_", " ")]),
+          ])}
+          timeZone={region.timezone}
+          canRunModel={aiStatus().configured}
+        />
       </div>
     </AppShell>
   );
