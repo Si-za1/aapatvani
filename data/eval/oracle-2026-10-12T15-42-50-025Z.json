@@ -1,0 +1,230 @@
+{
+  "generatedAt": "2026-10-12T15:42:50.025Z",
+  "mode": "oracle",
+  "model": "none (oracle mode)",
+  "promptVersions": {
+    "extraction": "extract-v1",
+    "compare": "compare-v1",
+    "alert": "alert-v1",
+    "explain": "explain-v1"
+  },
+  "aiConfigured": false,
+  "scenarios": [
+    {
+      "id": "larcha-main",
+      "name": "Araniko corridor landslide with a forwarded copy",
+      "mode": "oracle",
+      "reports": 6,
+      "grouping": {
+        "truePositives": 6,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": 1,
+        "recall": 1,
+        "falseMerges": [],
+        "missed": []
+      },
+      "copies": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": 1,
+        "recall": 1
+      },
+      "contradictions": {
+        "found": 1,
+        "expected": 1,
+        "recall": 1,
+        "missed": []
+      },
+      "abstention": {
+        "correct": 1,
+        "total": 1
+      },
+      "impact": {
+        "ran": true,
+        "status": "ok",
+        "blockedRoadOk": true,
+        "blockedRoadFound": "Arniko Highway (NH34)",
+        "expectedLostAccess": [
+          "Tatopani"
+        ],
+        "foundLostAccess": [
+          "Larcha",
+          "Tatopani",
+          "Namtan",
+          "Kodāri"
+        ],
+        "ok": true
+      },
+      "notes": [
+        "Matches were found, but none of the other reports is in an incident yet; a new candidate incident was opened.",
+        "This report has no usable location (no GPS, no pin, no recognised place name), so it was not compared with other reports."
+      ]
+    },
+    {
+      "id": "distinct-events",
+      "name": "Two different hazards close together",
+      "mode": "oracle",
+      "reports": 2,
+      "grouping": {
+        "truePositives": 0,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": null,
+        "recall": null,
+        "falseMerges": [],
+        "missed": []
+      },
+      "copies": {
+        "truePositives": 0,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": null,
+        "recall": null
+      },
+      "contradictions": {
+        "found": 0,
+        "expected": 0,
+        "recall": null,
+        "missed": []
+      },
+      "abstention": {
+        "correct": 0,
+        "total": 0
+      },
+      "notes": []
+    },
+    {
+      "id": "copy-only",
+      "name": "The same message forwarded twice",
+      "mode": "oracle",
+      "reports": 2,
+      "grouping": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": 1,
+        "recall": 1,
+        "falseMerges": [],
+        "missed": []
+      },
+      "copies": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": 1,
+        "recall": 1
+      },
+      "contradictions": {
+        "found": 0,
+        "expected": 0,
+        "recall": null,
+        "missed": []
+      },
+      "abstention": {
+        "correct": 0,
+        "total": 0
+      },
+      "notes": [
+        "Matches were found, but none of the other reports is in an incident yet; a new candidate incident was opened."
+      ]
+    },
+    {
+      "id": "counts-disagree",
+      "name": "The same event with different casualty counts",
+      "mode": "oracle",
+      "reports": 2,
+      "grouping": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": 1,
+        "recall": 1,
+        "falseMerges": [],
+        "missed": []
+      },
+      "copies": {
+        "truePositives": 0,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": null,
+        "recall": null
+      },
+      "contradictions": {
+        "found": 1,
+        "expected": 1,
+        "recall": 1,
+        "missed": []
+      },
+      "abstention": {
+        "correct": 0,
+        "total": 0
+      },
+      "notes": [
+        "Matches were found, but none of the other reports is in an incident yet; a new candidate incident was opened."
+      ]
+    },
+    {
+      "id": "abstain",
+      "name": "A report that cannot be placed",
+      "mode": "oracle",
+      "reports": 2,
+      "grouping": {
+        "truePositives": 0,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": null,
+        "recall": null,
+        "falseMerges": [],
+        "missed": []
+      },
+      "copies": {
+        "truePositives": 0,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": null,
+        "recall": null
+      },
+      "contradictions": {
+        "found": 0,
+        "expected": 0,
+        "recall": null,
+        "missed": []
+      },
+      "abstention": {
+        "correct": 1,
+        "total": 1
+      },
+      "notes": [
+        "This report has no usable location (no GPS, no pin, no recognised place name), so it was not compared with other reports."
+      ]
+    }
+  ],
+  "totals": {
+    "grouping": {
+      "precision": 1,
+      "recall": 1,
+      "falseMerges": 0,
+      "missed": 0
+    },
+    "copies": {
+      "precision": 1,
+      "recall": 1
+    },
+    "contradictions": {
+      "found": 2,
+      "expected": 2,
+      "recall": 1
+    },
+    "abstention": {
+      "correct": 2,
+      "total": 2
+    },
+    "impact": {
+      "checked": 1,
+      "ok": 1
+    }
+  },
+  "caveat": "A small, hand-written set of scenarios over real road geography. It shows the pipeline behaves as designed on cases we chose; it is not a measure of real-world effectiveness, and no such claim should be read from it."
+}

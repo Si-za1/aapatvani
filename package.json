@@ -14,7 +14,8 @@
     "data:prepare": "tsx scripts/prepare-region.ts --input",
     "check:models": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/check-models.ts",
     "seed": "tsx --conditions=react-server scripts/seed-demo.ts",
-    "seed:reset": "rm -rf .data/db .data/media"
+    "seed:reset": "rm -rf .data/db .data/media",
+    "eval": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/eval.ts"
   },
   "dependencies": {
     "@google/genai": "^2.28.0",
