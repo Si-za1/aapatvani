@@ -468,6 +468,7 @@ export type AlertDraft = z.infer<typeof AlertDraft>;
 // ---------------------------------------------------------------- Audit trail
 
 export const AuditTarget = z.enum(["report", "claim", "extraction", "incident", "suggestion", "contradiction", "impact", "alert", "session"]);
+export type AuditTarget = z.infer<typeof AuditTarget>;
 
 export const AuditEvent = z.object({
   id: z.string(),

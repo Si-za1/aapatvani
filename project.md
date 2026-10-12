@@ -4,7 +4,7 @@ This is the working document: what we're building, how, and where we are. Update
 
 - **Product brief:** [`docs/product-vision.md`](docs/product-vision.md), the source of truth for product intent
 - **Hackathon:** Google Cloud AI Builder Cup 2026. Prototype deadline **Oct 18, 2026**; we target **Oct 17**.
-- **Last updated:** 2026-10-11
+- **Last updated:** 2026-10-12
 
 ---
 
@@ -17,17 +17,17 @@ We build in chunks and commit at the end of each one.
 | 1 | Foundation: scaffold, design system, region data (OSM extract) | ✅ Done |
 | 2 | Backend core: data model, data/media stores, reviewer auth, evidence checks, gazetteer, Blast Radius engine, unit tests | ✅ Done |
 | 3 | AI layer: Gemini extraction (text, photo, voice), embeddings, report comparison, alert drafting, impact explanation, validation | ✅ Done (unit-tested; live Gemini check waits for credentials) |
-| 4 | Matching & incidents: clustering, copy detection, contradiction rules, services, API routes | 🟡 Next |
-| 5 | Public side: welcoming landing page, mobile report form (Nepali/English, photo, voice, location, time) | ⬜ |
+| 4 | Matching & incidents: clustering, copy detection, contradiction rules, services, API routes | ✅ Done (local store, end-to-end through the API) |
+| 5 | Public side: welcoming landing page, mobile report form (Nepali/English, photo, voice, location, time) | 🟡 Next |
 | 6 | Responder side: dashboard + map, review queue, report and incident workspaces | ⬜ |
 | 7 | Impact & alerts UI: blast radius on the map, confirm/dismiss, cited alert drafts with approval | ⬜ |
 | 8 | Evaluation & demo data: labelled synthetic scenarios, eval script, results page, seed | ⬜ |
 | 9 | Finish: Dockerfile, Cloud Run deploy, README, final checks | ⬜ |
 | — | Vision deck (PDF) + 3-minute demo video | ⬜ |
 
-**Checks passing now:** `npm run typecheck`, `npm run lint`, `npm test` (91 tests), `npm run build`. Once credentials exist, `npm run check:models` verifies the model IDs, structured output and embeddings against the real key/project.
+**Checks passing now:** `npm run typecheck`, `npm run lint`, `npm test` (156 tests), `npm run build`. Once credentials exist, `npm run check:models` verifies the model IDs, structured output and embeddings against the real key/project.
 
-**Waiting on credentials (not blocking yet):** a Gemini API key, or a GCP project with Agent Platform enabled (for live Gemini calls); later, Firestore, Cloud Storage and Cloud Run in that project.
+**Credentials: deferred by decision (2026-10-12).** We build chunks 4–8 to completion against the local backends (file store, local media, passcode sign-in) and the scripted test model, then set up Gemini, Firestore, Storage and Cloud Run in one pass near the end and verify everything together. Three things cannot close without credentials, because they are cloud checks by definition: chunk 9's gate (a deployed URL), the `check:models` live smoke test, and the demo video — hard requirement 5 says the video must *show the AI working*. Plan the credential session before recording and deploying, not after.
 
 Legend: ⬜ not started · 🟡 in progress · ✅ done · ⚠️ needs attention
 
@@ -323,7 +323,7 @@ No flood extents, runout estimates, or casualty or damage estimates. Runs in ~25
 | 1 Foundation ✅ | Next.js 16.4 + Tailwind 4 + shadcn/ui; theme tokens and fonts; OSM extract for the Araniko corridor | Build passes; dataset regenerates from the saved query |
 | 2 Backend core ✅ | Schemas; local/Firestore store; local/GCS media; passcode/Firebase sessions; proxy gate; excerpt + alias checks; gazetteer; graph + blast radius; tests | 57 unit tests pass, incl. the real-data demo regression |
 | 3 AI layer | Gemini client (Agent Platform or API key, fallback model, timeouts); Zod output schemas → JSON Schema; prompts; extraction (text/photo/voice) with origin assignment and place resolution; embeddings; pairwise comparison; alert drafting; impact explanation; `check:models` script; tests with a fake model | Unit tests cover every validation path; live smoke test once credentials exist |
-| 4 Matching & incidents | Feature scoring, copy detection, contradiction rules, incident assignment, services, all API routes, audit events | End-to-end via API on the local store |
+| 4 Matching & incidents ✅ | Feature scoring, copy detection, contradiction rules, incident assignment, services, all API routes, audit events | End-to-end via API on the local store |
 | 5 Public side | Landing page; report form (NE/EN UI, photo, voice recorder, GPS/pin/place, time); receipt with "what we understood" | Submitting on a phone works |
 | 6 Responder side | Sign-in; dashboard (stats, map, incident list, incoming timeline, filters); review queue; report workspace with excerpt highlighting; incident workspace | A reviewer can triage the seeded scenario |
 | 7 Impact & alerts | Blast radius panel + map layers; confirm/dismiss; history; AI explanation; alert drafting, citations, approval | The full demo scenario runs |
@@ -408,6 +408,7 @@ We use the Larcha–Tatopani stretch: a fictional landslide in real geography, l
 | 2026-10-11 | Demo area: Araniko corridor, Larcha–Tatopani stretch | Real network shows a clear, verifiable loss of access |
 | 2026-10-11 | Work in chunks, commit at the end of each chunk | Team request |
 | Proposed | Gemini via Agent Platform (`enterprise: true`) on Cloud Run; an AI Studio key only for local dev | No API key in production. Confirm in §15. |
+| 2026-10-12 | Defer all Google Cloud setup (Gemini, Firestore, Storage, Cloud Run) to one session near the end of the build; verify chunks 4–8 against the local backends and the scripted test model | Team decision — build the whole pipeline first, then set up and check the Google services in a single pass. Accepted cost: model-ID, quota, region and Nepali-extraction problems surface late, so keep the `Llm` interface and oracle/test-model modes working as the hedge |
 | Proposed | GCP region `asia-south1` (Mumbai) for Cloud Run, Firestore and Storage; Gemini location `global` | Closest region to Nepal; regional availability of 3.8 Flash not yet confirmed |
 
 ---
@@ -416,14 +417,16 @@ We use the Larcha–Tatopani stretch: a fictional landslide in real geography, l
 
 - **2026-10-11:** Created the repo, `.gitignore`, this tracker and `docs/product-vision.md`. Verified package versions, Gemini model IDs, SDK options and the hackathon rules (see Appendix).
 - **2026-10-11 (chunks 1–2):** Scaffolded Next.js 16.4 with shadcn/ui and the warm theme. Pulled the Nepal-bounded OSM extract (snapshot 2026-10-11T11:22:51Z) and built the corridor dataset: 11,340 nodes, 11,613 edges, 2,525 km of road, 36 health facilities (4 hospitals), 408 schools, 187 settlements, 622 bilingual gazetteer entries. Wrote the domain schemas, swappable data/media/auth backends, evidence checks, gazetteer and the Blast Radius engine. Typecheck, lint, 57 unit tests and the production build pass. First commit.
+- **2026-10-12 (chunk 4):** Built matching and incidents, and the whole backend API. `lib/matching/` (candidate filter, lexical + embedding similarity, copy detection, feature scoring with a visible breakdown, rule contradictions), `lib/incidents/` (candidate incidents, membership, independent-source counting), `lib/review/` (claim, suggestion, contradiction and membership decisions), `lib/impact/` (versioned Blast Radius runs, candidate confirm/dismiss, guarded AI explanation), `lib/alerts/` (cited drafts, approval), `lib/reports/` (intake with EXIF and hashing, extraction runs), plus an append-only audit trail and 18 API routes covering reports, extraction, matching, review, impact, alerts, media and sign-in. Two design points worth recording: coordinates are taken only from GPS, a pin or a gazetteer match, so a report with no usable location is deliberately never compared rather than guessed at (§3 rule 3); and copies skip the Gemini comparison, because the copy link is already the finding. 156 tests pass, including the §12 demo scenario end to end on the local store and every route exercised through its handler. Two fixes came out of testing: accepting a suggestion now confirms both memberships (it previously left them "suggested" when the system had already grouped the pair), and `handle()` no longer swallows Next.js prerender signals. Known and deferred: the Turbopack build warns that `lib/geo/dataset.ts` reads the dataset with a dynamic path, which traces the whole project into the standalone output — a Docker image-size item for chunk 9, not a correctness problem.
+- **2026-10-12 (status check):** Re-ran the full check set on a clean tree — typecheck, lint, 91 tests and the production build all pass. Chunk 3's code is complete and committed. The only unmet clause is its live smoke test: there is still no `.env.local`, so `npm run check:models` has never run against a real key or GCP project. Chunk 4 can start without credentials (the scripted test model covers it), so this is not blocking the build — but it is now the long-lead item on the critical path for the demo. The AI layer is library code only so far; nothing calls it from an API route yet (chunk 4 wires that up).
 - **2026-10-11 (chunk 3):** Built the AI layer: Gemini client with Agent Platform/API-key backends and fallback, Zod → Gemini JSON Schema conversion (only supported keywords, tested), validated structured generation with one corrective retry, multimodal extraction with provenance rules and gazetteer resolution, embeddings, pairwise comparison, cited alert drafting with number checks, impact explanation guard, and `npm run check:models`. 91 unit tests pass (a scripted test model exercises every validation path). Live Gemini calls not yet run — waiting for credentials.
 
 ---
 
 ## 15. Open questions
 
-1. Gemini access: Agent Platform (recommended) or an AI Studio API key? The AI layer is built and unit-tested; live calls (and `npm run check:models`) need one of these. Put it in `.env.local` (see `.env.example`).
-2. GCP project ID with billing or hackathon credits — for Firestore, Cloud Storage, Firebase Auth and Cloud Run.
+1. Gemini access — **deferred to the end-of-build credential session** (see §0 and §13). The decision still needed then: Agent Platform (recommended, no key to leak) or an AI Studio key. The AI layer is built and unit-tested either way. Put it in `.env.local` (see `.env.example`).
+2. GCP project ID with billing or hackathon credits — **deferred to the same session**; needed for Firestore, Cloud Storage, Firebase Auth and Cloud Run.
 3. Demo images: use an openly licensed landslide photo (with attribution, labelled as not of this event), or images you provide?
 
 ---
