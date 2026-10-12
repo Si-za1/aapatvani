@@ -30,10 +30,8 @@ export function AppShell({
       <aside className="flex shrink-0 flex-col gap-4 bg-sidebar px-4 py-4 text-sidebar-foreground lg:w-60 lg:px-3 lg:py-6">
         <div className="flex items-center justify-between gap-3 lg:px-2">
           <Link href="/dashboard" className="flex items-baseline gap-2">
+            {/* Reviewer screens are English, so the Nepali name is a brand mark here, not a label. */}
             <span className="font-semibold tracking-tight">AapatVani</span>
-            <span lang="ne" className="text-xs text-sidebar-foreground/60">
-              आपतवाणी
-            </span>
           </Link>
           <span className="hidden text-xs text-sidebar-foreground/60 lg:inline">Reviewer</span>
         </div>

@@ -34,9 +34,10 @@ async function Landing() {
     <div className="flex flex-col gap-10">
       <header className="flex items-center justify-between gap-4">
         <div className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold tracking-tight">AapatVani</span>
-          <span lang="ne" className="text-sm text-muted-foreground">
-            आपतवाणी
+          <span className="text-lg font-semibold tracking-tight">{locale === "ne" ? "आपतवाणी" : "AapatVani"}</span>
+          {/* The other script is a brand mark, not a translation: it never leads. */}
+          <span lang={locale === "ne" ? "en" : "ne"} className="text-xs text-muted-foreground">
+            {locale === "ne" ? "AapatVani" : "आपतवाणी"}
           </span>
         </div>
         <LanguageToggle locale={locale} />
@@ -71,16 +72,24 @@ async function Landing() {
           {t("landing.hazardsTitle")}
         </h2>
         <ul className="flex flex-wrap gap-2">
-          {sampleHazards.map((hazard) => (
-            <li
-              key={hazard.id}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm"
-            >
-              <HazardGlyph icon={hazard.icon} className="size-4 text-ink-soft" />
-              <span lang="ne">{hazard.labelLocal}</span>
-              <span className="text-muted-foreground">{hazard.label}</span>
-            </li>
-          ))}
+          {sampleHazards.map((hazard) => {
+            // The reader's own language leads. The other script follows as a smaller note, because
+            // the two names are genuinely useful together — but not the other way round.
+            const primary = locale === "ne" ? hazard.labelLocal : hazard.label;
+            const secondary = locale === "ne" ? hazard.label : hazard.labelLocal;
+            return (
+              <li
+                key={hazard.id}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm"
+              >
+                <HazardGlyph icon={hazard.icon} className="size-4 text-ink-soft" />
+                <span lang={locale}>{primary}</span>
+                <span className="text-xs text-muted-foreground" lang={locale === "ne" ? "en" : "ne"}>
+                  {secondary}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </section>
 
