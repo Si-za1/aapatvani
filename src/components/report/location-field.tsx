@@ -131,7 +131,7 @@ export function LocationField({
       ) : null}
 
       {error ? (
-        <p className="flex items-start gap-2 rounded-xl bg-butter-tint px-3 py-2 text-sm text-butter-strong">
+        <p className="flex items-start gap-2 rounded-xl bg-amber-tint px-3 py-2 text-sm text-amber-strong">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           {error}
         </p>
@@ -195,16 +195,16 @@ function Located({
   clearLabel: string;
 }) {
   return (
-    <p className="flex flex-wrap items-center gap-2 rounded-xl bg-river-tint px-3 py-2 text-sm text-river-strong">
+    <p className="flex flex-wrap items-center gap-2 rounded-xl bg-moss-tint px-3 py-2 text-sm text-moss-strong">
       <MapPin className="size-4 shrink-0" aria-hidden />
       <span className="font-medium">{label}</span>
-      {detail ? <span className="text-river-strong/80">{detail}</span> : null}
+      {detail ? <span className="text-moss-strong/80">{detail}</span> : null}
       <Button
         type="button"
         variant="ghost"
         size="sm"
         onClick={onClear}
-        className="ml-auto h-7 rounded-full px-2 text-river-strong hover:bg-river/30"
+        className="ml-auto h-7 rounded-full px-2 text-moss-strong hover:bg-moss/30"
       >
         <X className="size-3.5" aria-hidden />
         {clearLabel}

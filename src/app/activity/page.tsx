@@ -19,10 +19,10 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Activity" };
 
 const ACTOR: Record<Actor["kind"], { label: string; className: string; Icon: typeof User }> = {
-  human: { label: "Person", className: "bg-sage-tint text-sage-strong", Icon: User },
-  ai: { label: "AI", className: "bg-sky-tint text-sky-strong", Icon: Bot },
-  system: { label: "System", className: "bg-river-tint text-river-strong", Icon: Wrench },
-  public: { label: "Reporter", className: "bg-rose-tint text-rose-strong", Icon: User },
+  human: { label: "Person", className: "bg-leaf-tint text-leaf-strong", Icon: User },
+  ai: { label: "AI", className: "bg-violet-tint text-violet-strong", Icon: Bot },
+  system: { label: "System", className: "bg-moss-tint text-moss-strong", Icon: Wrench },
+  public: { label: "Reporter", className: "bg-coral-tint text-coral-strong", Icon: User },
 };
 
 const FILTERS = [

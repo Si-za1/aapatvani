@@ -93,7 +93,7 @@ export function ClaimCard({
     <li
       className={cn(
         "flex flex-col gap-2.5 rounded-2xl border bg-card p-3.5 transition-colors",
-        active ? "border-butter ring-1 ring-butter" : "border-border",
+        active ? "border-amber ring-1 ring-amber" : "border-border",
       )}
       onMouseEnter={() => onActivate(claim.id)}
       onMouseLeave={() => onActivate(null)}
@@ -119,7 +119,7 @@ export function ClaimCard({
         <p
           className={cn(
             "rounded-lg px-2 py-1.5 text-xs",
-            claim.excerpt.verified ? "bg-rose-tint text-rose-strong" : "bg-butter-tint text-butter-strong",
+            claim.excerpt.verified ? "bg-coral-tint text-coral-strong" : "bg-amber-tint text-amber-strong",
           )}
         >
           <span className="font-medium">{claim.excerpt.verified ? "From the original: " : "Not found in the original: "}</span>
@@ -263,7 +263,7 @@ export function ClaimCard({
         </div>
       )}
 
-      {error ? <p className="text-xs text-clay-strong">{error}</p> : null}
+      {error ? <p className="text-xs text-flame-strong">{error}</p> : null}
     </li>
   );
 }

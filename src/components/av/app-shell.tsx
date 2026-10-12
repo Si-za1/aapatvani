@@ -37,7 +37,7 @@ export function AppShell({
         <Link
           href="/dashboard"
           aria-label="AapatVani"
-          className="mr-1 hidden size-10 shrink-0 place-items-center rounded-xl bg-sage text-[15px] font-bold text-sage-strong lg:grid"
+          className="mr-1 hidden size-10 shrink-0 place-items-center rounded-xl bg-leaf text-[15px] font-bold text-leaf-strong lg:grid"
         >
           आ
         </Link>

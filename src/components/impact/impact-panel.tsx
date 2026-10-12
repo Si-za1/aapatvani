@@ -121,7 +121,7 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
           </h2>
           {runButton}
         </div>
-        {note ? <p className="rounded-2xl bg-river-tint px-4 py-3 text-sm text-river-strong">{note}</p> : null}
+        {note ? <p className="rounded-2xl bg-moss-tint px-4 py-3 text-sm text-moss-strong">{note}</p> : null}
         <p className="rounded-2xl border border-dashed border-border bg-card px-4 py-5 text-sm text-muted-foreground">
           This runs a road-access analysis over the OpenStreetMap extract: if the road a report describes as
           blocked really were blocked, which settlements would keep a route to a health facility and which would
@@ -179,18 +179,18 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
               <span className="text-muted-foreground">
                 {entry.candidates} finding{entry.candidates === 1 ? "" : "s"} · {entry.status}
               </span>
-              {entry.id === assessment.id ? <Badge className="rounded-full bg-river-tint text-xs text-river-strong">showing</Badge> : null}
+              {entry.id === assessment.id ? <Badge className="rounded-full bg-moss-tint text-xs text-moss-strong">showing</Badge> : null}
             </li>
           ))}
         </ul>
       ) : null}
 
-      {note ? <p className="rounded-2xl bg-river-tint px-4 py-3 text-sm text-river-strong">{note}</p> : null}
+      {note ? <p className="rounded-2xl bg-moss-tint px-4 py-3 text-sm text-moss-strong">{note}</p> : null}
 
       {map}
 
       {assessment.aiExplanation ? (
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-sky-tint px-4 py-3.5 text-sm text-sky-strong">
+        <div className="flex flex-col gap-1.5 rounded-2xl bg-violet-tint px-4 py-3.5 text-sm text-violet-strong">
           <span className="flex flex-wrap items-center gap-2">
             <OriginBadge origin="ai" />
             <span className="text-xs">
@@ -291,7 +291,7 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
       </div>
 
       {assessment.warnings.length > 0 || assessment.limitations.length > 0 ? (
-        <div className="flex flex-col gap-2 rounded-2xl bg-butter-tint px-4 py-3.5 text-sm text-butter-strong">
+        <div className="flex flex-col gap-2 rounded-2xl bg-amber-tint px-4 py-3.5 text-sm text-amber-strong">
           <h3 className="flex items-center gap-2 font-semibold">
             <TriangleAlert className="size-4" aria-hidden />
             What this analysis cannot say
@@ -348,10 +348,10 @@ function CandidateCard({
                 className={cn(
                   "rounded-full px-2 py-0.5 font-medium",
                   access.status === "lost"
-                    ? "bg-clay-tint text-clay-strong"
+                    ? "bg-flame-tint text-flame-strong"
                     : access.status === "longer"
-                      ? "bg-butter-tint text-butter-strong"
-                      : "bg-sage-tint text-sage-strong",
+                      ? "bg-amber-tint text-amber-strong"
+                      : "bg-leaf-tint text-leaf-strong",
                 )}
               >
                 {access.status === "lost"
@@ -385,7 +385,7 @@ function CandidateCard({
       {candidate.caveats.length > 0 ? (
         <ul className="flex flex-col gap-1">
           {candidate.caveats.map((caveat) => (
-            <li key={caveat} className="flex gap-2 text-xs text-butter-strong">
+            <li key={caveat} className="flex gap-2 text-xs text-amber-strong">
               <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
               {caveat}
             </li>

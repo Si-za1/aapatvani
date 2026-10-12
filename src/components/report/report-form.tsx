@@ -154,6 +154,9 @@ export function ReportForm({
         <div className="flex flex-wrap gap-2">
           {hazards.map((option) => {
             const active = hazard === option.id;
+            // One language at a time: the reporter picked the language they read, and the other
+            // script next to every option is noise on a phone.
+            const label = locale === "ne" ? option.labelLocal : option.label;
             return (
               <button
                 key={option.id}
@@ -168,8 +171,7 @@ export function ReportForm({
                 )}
               >
                 <HazardGlyph icon={option.icon} className="size-4" />
-                <span>{option.labelLocal}</span>
-                <span className={active ? "text-primary-foreground/70" : "text-muted-foreground"}>{option.label}</span>
+                <span lang={locale}>{label}</span>
               </button>
             );
           })}
@@ -228,7 +230,7 @@ export function ReportForm({
       </Field>
 
       {error ? (
-        <p role="alert" className="flex items-start gap-2 rounded-2xl bg-clay-tint px-4 py-3 text-sm text-clay-strong">
+        <p role="alert" className="flex items-start gap-2 rounded-2xl bg-flame-tint px-4 py-3 text-sm text-flame-strong">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>
             <strong className="font-semibold">{t("form.errorTitle")}: </strong>

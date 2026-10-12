@@ -51,7 +51,7 @@ async function Screen() {
         <p className="text-sm text-muted-foreground">{t("app.noPersonalData")}</p>
       </div>
 
-      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl bg-clay-tint px-4 py-3 text-sm text-clay-strong">
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl bg-flame-tint px-4 py-3 text-sm text-flame-strong">
         <Phone className="size-4 shrink-0" aria-hidden />
         <span>{t("landing.emergency")}</span>
         <span className="font-medium">

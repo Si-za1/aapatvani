@@ -48,31 +48,31 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* AapatVani palette. Every status colour is always paired with an icon and a text label.
-     Rose/sky/river/sage/butter/clay keep their meanings; the hues are the new palette. */
+  /* AapatVani palette. Each hue names what it means, and every one is always paired with an icon
+     and a text label, so nothing depends on colour alone (project.md §3). */
   --color-cream: var(--av-cream);
   --color-sand: var(--av-sand);
   --color-ink: var(--av-ink);
   --color-ink-soft: var(--av-ink-soft);
-  --color-butter: var(--av-amber);
-  --color-butter-tint: var(--av-amber-tint);
-  --color-butter-strong: var(--av-amber-strong);
-  --color-rose: var(--av-coral);
-  --color-rose-tint: var(--av-coral-tint);
-  --color-rose-strong: var(--av-coral-strong);
-  --color-sage: var(--av-leaf);
-  --color-sage-tint: var(--av-leaf-tint);
-  --color-sage-strong: var(--av-leaf-strong);
-  --color-sky: var(--av-violet);
-  --color-sky-tint: var(--av-violet-tint);
-  --color-sky-strong: var(--av-violet-strong);
-  --color-river: var(--av-moss);
-  --color-river-tint: var(--av-moss-tint);
-  --color-river-strong: var(--av-moss-strong);
-  --color-clay: var(--av-flame);
-  --color-clay-tint: var(--av-flame-tint);
-  --color-clay-strong: var(--av-flame-strong);
-  --color-stone: var(--av-stone);
+  --color-coral: var(--av-coral); /* reported by the community */
+  --color-coral-tint: var(--av-coral-tint);
+  --color-coral-strong: var(--av-coral-strong);
+  --color-violet: var(--av-violet); /* AI interpretation */
+  --color-violet-tint: var(--av-violet-tint);
+  --color-violet-strong: var(--av-violet-strong);
+  --color-moss: var(--av-moss); /* computed from map data */
+  --color-moss-tint: var(--av-moss-tint);
+  --color-moss-strong: var(--av-moss-strong);
+  --color-leaf: var(--av-leaf); /* confirmed by a person */
+  --color-leaf-tint: var(--av-leaf-tint);
+  --color-leaf-strong: var(--av-leaf-strong);
+  --color-amber: var(--av-amber); /* needs review */
+  --color-amber-tint: var(--av-amber-tint);
+  --color-amber-strong: var(--av-amber-strong);
+  --color-flame: var(--av-flame); /* critical, always labelled */
+  --color-flame-tint: var(--av-flame-tint);
+  --color-flame-strong: var(--av-flame-strong);
+  --color-stone: var(--av-stone); /* rejected / dismissed / neutral */
   --color-stone-tint: var(--av-stone-tint);
   --color-stone-strong: var(--av-stone-strong);
 }
@@ -173,17 +173,17 @@
     line-height: 1.7;
   }
   ::selection {
-    background: var(--av-butter-tint);
+    background: var(--av-amber-tint);
   }
 }
 
 @layer components {
   /* Highlight for a claim's source excerpt inside the original report text. */
   .excerpt-mark {
-    @apply rounded-sm bg-butter-tint px-0.5 text-foreground ring-1 ring-butter;
+    @apply rounded-sm bg-amber-tint px-0.5 text-foreground ring-1 ring-amber;
   }
   .excerpt-mark[data-active="true"] {
-    @apply bg-butter ring-butter-strong;
+    @apply bg-amber ring-amber-strong;
   }
 }
 

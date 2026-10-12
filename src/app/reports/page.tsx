@@ -27,11 +27,11 @@ const VIEWS = [
 const AWAITING: Report["status"][] = ["extracted", "extraction_failed"];
 
 const STATUS_TONE: Record<Report["status"], { label: string; className: string }> = {
-  received: { label: "Not read yet", className: "bg-butter-tint text-butter-strong" },
-  extracting: { label: "Reading…", className: "bg-sky-tint text-sky-strong" },
-  extracted: { label: "Read, awaiting review", className: "bg-sky-tint text-sky-strong" },
-  extraction_failed: { label: "Reading failed", className: "bg-clay-tint text-clay-strong" },
-  ai_unavailable: { label: "Awaiting a person", className: "bg-butter-tint text-butter-strong" },
+  received: { label: "Not read yet", className: "bg-amber-tint text-amber-strong" },
+  extracting: { label: "Reading…", className: "bg-violet-tint text-violet-strong" },
+  extracted: { label: "Read, awaiting review", className: "bg-violet-tint text-violet-strong" },
+  extraction_failed: { label: "Reading failed", className: "bg-flame-tint text-flame-strong" },
+  ai_unavailable: { label: "Awaiting a person", className: "bg-amber-tint text-amber-strong" },
 };
 
 export default function ReportsPage({ searchParams }: PageProps<"/reports">) {
@@ -131,7 +131,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
                         {tone.label}
                       </Badge>
                       {report.incidentId ? (
-                        <Badge variant="secondary" className="rounded-full bg-river-tint text-xs text-river-strong">
+                        <Badge variant="secondary" className="rounded-full bg-moss-tint text-xs text-moss-strong">
                           In an incident
                         </Badge>
                       ) : null}
@@ -147,8 +147,8 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
                       <span>{claimsByReport.get(report.id) ?? 0} claims</span>
                       {report.media.length > 0 ? <span>{report.media.length} attachment(s)</span> : null}
                       <span>{report.location.placeText ?? (report.location.source === "none" ? "No location" : `Location by ${report.location.source.replace("_", " ")}`)}</span>
-                      {report.incidentId ? <span className="text-river-strong">{incidentTitle.get(report.incidentId)}</span> : null}
-                      {failures ? <span className="text-clay-strong">{failures} validation problem(s)</span> : null}
+                      {report.incidentId ? <span className="text-moss-strong">{incidentTitle.get(report.incidentId)}</span> : null}
+                      {failures ? <span className="text-flame-strong">{failures} validation problem(s)</span> : null}
                     </div>
                   </Link>
                 </li>

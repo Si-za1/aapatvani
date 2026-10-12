@@ -18,9 +18,9 @@ import { relativeTime } from "@/lib/time";
 export const metadata: Metadata = { title: "Incidents" };
 
 const TONE: Record<IncidentStatus, { label: string; className: string }> = {
-  candidate: { label: "Candidate — needs review", className: "bg-butter-tint text-butter-strong" },
-  under_review: { label: "Under review", className: "bg-sky-tint text-sky-strong" },
-  verified: { label: "Verified by a reviewer", className: "bg-sage-tint text-sage-strong" },
+  candidate: { label: "Candidate — needs review", className: "bg-amber-tint text-amber-strong" },
+  under_review: { label: "Under review", className: "bg-violet-tint text-violet-strong" },
+  verified: { label: "Verified by a reviewer", className: "bg-leaf-tint text-leaf-strong" },
   dismissed: { label: "Dismissed", className: "bg-stone-tint text-stone-strong" },
 };
 
@@ -92,7 +92,7 @@ async function Screen() {
                       {incident.openContradictions > 0 ? (
                         <>
                           <span aria-hidden>·</span>
-                          <span className="text-clay-strong">
+                          <span className="text-flame-strong">
                             {incident.openContradictions} open contradiction
                             {incident.openContradictions === 1 ? "" : "s"}
                           </span>
@@ -103,7 +103,7 @@ async function Screen() {
                       <ArrowRight className="ml-auto size-3.5" aria-hidden />
                     </div>
                     {incident.verification ? (
-                      <p className="text-xs text-sage-strong">
+                      <p className="text-xs text-leaf-strong">
                         Verified by {incident.verification.byName} · {relativeTime(incident.verification.at)}
                       </p>
                     ) : null}

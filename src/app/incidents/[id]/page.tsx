@@ -32,9 +32,9 @@ import { formatDateTime } from "@/lib/time";
 export const metadata: Metadata = { title: "Incident" };
 
 const STATUS_TONE: Record<IncidentStatus, { label: string; className: string }> = {
-  candidate: { label: "Candidate — needs review", className: "bg-butter-tint text-butter-strong" },
-  under_review: { label: "Under review", className: "bg-sky-tint text-sky-strong" },
-  verified: { label: "Verified by a reviewer", className: "bg-sage-tint text-sage-strong" },
+  candidate: { label: "Candidate — needs review", className: "bg-amber-tint text-amber-strong" },
+  under_review: { label: "Under review", className: "bg-violet-tint text-violet-strong" },
+  verified: { label: "Verified by a reviewer", className: "bg-leaf-tint text-leaf-strong" },
   dismissed: { label: "Dismissed", className: "bg-stone-tint text-stone-strong" },
 };
 

@@ -178,7 +178,7 @@ export function ReportWorkspace({
           </Row>
         </dl>
 
-        {report.statusDetail ? <p className="rounded-2xl bg-butter-tint px-4 py-3 text-sm text-butter-strong">{report.statusDetail}</p> : null}
+        {report.statusDetail ? <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">{report.statusDetail}</p> : null}
       </section>
 
       <section aria-labelledby="claims-heading" className="flex flex-col gap-3">
@@ -202,13 +202,13 @@ export function ReportWorkspace({
         </div>
 
         {!canRunModel ? (
-          <p className="rounded-2xl bg-butter-tint px-4 py-3 text-sm text-butter-strong">
+          <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
             Gemini is not configured on this deployment, so these buttons will not read anything new. Everything else on
             this page works.
           </p>
         ) : null}
 
-        {note ? <p className="rounded-2xl bg-river-tint px-4 py-3 text-sm text-river-strong">{note}</p> : null}
+        {note ? <p className="rounded-2xl bg-moss-tint px-4 py-3 text-sm text-moss-strong">{note}</p> : null}
 
         {extraction ? (
           <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-4 text-xs text-muted-foreground">
@@ -221,7 +221,7 @@ export function ReportWorkspace({
               <ReviewBadge status={extraction.status === "ok" ? "confirmed" : "rejected"} className={extraction.status === "ok" ? "hidden" : ""} />
             </p>
             {extraction.status === "failed" ? (
-              <p className="rounded-lg bg-clay-tint px-2 py-1.5 text-clay-strong">Reading failed: {extraction.error}</p>
+              <p className="rounded-lg bg-flame-tint px-2 py-1.5 text-flame-strong">Reading failed: {extraction.error}</p>
             ) : null}
             <p>
               {extraction.validation.citationsChecked} citations checked,{" "}
@@ -242,7 +242,7 @@ export function ReportWorkspace({
               </p>
             ) : null}
             {extraction.transcript ? (
-              <p className="rounded-lg bg-sky-tint px-2 py-1.5 text-sky-strong">
+              <p className="rounded-lg bg-violet-tint px-2 py-1.5 text-violet-strong">
                 <span className="font-medium">Voice note transcript (read by AI): </span>
                 {extraction.transcript}
               </p>
@@ -278,7 +278,7 @@ export function ReportWorkspace({
         ) : null}
 
         {activeClaim?.excerpt ? (
-          <p className="flex items-start gap-2 rounded-2xl bg-butter-tint px-4 py-3 text-xs text-butter-strong">
+          <p className="flex items-start gap-2 rounded-2xl bg-amber-tint px-4 py-3 text-xs text-amber-strong">
             <MapPin className="mt-0.5 size-3.5 shrink-0" aria-hidden />
             <span>
               The highlighted words in the original are the source of “{activeClaim.statementEn}”.

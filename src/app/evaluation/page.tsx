@@ -59,7 +59,7 @@ async function Screen() {
           <>
             <Card className="gap-3 p-5">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className={`rounded-full text-xs ${shown.report.mode === "gemini" ? "bg-sky-tint text-sky-strong" : "bg-river-tint text-river-strong"}`}>
+                <Badge variant="secondary" className={`rounded-full text-xs ${shown.report.mode === "gemini" ? "bg-violet-tint text-violet-strong" : "bg-moss-tint text-moss-strong"}`}>
                   {shown.report.mode === "gemini" ? "Gemini mode" : "Oracle mode"}
                 </Badge>
                 <span className="text-sm text-muted-foreground">
@@ -84,7 +84,7 @@ async function Screen() {
                 )}
               </p>
 
-              <p className="flex items-start gap-2 rounded-xl bg-butter-tint px-3 py-2.5 text-xs text-butter-strong">
+              <p className="flex items-start gap-2 rounded-xl bg-amber-tint px-3 py-2.5 text-xs text-amber-strong">
                 <TriangleAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden />
                 {shown.report.caveat}
               </p>
@@ -187,16 +187,16 @@ async function Screen() {
                       ) : null}
                     </div>
                     {scenario.grouping.falseMerges.length > 0 ? (
-                      <p className="text-xs text-clay-strong">False merges: {scenario.grouping.falseMerges.join(", ")}</p>
+                      <p className="text-xs text-flame-strong">False merges: {scenario.grouping.falseMerges.join(", ")}</p>
                     ) : null}
                     {scenario.grouping.missed.length > 0 ? (
-                      <p className="text-xs text-butter-strong">Missed: {scenario.grouping.missed.join(", ")}</p>
+                      <p className="text-xs text-amber-strong">Missed: {scenario.grouping.missed.join(", ")}</p>
                     ) : null}
                     {scenario.contradictions.missed.length > 0 ? (
-                      <p className="text-xs text-butter-strong">Missed contradictions: {scenario.contradictions.missed.join("; ")}</p>
+                      <p className="text-xs text-amber-strong">Missed contradictions: {scenario.contradictions.missed.join("; ")}</p>
                     ) : null}
                     {scenario.impact?.ran && !scenario.impact.ok ? (
-                      <p className="text-xs text-clay-strong">
+                      <p className="text-xs text-flame-strong">
                         Impact mismatch — blocked road found: {scenario.impact.blockedRoadFound ?? "none"}; expected{" "}
                         {scenario.impact.expectedLostAccess.join(", ")} to lose access, found{" "}
                         {scenario.impact.foundLostAccess.join(", ") || "none"}.
@@ -217,7 +217,7 @@ async function Screen() {
                     <span className="font-mono">{entry.file}</span>
                     <span className="text-muted-foreground">{formatDateTime(entry.report.generatedAt, "Asia/Kathmandu")}</span>
                     <span className="text-muted-foreground">{entry.report.model}</span>
-                    {entry.file === shown.file ? <Badge className="rounded-full bg-river-tint text-xs text-river-strong">showing</Badge> : null}
+                    {entry.file === shown.file ? <Badge className="rounded-full bg-moss-tint text-xs text-moss-strong">showing</Badge> : null}
                   </li>
                 ))}
               </ul>
@@ -260,7 +260,7 @@ function Metric({ label, value, hint, tone }: { label: string; value: string; hi
   return (
     <Card className="gap-1 p-4">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`text-xl font-semibold tabular-nums ${tone === "alert" ? "text-clay-strong" : ""}`}>{value}</p>
+      <p className={`text-xl font-semibold tabular-nums ${tone === "alert" ? "text-flame-strong" : ""}`}>{value}</p>
       <p className="text-xs text-muted-foreground">{hint}</p>
     </Card>
   );

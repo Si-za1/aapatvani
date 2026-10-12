@@ -167,7 +167,7 @@ export function VoiceRecorder({
         <Button
           type="button"
           onClick={() => void stop()}
-          className="h-12 rounded-xl bg-clay-strong text-base text-white hover:bg-clay-strong/90"
+          className="h-12 rounded-xl bg-flame-strong text-base text-white hover:bg-flame-strong/90"
         >
           <Square className="size-4" aria-hidden />
           {t("form.voiceStop")} · {formatSeconds(seconds)}
@@ -185,8 +185,8 @@ export function VoiceRecorder({
       )}
 
       {recording ? (
-        <p className="flex items-center gap-2 text-sm text-clay-strong" aria-live="polite">
-          <span className="size-2 animate-pulse rounded-full bg-clay-strong" aria-hidden />
+        <p className="flex items-center gap-2 text-sm text-flame-strong" aria-live="polite">
+          <span className="size-2 animate-pulse rounded-full bg-flame-strong" aria-hidden />
           {t("form.voiceRecording")}
         </p>
       ) : (
@@ -194,7 +194,7 @@ export function VoiceRecorder({
       )}
 
       {error ? (
-        <p className="flex items-start gap-2 rounded-xl bg-butter-tint px-3 py-2 text-sm text-butter-strong">
+        <p className="flex items-start gap-2 rounded-xl bg-amber-tint px-3 py-2 text-sm text-amber-strong">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           {error}
         </p>

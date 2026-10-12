@@ -126,7 +126,7 @@ export function PhotoField({
           <div className="flex min-w-0 flex-col gap-1">
             <p className="truncate text-sm font-medium">{photo.file.name}</p>
             <p className="text-xs text-muted-foreground">{(photo.file.size / 1024 / 1024).toFixed(1)} MB</p>
-            {photo.transform ? <p className="text-xs text-butter-strong">{photo.transform}</p> : null}
+            {photo.transform ? <p className="text-xs text-amber-strong">{photo.transform}</p> : null}
             <Button type="button" variant="ghost" size="sm" onClick={onRemove} className="mt-auto h-7 w-fit rounded-full px-2">
               <X className="size-3.5" aria-hidden />
               {t("form.photoRemove")}

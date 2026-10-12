@@ -116,7 +116,7 @@ export function IncidentWorkspace({
 
   return (
     <div className="flex flex-col gap-6 px-5 py-6 sm:px-8">
-      {note ? <p className="rounded-2xl bg-river-tint px-4 py-3 text-sm text-river-strong">{note}</p> : null}
+      {note ? <p className="rounded-2xl bg-moss-tint px-4 py-3 text-sm text-moss-strong">{note}</p> : null}
 
       <section aria-labelledby="members-heading" className="flex flex-col gap-3">
         <h2 id="members-heading" className="text-sm font-semibold">
@@ -137,7 +137,7 @@ export function IncidentWorkspace({
                   variant="secondary"
                   className={cn(
                     "rounded-full text-xs",
-                    member.membership === "confirmed" ? "bg-sage-tint text-sage-strong" : "bg-butter-tint text-butter-strong",
+                    member.membership === "confirmed" ? "bg-leaf-tint text-leaf-strong" : "bg-amber-tint text-amber-strong",
                   )}
                 >
                   {member.membership === "confirmed" ? "Membership confirmed" : "Membership suggested"}
@@ -213,7 +213,7 @@ export function IncidentWorkspace({
         </h2>
 
         {!canRunModel ? (
-          <p className="rounded-2xl bg-butter-tint px-4 py-3 text-sm text-butter-strong">
+          <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
             Gemini is not configured, so these suggestions were made on computed features alone — distance, time, wording
             and hazard. The comparison half is absent rather than guessed.
           </p>
@@ -289,7 +289,7 @@ export function IncidentWorkspace({
                 key={contradiction.id}
                 className={cn(
                   "flex flex-col gap-2.5 rounded-2xl border p-4",
-                  contradiction.status === "open" ? "border-clay/50 bg-clay-tint" : "border-border bg-card",
+                  contradiction.status === "open" ? "border-flame/50 bg-flame-tint" : "border-border bg-card",
                 )}
               >
                 <div className="flex flex-wrap items-center gap-2">
@@ -297,7 +297,7 @@ export function IncidentWorkspace({
                     variant="secondary"
                     className={cn(
                       "rounded-full text-xs",
-                      contradiction.status === "open" ? "bg-clay text-clay-strong" : "bg-stone-tint text-stone-strong",
+                      contradiction.status === "open" ? "bg-flame text-flame-strong" : "bg-stone-tint text-stone-strong",
                     )}
                   >
                     {contradiction.kind.replace("_", " ")}
@@ -312,7 +312,7 @@ export function IncidentWorkspace({
                   ) : null}
                 </div>
 
-                <p className={cn("text-sm", contradiction.status === "open" ? "text-clay-strong" : "text-muted-foreground")}>
+                <p className={cn("text-sm", contradiction.status === "open" ? "text-flame-strong" : "text-muted-foreground")}>
                   {contradiction.description}
                 </p>
 
@@ -401,7 +401,7 @@ function SuggestionCard({
         <span className="text-sm font-medium">
           {suggestion.reportIds.map((id) => reportLabels[id] ?? id).join(" ↔ ")}
         </span>
-        <Badge variant="secondary" className="rounded-full bg-river-tint text-xs text-river-strong">
+        <Badge variant="secondary" className="rounded-full bg-moss-tint text-xs text-moss-strong">
           {Math.round(suggestion.score * 100)}% match
         </Badge>
         {suggestion.copySuspected ? (
@@ -413,7 +413,7 @@ function SuggestionCard({
       </div>
 
       {suggestion.ai ? (
-        <div className="flex flex-col gap-1.5 rounded-xl bg-sky-tint px-3 py-2.5 text-sm text-sky-strong">
+        <div className="flex flex-col gap-1.5 rounded-xl bg-violet-tint px-3 py-2.5 text-sm text-violet-strong">
           <p className="font-medium">{VERDICT_LABEL[suggestion.ai.verdict] ?? suggestion.ai.verdict}</p>
           <p>{suggestion.ai.rationale}</p>
           {suggestion.ai.agreements.length > 0 ? (
@@ -433,7 +433,7 @@ function SuggestionCard({
               <span className="w-16 shrink-0 font-medium text-foreground">{part.label}</span>
               <span className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-sand">
                 <span
-                  className="block h-full rounded-full bg-river-strong/70"
+                  className="block h-full rounded-full bg-moss-strong/70"
                   style={{ width: `${Math.round((part.value ?? 0) * 100)}%` }}
                 />
               </span>

@@ -20,9 +20,9 @@ import { cn } from "@/lib/utils";
 import type { DataLabel, Origin, ReviewStatus } from "@/lib/domain/schemas";
 
 const ORIGIN: Record<Origin, { label: string; className: string; Icon: typeof Bot }> = {
-  reporter: { label: "Reported", className: "bg-rose-tint text-rose-strong", Icon: MessageSquareQuote },
-  ai: { label: "AI interpretation", className: "bg-sky-tint text-sky-strong", Icon: Bot },
-  computed: { label: "Computed", className: "bg-river-tint text-river-strong", Icon: Calculator },
+  reporter: { label: "Reported", className: "bg-coral-tint text-coral-strong", Icon: MessageSquareQuote },
+  ai: { label: "AI interpretation", className: "bg-violet-tint text-violet-strong", Icon: Bot },
+  computed: { label: "Computed", className: "bg-moss-tint text-moss-strong", Icon: Calculator },
   reviewer: { label: "Reviewer", className: "bg-stone-tint text-stone-strong", Icon: UserCheck },
 };
 
@@ -44,11 +44,11 @@ export function OriginBadge({ origin, className }: { origin: Origin; className?:
 }
 
 const REVIEW: Record<ReviewStatus, { label: string; className: string; Icon: typeof Bot }> = {
-  unreviewed: { label: "Awaiting review", className: "bg-butter-tint text-butter-strong", Icon: Clock },
-  confirmed: { label: "Confirmed", className: "bg-sage-tint text-sage-strong", Icon: CircleCheck },
-  edited: { label: "Edited", className: "bg-sage-tint text-sage-strong", Icon: PencilLine },
+  unreviewed: { label: "Awaiting review", className: "bg-amber-tint text-amber-strong", Icon: Clock },
+  confirmed: { label: "Confirmed", className: "bg-leaf-tint text-leaf-strong", Icon: CircleCheck },
+  edited: { label: "Edited", className: "bg-leaf-tint text-leaf-strong", Icon: PencilLine },
   rejected: { label: "Rejected", className: "bg-stone-tint text-stone-strong", Icon: CircleX },
-  needs_info: { label: "Needs information", className: "bg-butter-tint text-butter-strong", Icon: CircleQuestionMark },
+  needs_info: { label: "Needs information", className: "bg-amber-tint text-amber-strong", Icon: CircleQuestionMark },
 };
 
 /**
@@ -78,9 +78,9 @@ export function ReviewBadge({
 }
 
 const DATA_LABEL: Record<DataLabel, { label: string; className: string }> = {
-  synthetic: { label: "Synthetic", className: "bg-clay-tint text-clay-strong" },
-  historical: { label: "Historical", className: "bg-sky-tint text-sky-strong" },
-  operational: { label: "Operational", className: "bg-sage-tint text-sage-strong" },
+  synthetic: { label: "Synthetic", className: "bg-flame-tint text-flame-strong" },
+  historical: { label: "Historical", className: "bg-violet-tint text-violet-strong" },
+  operational: { label: "Operational", className: "bg-leaf-tint text-leaf-strong" },
 };
 
 /**

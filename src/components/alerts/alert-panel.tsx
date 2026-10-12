@@ -32,8 +32,8 @@ export interface AlertPanelProps {
 }
 
 const STATUS_TONE: Record<AlertDraft["status"], { label: string; className: string }> = {
-  draft: { label: "Draft — not approved", className: "bg-butter-tint text-butter-strong" },
-  approved: { label: "Approved by a reviewer", className: "bg-sage-tint text-sage-strong" },
+  draft: { label: "Draft — not approved", className: "bg-amber-tint text-amber-strong" },
+  approved: { label: "Approved by a reviewer", className: "bg-leaf-tint text-leaf-strong" },
   rejected: { label: "Rejected", className: "bg-stone-tint text-stone-strong" },
   superseded: { label: "Superseded", className: "bg-stone-tint text-stone-strong" },
 };
@@ -143,18 +143,18 @@ export function AlertPanel({
       </p>
 
       {!canRunModel ? (
-        <p className="rounded-2xl bg-butter-tint px-4 py-3 text-sm text-butter-strong">
+        <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
           Gemini is not configured on this deployment, so a draft cannot be written. The citations, the confirmation
           rule and the approval record behind this panel are built and tested.
         </p>
       ) : !readiness.ready ? (
-        <p className="flex items-start gap-2 rounded-2xl bg-butter-tint px-4 py-3 text-sm text-butter-strong">
+        <p className="flex items-start gap-2 rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
           <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
           {readiness.reason}
         </p>
       ) : null}
 
-      {note ? <p className="rounded-2xl bg-river-tint px-4 py-3 text-sm text-river-strong">{note}</p> : null}
+      {note ? <p className="rounded-2xl bg-moss-tint px-4 py-3 text-sm text-moss-strong">{note}</p> : null}
 
       {draft ? (
         <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4">
@@ -167,7 +167,7 @@ export function AlertPanel({
           </div>
 
           {draft.validation.removedSentences > 0 || draft.validation.warnings.length > 0 ? (
-            <div className="flex flex-col gap-1.5 rounded-xl bg-butter-tint px-3 py-2.5 text-xs text-butter-strong">
+            <div className="flex flex-col gap-1.5 rounded-xl bg-amber-tint px-3 py-2.5 text-xs text-amber-strong">
               <p className="flex items-center gap-2 font-medium">
                 <TriangleAlert className="size-3.5" aria-hidden />
                 {draft.validation.removedSentences} sentence

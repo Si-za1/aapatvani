@@ -1,199 +1,178 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, CircleCheck, Mic, Route, ShieldCheck, TriangleAlert, Users } from "lucide-react";
+import { ArrowRight, ShieldCheck, TriangleAlert, Users } from "lucide-react";
 import { HazardGlyph } from "@/components/av/hazard-icon";
 import { LanguageToggle } from "@/components/av/language-toggle";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { getRegion } from "@/config/regions";
 import { getEnv } from "@/lib/env";
 import { translator } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 
-// The public landing page. It is the first thing a reporter sees on a phone, often on a slow
-// connection, so it is static apart from the language cookie and carries no data reads.
+// The public landing page. The first thing a reporter sees, often on a phone on a weak connection,
+// so it is static apart from the language cookie and carries no data reads.
+//
+// The shape is deliberate: everything a reporter needs on the left (what this is, one button, what
+// can be reported, what we will not do), and the explanation of how it works on the right as cards,
+// because nobody reads three steps before deciding to report — they read them afterwards, if at all.
 
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-12">
-      <Suspense fallback={<LandingSkeleton />}>
-        <Landing />
-      </Suspense>
-    </main>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-8 sm:py-8">
+        <Suspense fallback={<div className="h-[36rem] animate-pulse rounded-3xl bg-sand" aria-hidden />}>
+          <Landing />
+        </Suspense>
+      </div>
+    </div>
   );
 }
 
 async function Landing() {
   const locale = await getLocale();
   const t = translator(locale);
-  const region = getRegion(getEnv().defaultRegionId);
-  // A handful of hazards, so the page shows what can be reported without becoming a list.
-  const sampleHazards = region.hazards.filter((h) => !["other", "unclear"].includes(h.id)).slice(0, 6);
+  const env = getEnv();
+  const region = getRegion(env.defaultRegionId);
+  const hazards = region.hazards.filter((h) => !["unclear", "other"].includes(h.id));
+
+  const steps = [
+    { n: 1, title: t("landing.step1.title"), body: t("landing.step1.body"), tone: "bg-coral-tint text-coral-strong" },
+    { n: 2, title: t("landing.step2.title"), body: t("landing.step2.body"), tone: "bg-violet-tint text-violet-strong" },
+    { n: 3, title: t("landing.step3.title"), body: t("landing.step3.body"), tone: "bg-leaf-tint text-leaf-strong" },
+  ];
 
   return (
-    <div className="flex flex-col gap-10">
-      <header className="flex items-center justify-between gap-4">
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold tracking-tight">{locale === "ne" ? "आपतवाणी" : "AapatVani"}</span>
-          {/* The other script is a brand mark, not a translation: it never leads. */}
-          <span lang={locale === "ne" ? "en" : "ne"} className="text-xs text-muted-foreground">
-            {locale === "ne" ? "AapatVani" : "आपतवाणी"}
-          </span>
-        </div>
-        <LanguageToggle locale={locale} />
-      </header>
-
-      <section className="rounded-3xl bg-primary px-6 py-10 text-primary-foreground sm:px-10 sm:py-14">
-        <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-3 py-1 text-xs font-medium">
-          <span className="size-1.5 rounded-full bg-sage" aria-hidden />
-          {region.name}
-        </p>
-        <h1 className="max-w-xl text-3xl font-semibold sm:text-4xl" lang={locale}>
-          {t("app.tagline")}
-        </h1>
-        <p className="mt-4 max-w-xl text-primary-foreground/80" lang={locale}>
-          {t("app.intro")}
-        </p>
-        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button asChild size="lg" className="h-12 rounded-full bg-cream px-6 text-base text-ink hover:bg-cream/90">
-            <Link href="/report">
-              {t("landing.cta")}
-              <ArrowRight className="size-4" />
-            </Link>
-          </Button>
-          <p className="text-sm text-primary-foreground/70" lang={locale}>
-            {t("app.noPersonalData")}
-          </p>
-        </div>
-      </section>
-
-      <section aria-labelledby="hazards-heading" className="flex flex-col gap-3">
-        <h2 id="hazards-heading" className="text-sm font-medium text-muted-foreground">
-          {t("landing.hazardsTitle")}
-        </h2>
-        <ul className="flex flex-wrap gap-2">
-          {sampleHazards.map((hazard) => {
-            // The reader's own language leads. The other script follows as a smaller note, because
-            // the two names are genuinely useful together — but not the other way round.
-            const primary = locale === "ne" ? hazard.labelLocal : hazard.label;
-            const secondary = locale === "ne" ? hazard.label : hazard.labelLocal;
-            return (
-              <li
-                key={hazard.id}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm"
-              >
-                <HazardGlyph icon={hazard.icon} className="size-4 text-ink-soft" />
-                <span lang={locale}>{primary}</span>
-                <span className="text-xs text-muted-foreground" lang={locale === "ne" ? "en" : "ne"}>
-                  {secondary}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
-      <section aria-labelledby="how-heading" className="flex flex-col gap-4">
-        <h2 id="how-heading" className="text-xl font-semibold">
-          {t("landing.howTitle")}
-        </h2>
-        <ol className="grid gap-3 sm:grid-cols-3">
-          <Step
-            icon={<Mic className="size-5" />}
-            step={1}
-            title={t("landing.step1.title")}
-            body={t("landing.step1.body")}
-            tone="bg-rose-tint text-rose-strong"
-          />
-          <Step
-            icon={<Route className="size-5" />}
-            step={2}
-            title={t("landing.step2.title")}
-            body={t("landing.step2.body")}
-            tone="bg-river-tint text-river-strong"
-          />
-          <Step
-            icon={<CircleCheck className="size-5" />}
-            step={3}
-            title={t("landing.step3.title")}
-            body={t("landing.step3.body")}
-            tone="bg-sage-tint text-sage-strong"
-          />
-        </ol>
-      </section>
-
-      <Card className="gap-4 border-none bg-sand p-6">
-        <h2 className="flex items-center gap-2 text-base font-semibold">
-          <ShieldCheck className="size-5 text-ink-soft" aria-hidden />
-          {t("landing.trustTitle")}
-        </h2>
-        <p className="text-sm text-foreground/80">{t("landing.trustDo")}</p>
-        <p className="flex gap-2 text-sm text-foreground/80">
-          <TriangleAlert className="mt-0.5 size-4 shrink-0 text-clay-strong" aria-hidden />
-          <span>{t("landing.trustDont")}</span>
-        </p>
-      </Card>
-
-      <section className="rounded-2xl border border-clay/50 bg-clay-tint px-5 py-4">
-        <p className="flex gap-2 text-sm text-clay-strong">
-          <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-          <span lang={locale}>{t("landing.emergency")}</span>
-        </p>
-      </section>
-
-      <footer className="mt-auto flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <Link href="/login" className="inline-flex items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
+    <div className="overflow-hidden rounded-[2rem] bg-card">
+      <header className="flex items-center justify-between gap-4 px-6 py-5 sm:px-10">
+        <span className="text-lg font-bold tracking-tight" lang={locale}>
+          {locale === "ne" ? "आपतवाणी" : "AapatVani"}
+        </span>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/login"
+            className="hidden items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent sm:inline-flex"
+          >
             <Users className="size-4" aria-hidden />
             {t("landing.responder")}
           </Link>
-          <p className="text-xs text-muted-foreground">{t("landing.responderHint")}</p>
+          <LanguageToggle locale={locale} />
         </div>
-        <p className="text-xs text-muted-foreground">
-          Map data ©{" "}
-          <a href="https://www.openstreetmap.org/copyright" className="underline" rel="noreferrer" target="_blank">
-            OpenStreetMap
-          </a>{" "}
-          contributors · demo data is synthetic
+      </header>
+
+      <section className="grid gap-10 px-6 pt-6 pb-10 sm:px-10 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pt-10">
+        {/* Left: what this is, and the one thing to do. */}
+        <div className="flex flex-col gap-7">
+          <h1 className="max-w-xl text-[2.5rem] font-bold leading-[1.08] tracking-[-0.02em] sm:text-[3.25rem]" lang={locale}>
+            {t("app.tagline")}
+          </h1>
+
+          <div className="flex flex-col gap-5">
+            <p className="max-w-lg text-[15px] leading-relaxed text-muted-foreground" lang={locale}>
+              {t("app.intro")}
+            </p>
+
+            <Link
+              href="/report"
+              className="group inline-flex w-fit items-center gap-3 rounded-full bg-primary py-2 pr-2 pl-6 text-base font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
+            >
+              <span lang={locale}>{t("landing.cta")}</span>
+              <span className="grid size-9 place-items-center rounded-full bg-leaf text-leaf-strong transition-transform group-hover:translate-x-0.5">
+                <ArrowRight className="size-4" aria-hidden />
+              </span>
+            </Link>
+          </div>
+
+          {/* Below the button: what can actually be reported, as a quiet icon row. */}
+          <div className="flex flex-col gap-3">
+            <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
+              {t("landing.hazardsTitle")}
+            </h2>
+            <ul className="flex flex-wrap gap-2">
+              {hazards.map((hazard) => (
+                <li
+                  key={hazard.id}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-sand px-3 py-1.5 text-xs font-medium"
+                  title={locale === "ne" ? hazard.labelLocal : hazard.label}
+                >
+                  <HazardGlyph icon={hazard.icon} className="size-3.5 text-ink-soft" />
+                  <span lang={locale}>{locale === "ne" ? hazard.labelLocal : hazard.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* And what we will not do, in a line or two rather than a panel. */}
+          <p className="flex items-start gap-2.5 max-w-lg rounded-2xl bg-sand px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame-strong" aria-hidden />
+            <span lang={locale}>{t("landing.trustDont")}</span>
+          </p>
+
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="size-4 shrink-0 text-leaf-strong" aria-hidden />
+            <span lang={locale}>{t("app.noPersonalData")}</span>
+          </p>
+        </div>
+
+        {/* Right: how it works, as cards. Two staggered columns so the eye moves down the flow. */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:pt-2">
+          <div className="flex flex-col gap-4">
+            <StepCard {...steps[0]} />
+            <StepCard {...steps[2]} />
+          </div>
+          <div className="flex flex-col gap-4 sm:mt-12">
+            <StepCard {...steps[1]} />
+            <div className="flex flex-col justify-between gap-8 rounded-3xl bg-primary p-6 text-primary-foreground">
+              <p className="text-[15px] font-semibold leading-relaxed" lang={locale}>
+                {t("landing.trustDo")}
+              </p>
+              <p className="text-xs text-primary-foreground/60" lang={locale}>
+                {region.name} · OpenStreetMap
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-6 mb-8 rounded-2xl bg-flame-tint px-5 py-4 sm:mx-10">
+        <p className="flex gap-2.5 text-sm text-flame-strong" lang={locale}>
+          <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+          <span>{t("landing.emergency")}</span>
         </p>
+      </section>
+
+      <footer className="flex flex-col gap-4 border-t border-border px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+        <Link
+          href="/login"
+          className="inline-flex w-fit items-center gap-2 rounded-full bg-sand px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+        >
+          <Users className="size-4" aria-hidden />
+          {t("landing.responder")}
+        </Link>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+          {/* No build or render time is read here on purpose: anything that changes between
+              renders is reported by Next.js as an unstable value during prerendering. */}
+          <span>© AapatVani AI</span>
+          <a href="https://www.openstreetmap.org/copyright" className="underline" rel="noreferrer" target="_blank">
+            Map data © OpenStreetMap contributors
+          </a>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-flame" aria-hidden />
+            {/* The label every record carries, said once more where it cannot be missed. */}
+            Demo data is synthetic
+          </span>
+        </div>
       </footer>
     </div>
   );
 }
 
-function Step({
-  icon,
-  step,
-  title,
-  body,
-  tone,
-}: {
-  icon: React.ReactNode;
-  step: number;
-  title: string;
-  body: string;
-  tone: string;
-}) {
+function StepCard({ n, title, body, tone }: { n: number; title: string; body: string; tone: string }) {
+  // Sized to its content rather than stretched: a card with empty space at the bottom reads as a
+  // mistake, and the steps are deliberately different lengths.
   return (
-    <li className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-5">
-      <span className={`inline-flex size-9 items-center justify-center rounded-full ${tone}`} aria-hidden>
-        {icon}
-      </span>
-      <h3 className="text-sm font-semibold">
-        <span className="text-muted-foreground">{step}. </span>
-        {title}
-      </h3>
-      <p className="text-sm text-muted-foreground">{body}</p>
-    </li>
-  );
-}
-
-function LandingSkeleton() {
-  return (
-    <div className="flex animate-pulse flex-col gap-10" aria-hidden>
-      <div className="h-6 w-40 rounded-full bg-sand" />
-      <div className="h-64 rounded-3xl bg-sand" />
-      <div className="h-32 rounded-2xl bg-sand" />
+    <div className={`flex flex-col gap-3 rounded-3xl p-6 ${tone}`}>
+      <span className="grid size-7 place-items-center rounded-full bg-white/55 text-xs font-bold">{n}</span>
+      <h3 className="text-base font-semibold leading-snug">{title}</h3>
+      <p className="text-[13px] leading-relaxed opacity-80">{body}</p>
     </div>
   );
 }

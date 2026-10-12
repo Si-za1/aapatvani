@@ -21,9 +21,9 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Overview" };
 
 const STATUS_TONE: Record<IncidentStatus, { label: string; className: string; dot: string }> = {
-  candidate: { label: "Candidate", className: "bg-butter-tint text-butter-strong", dot: "bg-butter" },
-  under_review: { label: "Under review", className: "bg-sky-tint text-sky-strong", dot: "bg-sky" },
-  verified: { label: "Verified", className: "bg-sage-tint text-sage-strong", dot: "bg-sage" },
+  candidate: { label: "Candidate", className: "bg-amber-tint text-amber-strong", dot: "bg-amber" },
+  under_review: { label: "Under review", className: "bg-violet-tint text-violet-strong", dot: "bg-violet" },
+  verified: { label: "Verified", className: "bg-leaf-tint text-leaf-strong", dot: "bg-leaf" },
   dismissed: { label: "Dismissed", className: "bg-stone-tint text-stone-strong", dot: "bg-stone" },
 };
 
@@ -60,14 +60,14 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
 
       <div className="flex flex-col gap-7 px-6 pb-10 sm:px-10">
         <section aria-label="Counts" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Tile tone="bg-butter-tint text-butter-strong" value={stats.awaitingReview} label="Awaiting review" hint="Read, not yet checked" />
-          <Tile tone="bg-sky-tint text-sky-strong" value={stats.candidateIncidents} label="Candidate incidents" hint="Grouped by the system" />
-          <Tile tone="bg-clay-tint text-clay-strong" value={stats.openContradictions} label="Contradictions" hint="Reports that disagree" />
-          <Tile tone="bg-sage-tint text-sage-strong" value={stats.verifiedIncidents} label="Verified incidents" hint="Confirmed by a reviewer" />
+          <Tile tone="bg-amber-tint text-amber-strong" value={stats.awaitingReview} label="Awaiting review" hint="Read, not yet checked" />
+          <Tile tone="bg-violet-tint text-violet-strong" value={stats.candidateIncidents} label="Candidate incidents" hint="Grouped by the system" />
+          <Tile tone="bg-flame-tint text-flame-strong" value={stats.openContradictions} label="Contradictions" hint="Reports that disagree" />
+          <Tile tone="bg-leaf-tint text-leaf-strong" value={stats.verifiedIncidents} label="Verified incidents" hint="Confirmed by a reviewer" />
         </section>
 
         {stats.aiUnavailable > 0 ? (
-          <p className="rounded-2xl bg-butter-tint px-5 py-3.5 text-sm text-butter-strong">
+          <p className="rounded-2xl bg-amber-tint px-5 py-3.5 text-sm text-amber-strong">
             <strong className="font-semibold">{stats.aiUnavailable}</strong> report
             {stats.aiUnavailable === 1 ? " has" : "s have"} not been read automatically. On this deployment that means
             Gemini is not configured, so a reviewer reads them directly — nothing is lost, it is simply slower.
@@ -131,7 +131,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
                           {incident.openContradictions > 0 ? (
                             <>
                               <span aria-hidden>·</span>
-                              <span className="font-medium text-clay-strong">
+                              <span className="font-medium text-flame-strong">
                                 {incident.openContradictions} contradiction
                                 {incident.openContradictions === 1 ? "" : "s"}
                               </span>
@@ -193,11 +193,11 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
 
 function ReportStatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; dot: string; className: string }> = {
-    received: { label: "Not read", dot: "bg-butter", className: "text-butter-strong" },
-    extracting: { label: "Reading", dot: "bg-sky", className: "text-sky-strong" },
-    extracted: { label: "Read", dot: "bg-sky", className: "text-sky-strong" },
-    extraction_failed: { label: "Read failed", dot: "bg-clay", className: "text-clay-strong" },
-    ai_unavailable: { label: "Awaiting a person", dot: "bg-butter", className: "text-butter-strong" },
+    received: { label: "Not read", dot: "bg-amber", className: "text-amber-strong" },
+    extracting: { label: "Reading", dot: "bg-violet", className: "text-violet-strong" },
+    extracted: { label: "Read", dot: "bg-violet", className: "text-violet-strong" },
+    extraction_failed: { label: "Read failed", dot: "bg-flame", className: "text-flame-strong" },
+    ai_unavailable: { label: "Awaiting a person", dot: "bg-amber", className: "text-amber-strong" },
   };
   const tone = map[status] ?? map.received;
   return (

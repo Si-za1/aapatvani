@@ -46,10 +46,10 @@ interface ReceiptData {
  * sentence beneath it is the reporter's or the model's own text.
  */
 const ORIGIN_STYLE = {
-  reporter: { className: "bg-rose-tint text-rose-strong", key: "reporter" },
-  ai: { className: "bg-sky-tint text-sky-strong", key: "ai" },
-  computed: { className: "bg-river-tint text-river-strong", key: "computed" },
-  reviewer: { className: "bg-sage-tint text-sage-strong", key: "reviewer" },
+  reporter: { className: "bg-coral-tint text-coral-strong", key: "reporter" },
+  ai: { className: "bg-violet-tint text-violet-strong", key: "ai" },
+  computed: { className: "bg-moss-tint text-moss-strong", key: "computed" },
+  reviewer: { className: "bg-leaf-tint text-leaf-strong", key: "reviewer" },
 } as const;
 
 export function Receipt({ reportId, locale }: { reportId: string; locale: Locale }) {
@@ -116,7 +116,7 @@ export function Receipt({ reportId, locale }: { reportId: string; locale: Locale
 
   if (state === "denied") {
     return (
-      <p className="flex items-start gap-2 rounded-2xl bg-butter-tint px-4 py-3 text-sm text-butter-strong">
+      <p className="flex items-start gap-2 rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
         <span>{t("receipt.notFound")}</span>
       </p>
@@ -181,7 +181,7 @@ export function Receipt({ reportId, locale }: { reportId: string; locale: Locale
             <Mic className="size-5 text-ink-soft" aria-hidden />
             {t("form.voice")}
           </h2>
-          <p className="rounded-2xl bg-sky-tint px-4 py-3 text-sm text-sky-strong">{data.transcript}</p>
+          <p className="rounded-2xl bg-violet-tint px-4 py-3 text-sm text-violet-strong">{data.transcript}</p>
         </section>
       ) : null}
 
@@ -199,12 +199,12 @@ export function Receipt({ reportId, locale }: { reportId: string; locale: Locale
         </section>
       ) : null}
 
-      <section className="flex flex-col gap-2 rounded-2xl bg-sage-tint px-4 py-3.5">
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-sage-strong">
+      <section className="flex flex-col gap-2 rounded-2xl bg-leaf-tint px-4 py-3.5">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-leaf-strong">
           <Check className="size-4" aria-hidden />
           {t("receipt.nextTitle")}
         </h2>
-        <p className="text-sm text-sage-strong/90">{t("receipt.nextBody")}</p>
+        <p className="text-sm text-leaf-strong/90">{t("receipt.nextBody")}</p>
       </section>
 
       <section className="flex flex-col gap-3">

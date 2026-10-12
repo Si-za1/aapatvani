@@ -147,7 +147,7 @@ export function SignInForm({
       )}
 
       {error ? (
-        <p role="alert" className="flex items-start gap-2 rounded-xl bg-clay-tint px-3 py-2 text-sm text-clay-strong">
+        <p role="alert" className="flex items-start gap-2 rounded-xl bg-flame-tint px-3 py-2 text-sm text-flame-strong">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           {error}
         </p>
@@ -159,7 +159,7 @@ export function SignInForm({
       </Button>
 
       {mode === "passcode" && demoHint ? (
-        <p className="rounded-xl bg-butter-tint px-3 py-2 text-center text-xs text-butter-strong">
+        <p className="rounded-xl bg-amber-tint px-3 py-2 text-center text-xs text-amber-strong">
           Demo reviewer passcode: <span className="font-mono font-semibold">{demoHint}</span>
         </p>
       ) : null}
