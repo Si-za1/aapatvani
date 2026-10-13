@@ -13,7 +13,7 @@ import { ArrowRight } from "lucide-react";
 import { HazardGlyph } from "@/components/av/hazard-icon";
 import { ActorBadge } from "@/components/av/trust-labels";
 import { getRegion, hazardIcon } from "@/config/regions";
-import { ABOVE_LANE, LEAD, SLOT, layoutAxis } from "@/lib/timeline/layout";
+import { ABOVE_LANE, LEAD, SLOT, TIME_LANE, layoutAxis } from "@/lib/timeline/layout";
 import type { TimelineGroup } from "@/lib/timeline/group";
 import type { TimelineEntry } from "@/lib/timeline/types";
 import { formatTime } from "@/lib/time";
@@ -40,6 +40,10 @@ export function TimelineAxes({ groups, regionId }: { groups: TimelineGroup[]; re
 function TimelineAxis({ entries, regionId }: { entries: TimelineEntry[]; regionId: string }) {
   const region = getRegion(regionId);
   const layout = layoutAxis(entries);
+  // A stretch where nothing was reported by the community does not need a lane above the line. It
+  // collapses to just the time labels, which is the difference between a quiet day reading as quiet
+  // and reading as a wall of empty space.
+  const aboveLane = layout.markers.some((marker) => marker.above) ? ABOVE_LANE : TIME_LANE;
 
   return (
     // The line is as wide as its moments need, which on a busy day is wider than the card. Rather
@@ -49,7 +53,7 @@ function TimelineAxis({ entries, regionId }: { entries: TimelineEntry[]; regionI
         <div className="relative flex" style={{ width: layout.width, minWidth: layout.width }}>
           {/* The line itself. It runs the width of the drawing and ends in an arrow, because a
               timeline that stops dead reads like it stopped happening. */}
-          <div aria-hidden className="absolute right-0 left-0 flex items-center" style={{ top: ABOVE_LANE }}>
+          <div aria-hidden className="absolute right-0 left-0 flex items-center" style={{ top: aboveLane }}>
             <span className="h-px flex-1 bg-stone" />
             <ArrowRight className="size-3.5 shrink-0 -translate-y-px text-stone" />
           </div>
@@ -58,6 +62,7 @@ function TimelineAxis({ entries, regionId }: { entries: TimelineEntry[]; regionI
             <Marker
               key={marker.key}
               marker={marker}
+              aboveLane={aboveLane}
               regionId={regionId}
               timeZone={region.timezone}
               gap={index === 0 ? marker.x - LEAD : marker.x - layout.markers[index - 1].x - SLOT}
@@ -75,11 +80,13 @@ function TimelineAxis({ entries, regionId }: { entries: TimelineEntry[]; regionI
 
 function Marker({
   marker,
+  aboveLane,
   regionId,
   timeZone,
   gap,
 }: {
   marker: ReturnType<typeof layoutAxis>["markers"][number];
+  aboveLane: number;
   regionId: string;
   timeZone: string;
   gap: number;
@@ -99,7 +106,7 @@ function Marker({
       {/* Above: the community's own words, if any arrived at this moment, and the time either way.
           The lane is bottom aligned, so every time label sits in one row just above the line
           whatever is stacked above it. */}
-      <div className="relative flex flex-col justify-end" style={{ height: ABOVE_LANE }}>
+      <div className="relative flex flex-col justify-end" style={{ height: aboveLane }}>
         {marker.above ? <AbovePill entry={marker.above} regionId={regionId} /> : null}
         <p className="pl-4 pb-1.5 text-[11px] font-medium text-muted-foreground tabular-nums">
           {formatTime(marker.at, timeZone)}
@@ -110,11 +117,11 @@ function Marker({
       <span
         aria-hidden
         className="absolute -left-[3px] size-1.5 rounded-full bg-ink"
-        style={{ top: ABOVE_LANE - 3 }}
+        style={{ top: aboveLane - 3 }}
       />
 
       {/* Below: what the system and reviewers did about it. */}
-      <div className="relative flex flex-col gap-2.5 pt-5">
+      <div className="relative flex flex-col gap-2 pt-3">
         {marker.below.map((entry) => (
           <BelowCard key={entry.id} entry={entry} />
         ))}

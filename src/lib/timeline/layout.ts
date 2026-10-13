@@ -21,6 +21,8 @@ export const LEAD = 16;
 export const AXIS_WIDTH = 1180;
 /** The lane above the line, where what the community reported sits. */
 export const ABOVE_LANE = 118;
+/** What that lane shrinks to when nothing in the stretch was reported by the community. */
+export const TIME_LANE = 30;
 
 export interface AxisMarker {
   /** The moment, which is also the key. */

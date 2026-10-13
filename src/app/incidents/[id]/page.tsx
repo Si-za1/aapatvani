@@ -147,6 +147,25 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
           All incidents
         </Link>
 
+        {/* This page is long, and the parts of it a reviewer needs are far apart. These are jumps,
+            not tabs: everything stays on one page, because an incident is one thing and its
+            membership, its road analysis and its alert are not three screens. */}
+        <nav aria-label="On this page" className="flex flex-wrap items-center gap-1.5 pt-1">
+          {[
+            { href: "#membership", label: "Membership" },
+            { href: "#impact", label: "Impact analysis" },
+            { href: "#alert", label: "Alert draft" },
+          ].map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <MapPin className="size-4" aria-hidden />
@@ -163,61 +182,67 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
         </div>
       </div>
 
-      <IncidentWorkspace
-        incidentId={incident.id}
-        members={members}
-        suggestions={suggestionViews}
-        contradictions={contradictionViews}
-        reportLabels={reportLabels}
-        canRunModel={aiStatus().configured}
-      />
+      <section id="membership" className="scroll-mt-24">
+        <IncidentWorkspace
+          incidentId={incident.id}
+          members={members}
+          suggestions={suggestionViews}
+          contradictions={contradictionViews}
+          reportLabels={reportLabels}
+          canRunModel={aiStatus().configured}
+        />
+      </section>
 
       <div className="mt-8 flex flex-col gap-8 border-t border-border pt-8">
-        <ImpactPanel
-          incidentId={incident.id}
-          assessment={assessment}
-          history={assessments
-            .slice()
-            .sort((a, b) => b.version - a.version)
-            .map((entry) => ({
-              id: entry.id,
-              version: entry.version,
-              createdAt: entry.createdAt,
-              createdBy: entry.createdBy.name,
-              status: entry.status,
-              candidates: entry.candidates.length,
-            }))}
-          timeZone={region.timezone}
-          canRunModel={aiStatus().configured}
-          map={
-            assessment && incident.location ? (
-              <ImpactMapPanel
-                assessment={assessment}
-                incident={{ lat: incident.location.lat, lng: incident.location.lng, label: incident.title }}
-                center={[incident.location.lat, incident.location.lng]}
-                zoom={13}
-                tileUrl={env.map.tileUrl}
-                attribution={env.map.attribution}
-              />
+        <section id="impact" className="scroll-mt-24">
+          <ImpactPanel
+            incidentId={incident.id}
+            assessment={assessment}
+            history={assessments
+              .slice()
+              .sort((a, b) => b.version - a.version)
+              .map((entry) => ({
+                id: entry.id,
+                version: entry.version,
+                createdAt: entry.createdAt,
+                createdBy: entry.createdBy.name,
+                status: entry.status,
+                candidates: entry.candidates.length,
+              }))}
+            timeZone={region.timezone}
+            canRunModel={aiStatus().configured}
+            map={
+              assessment && incident.location ? (
+                <ImpactMapPanel
+                  assessment={assessment}
+                  incident={{ lat: incident.location.lat, lng: incident.location.lng, label: incident.title }}
+                  center={[incident.location.lat, incident.location.lng]}
+                  zoom={13}
+                  tileUrl={env.map.tileUrl}
+                  attribution={env.map.attribution}
+                />
             ) : null
           }
-        />
+          />
+        </section>
 
-        <AlertPanel
-          incidentId={incident.id}
-          draft={alert}
-          readiness={alertReadiness({ claims })}
-          confirmedClaims={claims.filter((c) => c.review.status === "confirmed" || c.review.status === "edited").length}
-          confirmedImpacts={confirmedCandidates(assessment).length}
-          openContradictions={contradictions.filter((c) => c.status === "open").length}
-          citationLabels={Object.fromEntries([
-            ...claims.map((claim) => [claim.id, (claim.editedStatement ?? claim.statementEn).slice(0, 60)]),
-            ...(assessment?.candidates ?? []).map((candidate) => [candidate.id, candidate.name.slice(0, 60)]),
-            ...contradictions.map((contradiction) => [contradiction.id, contradiction.kind.replace("_", " ")]),
-          ])}
-          timeZone={region.timezone}
-          canRunModel={aiStatus().configured}
-        />
+        <section id="alert" className="scroll-mt-24">
+          <AlertPanel
+            incidentId={incident.id}
+            draft={alert}
+            readiness={alertReadiness({ claims })}
+            confirmedClaims={claims.filter((c) => c.review.status === "confirmed" || c.review.status === "edited").length}
+            confirmedImpacts={confirmedCandidates(assessment).length}
+            openContradictions={contradictions.filter((c) => c.status === "open").length}
+            citationLabels={Object.fromEntries([
+              ...claims.map((claim) => [claim.id, (claim.editedStatement ?? claim.statementEn).slice(0, 60)]),
+              ...(assessment?.candidates ?? []).map((candidate) => [candidate.id, candidate.name.slice(0, 60)]),
+              ...contradictions.map((contradiction) => [contradiction.id, contradiction.kind.replace("_", " ")]),
+            ])}
+            timeZone={region.timezone}
+            canRunModel={aiStatus().configured}
+          />
+        </section>
       </div>
     </AppShell>
   );
