@@ -313,7 +313,7 @@ Defined and validated in `src/lib/domain/schemas.ts`. No nested arrays (Firestor
 4. **Explanations** are deterministic sentences; caveats cover weak road links (> 500 m from a mapped road), unconfirmed claims and footpaths. Settlements already disconnected before the incident are reported as data gaps, not as affected.
 5. **Always shown:** "Places outside this analysis are not necessarily safe." Outside the dataset → no analysis and a clear message.
 
-No flood extents, runout estimates, or casualty or damage estimates. Runs in ~25 ms on the corridor graph.
+No flood extents, runout estimates, or casualty or damage estimates. Runs in **10.6 ms warm, 12.4 ms p95** on the corridor graph (`npm run bench`, 30 runs, 185 settlements analysed). The earlier "~25 ms" was a hand measurement; this is a harness.
 
 ### 8.5 Alert drafts (chunk 3 logic, chunk 7 UI)
 - Gemini receives only confirmed claims, confirmed impact candidates, open contradictions and unknowns, all aliased.
