@@ -22,7 +22,6 @@ import {
   LoaderCircle,
   Play,
   RefreshCw,
-  TriangleAlert,
 } from "lucide-react";
 import { OriginBadge, ReviewBadge } from "@/components/av/trust-labels";
 import { Badge } from "@/components/ui/badge";
@@ -322,22 +321,6 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, now, ca
         ) : null}
       </div>
 
-      {assessment.warnings.length > 0 || assessment.limitations.length > 0 ? (
-        <div className="flex flex-col gap-2 rounded-2xl bg-amber-tint px-4 py-3.5 text-sm text-amber-strong">
-          <h3 className="flex items-center gap-2 font-semibold">
-            <TriangleAlert className="size-4" aria-hidden />
-            What this analysis cannot say
-          </h3>
-          <ul className="flex flex-col gap-1">
-            {[...assessment.limitations, ...assessment.warnings].map((warning) => (
-              <li key={warning} className="flex gap-2">
-                <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-                <span>{warning}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
     </section>
   );
 }

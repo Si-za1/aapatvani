@@ -16,7 +16,7 @@
 // after that, so the depth on screen is the work remaining.
 
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, CircleSlash } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, CircleSlash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ImpactCandidate } from "@/lib/domain/schemas";
@@ -98,82 +98,83 @@ export function FindingDeck({
           ) : null,
         )}
 
-        <article className="relative flex flex-col gap-3.5 rounded-3xl border border-border bg-card p-5 shadow-[0_12px_32px_-18px_rgba(28,31,24,0.28)]">
-          <header className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-              {FINDING_LABEL[current.finding]}
-            </p>
+        <article className="relative flex min-h-[15rem] flex-col rounded-3xl border border-border bg-card p-5 shadow-[0_12px_32px_-18px_rgba(28,31,24,0.28)]">
+          {/* Two lines of heading, then the claim, then the evidence for it. Everything else is
+              behind a summary, because this card exists to be decided on, not read from end to end,
+              and a card whose height changes with every finding makes the stack jump under the
+              cursor. */}
+          <header className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex min-w-0 flex-col gap-1">
+              <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                {FINDING_LABEL[current.finding]}
+              </p>
+              <h4 className="text-lg leading-snug font-bold tracking-tight">{current.name}</h4>
+            </div>
             {current.assetKind ? (
-              <Badge variant="secondary" className="rounded-full bg-sand text-xs">
+              <Badge variant="secondary" className="shrink-0 rounded-full bg-sand text-xs">
                 {current.assetSubtype ?? current.assetKind}
               </Badge>
             ) : null}
           </header>
 
-          <h4 className="text-lg leading-snug font-bold tracking-tight">{current.name}</h4>
-
-          <p className="text-sm leading-relaxed text-muted-foreground">{current.explanation}</p>
+          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+            {current.explanation}
+          </p>
 
           {current.access?.length ? (
-            <ul className="flex flex-col gap-1.5 rounded-2xl bg-sand/50 p-3 text-xs">
+            <ul className="mt-3 flex flex-wrap gap-1.5">
               {current.access.map((access) => (
-                <li key={access.target} className="flex flex-wrap items-center gap-2">
-                  <span className="font-medium">
-                    {access.target === "hospital" ? "To a hospital" : "To any health facility"}:
-                  </span>
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 font-medium",
-                      access.status === "lost"
-                        ? "bg-flame-tint text-flame-strong"
-                        : access.status === "longer"
-                          ? "bg-amber-tint text-amber-strong"
-                          : access.status === "not_connected"
-                            ? "bg-stone-tint text-stone-strong"
-                            : "bg-leaf-tint text-leaf-strong",
-                    )}
-                  >
-                    {access.status === "lost"
-                      ? "no route left in this dataset"
+                <li
+                  key={access.target}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold",
+                    access.status === "lost"
+                      ? "bg-flame-tint text-flame-strong"
                       : access.status === "longer"
-                        ? "route much longer"
+                        ? "bg-amber-tint text-amber-strong"
                         : access.status === "not_connected"
-                          ? "already disconnected before"
+                          ? "bg-stone-tint text-stone-strong"
+                          : "bg-leaf-tint text-leaf-strong",
+                  )}
+                >
+                  {access.target === "hospital" ? "To a hospital" : "To any facility"}
+                  <span className="font-normal opacity-75">
+                    {access.status === "lost"
+                      ? "no route left"
+                      : access.status === "longer"
+                        ? "much longer"
+                        : access.status === "not_connected"
+                          ? "already cut off"
                           : "unchanged"}
                   </span>
-                  {access.beforeM !== null || access.afterM !== null ? (
-                    <span className="text-muted-foreground tabular-nums">
-                      before {access.beforeM === null ? "no route" : `${Math.round(access.beforeM / 1000)} km`} · after{" "}
-                      {access.afterM === null ? "no route" : `${Math.round(access.afterM / 1000)} km`}
-                    </span>
-                  ) : null}
                 </li>
               ))}
             </ul>
           ) : null}
 
           {current.caveats.length ? (
-            <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
-              {current.caveats.map((caveat) => (
-                <li key={caveat} className="flex gap-2">
-                  <span aria-hidden className="text-border">
-                    •
-                  </span>
-                  {caveat}
-                </li>
-              ))}
-            </ul>
+            <details className="group mt-3 text-xs">
+              <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 font-medium text-muted-foreground hover:text-foreground">
+                <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" aria-hidden />
+                {current.caveats.length} caveat{current.caveats.length === 1 ? "" : "s"} on this finding
+              </summary>
+              <ul className="mt-2 flex flex-col gap-1.5 text-muted-foreground">
+                {current.caveats.map((caveat) => (
+                  <li key={caveat} className="flex gap-2">
+                    <span aria-hidden className="text-border">
+                      •
+                    </span>
+                    {caveat}
+                  </li>
+                ))}
+              </ul>
+            </details>
           ) : null}
 
-          {/* The two decisions, and the two directions. Deciding is the loud pair; moving through the
+          {/* The decisions, and the two directions. Deciding is the loud pair; moving through the
               deck is quiet, because it changes nothing. */}
-          <div className="mt-1 flex flex-wrap items-center gap-2 border-t border-border/70 pt-4">
-            <Button
-              type="button"
-              onClick={() => decide("confirmed")}
-              disabled={disabled}
-              className="rounded-full"
-            >
+          <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-border/70 pt-4">
+            <Button type="button" onClick={() => decide("confirmed")} disabled={disabled} className="rounded-full">
               <Check className="size-4" aria-hidden />
               Confirm
             </Button>
@@ -214,7 +215,7 @@ export function FindingDeck({
             </span>
           </div>
 
-          {busy ? <p className="text-xs text-muted-foreground">Saving…</p> : null}
+          {busy ? <p className="mt-2 text-xs text-muted-foreground">Saving…</p> : null}
         </article>
       </div>
     </div>

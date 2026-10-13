@@ -276,112 +276,206 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--bor
 
   <section class="card">
     <div>
+      <h2>Architecture: one deployable, and where the model is allowed to stand</h2>
+      <p class="lede" style="margin-top:.35rem">A single Next.js app on Cloud Run. The model is reached only from the server, and every backend behind it can be swapped by an environment variable.</p>
+    </div>
+
+    <div class="figwrap">
+      <figure>
+        <svg viewBox="0 0 720 636" width="720" role="img" aria-label="Architecture: two clients talk to one Next.js app on Cloud Run, which reaches Gemini, Firestore and Cloud Storage, with the road dataset shipped inside the image.">
+          <defs>
+            <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--border)"/>
+            </marker>
+          </defs>
+
+          <!-- Clients -->
+          <rect class="stage-box" x="42" y="14" width="252" height="60" rx="14"/>
+          <circle cx="64" cy="44" r="5" fill="var(--reported)"/>
+          <text class="stage-title" x="80" y="42">Community reporter</text>
+          <text class="stage-detail" x="80" y="58">A phone browser, no account</text>
+
+          <rect class="stage-box" x="426" y="14" width="252" height="60" rx="14"/>
+          <circle cx="448" cy="44" r="5" fill="var(--person)"/>
+          <text class="stage-title" x="464" y="42">Reviewer</text>
+          <text class="stage-detail" x="464" y="58">Signed in, named in the record</text>
+
+          <line class="flow" x1="168" y1="74" x2="168" y2="106" marker-end="url(#a2)"/>
+          <line class="flow" x1="552" y1="74" x2="552" y2="106" marker-end="url(#a2)"/>
+
+          <!-- The app boundary -->
+          <rect class="zone" x="20" y="108" width="680" height="264" rx="20"/>
+          <text class="zone-label" x="40" y="132">ONE DEPLOYABLE · NEXT.JS 16 ON CLOUD RUN</text>
+
+          <rect class="stage-box" x="40" y="146" width="200" height="86" rx="14"/>
+          <text class="stage-title" x="56" y="172">Pages</text>
+          <text class="stage-detail" x="56" y="190">Server components that read</text>
+          <text class="stage-detail" x="56" y="205">the store directly</text>
+          <text class="uc-sub mono" x="56" y="222">13 routes</text>
+
+          <rect class="stage-box" x="256" y="146" width="200" height="86" rx="14"/>
+          <text class="stage-title" x="272" y="172">Route handlers</text>
+          <text class="stage-detail" x="272" y="190">Intake, extraction, review,</text>
+          <text class="stage-detail" x="272" y="205">impact, alerts, media</text>
+          <text class="uc-sub mono" x="272" y="222">21 handlers</text>
+
+          <rect class="stage-box" x="472" y="146" width="208" height="86" rx="14"/>
+          <text class="stage-title" x="488" y="172">The gate</text>
+          <text class="stage-detail" x="488" y="190">A cheap cookie check in the proxy,</text>
+          <text class="stage-detail" x="488" y="205">then every page and handler</text>
+          <text class="stage-detail" x="488" y="220">verifies its own session</text>
+
+          <!-- Inner modules -->
+          <rect class="stage-box" x="40" y="246" width="640" height="106" rx="14"/>
+          <text class="zone-label" x="56" y="270">MODULES · NOTHING HERE IS REACHABLE FROM A BROWSER</text>
+
+          <rect x="56" y="282" width="118" height="54" rx="10" fill="var(--ai-bg)"/>
+          <text class="uc-text" x="115" y="305" text-anchor="middle" fill="var(--ai)">ai</text>
+          <text class="uc-sub" x="115" y="322" text-anchor="middle" fill="var(--ai)">Gemini calls</text>
+
+          <rect x="182" y="282" width="118" height="54" rx="10" fill="var(--computed-bg)"/>
+          <text class="uc-text" x="241" y="305" text-anchor="middle" fill="var(--computed)">evidence</text>
+          <text class="uc-sub" x="241" y="322" text-anchor="middle" fill="var(--computed)">aliases · excerpts</text>
+
+          <rect x="308" y="282" width="118" height="54" rx="10" fill="var(--computed-bg)"/>
+          <text class="uc-text" x="367" y="305" text-anchor="middle" fill="var(--computed)">matching</text>
+          <text class="uc-sub" x="367" y="322" text-anchor="middle" fill="var(--computed)">scores · copies</text>
+
+          <rect x="434" y="282" width="118" height="54" rx="10" fill="var(--computed-bg)"/>
+          <text class="uc-text" x="493" y="305" text-anchor="middle" fill="var(--computed)">geo</text>
+          <text class="uc-sub" x="493" y="322" text-anchor="middle" fill="var(--computed)">graph · blast radius</text>
+
+          <rect x="560" y="282" width="104" height="54" rx="10" fill="var(--surface-2)"/>
+          <text class="uc-text" x="612" y="305" text-anchor="middle" fill="var(--fg)">db · auth</text>
+          <text class="uc-sub" x="612" y="322" text-anchor="middle" fill="var(--muted)">storage</text>
+
+          <!-- Arrows to the services -->
+          <line class="flow" x1="176" y1="372" x2="176" y2="412" marker-end="url(#a2)"/>
+          <line class="flow" x1="360" y1="372" x2="360" y2="412" marker-end="url(#a2)"/>
+          <line class="flow" x1="544" y1="372" x2="544" y2="412" marker-end="url(#a2)"/>
+          <text class="chip-text" x="196" y="396" fill="var(--muted)">model calls · server-side only</text>
+
+          <!-- Services -->
+          <rect class="stage-box" x="40" y="414" width="230" height="80" rx="14"/>
+          <circle cx="60" cy="440" r="5" fill="var(--ai)"/>
+          <text class="stage-title" x="76" y="445">Gemini 3.8 Flash</text>
+          <text class="stage-detail" x="56" y="466">Extraction, comparison, drafts</text>
+          <text class="stage-detail" x="56" y="481">gemini-embedding-001 for matching</text>
+
+          <rect class="stage-box" x="286" y="414" width="180" height="80" rx="14"/>
+          <text class="stage-title" x="302" y="445">Firestore</text>
+          <text class="stage-detail" x="302" y="466">Reports, claims, incidents,</text>
+          <text class="stage-detail" x="302" y="481">reviews, the audit trail</text>
+
+          <rect class="stage-box" x="482" y="414" width="198" height="80" rx="14"/>
+          <text class="stage-title" x="498" y="445">Cloud Storage</text>
+          <text class="stage-detail" x="498" y="466">Private photos and audio,</text>
+          <text class="stage-detail" x="498" y="481">streamed to reviewers only</text>
+
+          <!-- What ships with the app -->
+          <rect class="stage-box" x="40" y="512" width="640" height="58" rx="14" style="stroke-dasharray:6 4"/>
+          <circle cx="60" cy="541" r="5" fill="var(--computed)"/>
+          <text class="stage-title" x="76" y="538">The road dataset ships inside the image</text>
+          <text class="stage-detail" x="76" y="555">11,340 junctions, 36 health facilities, 187 settlements — an OpenStreetMap extract, pre-processed, versioned, ODbL</text>
+
+          <!-- Swappable note -->
+          <text class="uc-sub" x="40" y="598">Every backend above can be replaced by an environment variable: DATA_BACKEND, MEDIA_BACKEND, AUTH_MODE.</text>
+          <text class="uc-sub" x="40" y="614">On a laptop the app runs end to end on a file store, local media and a passcode — no cloud account needed to develop it.</text>
+        </svg>
+        <figcaption>The model is the only component outside the process that work must cross a network boundary to reach, and it is reached from the server with the Cloud Run service account, so there is no API key in the image to leak.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="card">
+    <div>
       <h2>Process flow: a report to an approved alert</h2>
       <p class="lede" style="margin-top:.35rem">Every stage names who does it, because the whole point of the product is that a model's output and a person's decision are never the same kind of thing.</p>
     </div>
 
     <div class="figwrap">
       <figure>
-        <svg viewBox="0 0 720 862" width="720" role="img" aria-label="Process flow from a community report through extraction, checking, grouping, review, road analysis and alert approval.">
+                <svg viewBox="0 0 720 880" width="720" role="img" aria-label="Process flow from a community report through extraction, checking, grouping, review, road analysis and alert approval.">
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--border)"/>
             </marker>
           </defs>
 
-          <!-- 1 -->
-          <rect class="stage-box" x="28" y="16" width="440" height="76" rx="16"/>
-          <rect x="44" y="30" width="104" height="19" rx="9.5" fill="var(--reported-bg)"/>
-          <text class="chip-text" x="96" y="43.5" text-anchor="middle" fill="var(--reported)">COMMUNITY</text>
-          <text class="stage-title" x="44" y="68">A report arrives</text>
-          <text class="stage-detail" x="44" y="84">Text, photo or voice, in Nepali or English, with a rough location</text>
-          <text class="chip-text mono" x="484" y="60" fill="var(--muted)">POST /api/reports</text>
+          <rect class="stage-box" x="24" y="16" width="436" height="76" rx="16"/>
+          <rect x="40" y="30" width="83" height="19" rx="9.5" fill="var(--reported-bg)"/>
+          <text class="chip-text" x="82" y="43.5" text-anchor="middle" fill="var(--reported)">COMMUNITY</text>
+          <text class="stage-title" x="40" y="72">A report arrives</text>
+          <text class="stage-detail" x="40" y="88">Text, photo or voice, in Nepali or English</text>
+          <text class="chip-text mono" x="444" y="72" text-anchor="end" fill="var(--muted)">POST /api/reports</text>
+          <line class="flow" x1="242" y1="92" x2="242" y2="126" marker-end="url(#arrow)"/>
+          <rect class="stage-box" x="24" y="126" width="436" height="76" rx="16"/>
+          <rect x="40" y="140" width="50" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="65" y="153.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <text class="stage-title" x="40" y="182">Saved before anything else</text>
+          <text class="stage-detail" x="40" y="198">The original is immutable, media hashed and kept private</text>
+          <text class="chip-text mono" x="444" y="182" text-anchor="end" fill="var(--muted)">SHA-256 · EXIF</text>
+          <line class="flow" x1="242" y1="202" x2="242" y2="236" marker-end="url(#arrow)"/>
+          <rect class="stage-box" x="24" y="236" width="436" height="76" rx="16"/>
+          <rect x="40" y="250" width="64" height="19" rx="9.5" fill="var(--ai-bg)"/>
+          <text class="chip-text" x="72" y="263.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
+          <text class="stage-title" x="40" y="292">Read into claims</text>
+          <text class="stage-detail" x="40" y="308">Every claim carries the words it came from</text>
+          <text class="chip-text mono" x="444" y="292" text-anchor="end" fill="var(--muted)">POST /extract</text>
+          <line class="flow" x1="242" y1="312" x2="242" y2="346" marker-end="url(#arrow)"/>
+          <rect class="stage-box" x="24" y="346" width="436" height="76" rx="16"/>
+          <rect x="40" y="360" width="50" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="65" y="373.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <text class="stage-title" x="40" y="402">Checked before it is believed</text>
+          <text class="stage-detail" x="40" y="418">The excerpt must appear in the original text</text>
+          <text class="chip-text mono" x="444" y="402" text-anchor="end" fill="var(--muted)">Zod · gazetteer</text>
+          <line class="flow" x1="242" y1="422" x2="242" y2="456" marker-end="url(#arrow)"/>
+          <rect class="stage-box" x="24" y="456" width="436" height="76" rx="16"/>
+          <rect x="40" y="470" width="50" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="65" y="483.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <rect x="98" y="470" width="64" height="19" rx="9.5" fill="var(--ai-bg)"/>
+          <text class="chip-text" x="130" y="483.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
+          <text class="stage-title" x="40" y="512">Grouped with other reports</text>
+          <text class="stage-detail" x="40" y="528">Distance, time, hazard and wording</text>
+          <text class="chip-text mono" x="444" y="512" text-anchor="end" fill="var(--muted)">POST /match</text>
+          <line class="flow" x1="242" y1="532" x2="242" y2="566" marker-end="url(#arrow)"/>
+          <rect class="stage-box" x="24" y="566" width="436" height="76" rx="16"/>
+          <rect x="40" y="580" width="90" height="19" rx="9.5" fill="var(--person-bg)"/>
+          <text class="chip-text" x="85" y="593.5" text-anchor="middle" fill="var(--person)">A REVIEWER</text>
+          <text class="stage-title" x="40" y="622">A person settles it</text>
+          <text class="stage-detail" x="40" y="638">Confirm, correct, reject, or ask for more</text>
+          <text class="chip-text mono" x="444" y="622" text-anchor="end" fill="var(--muted)">/api/review</text>
+          <line class="flow" x1="242" y1="642" x2="242" y2="676" marker-end="url(#arrow)"/>
+          <rect class="stage-box" x="24" y="676" width="436" height="76" rx="16"/>
+          <rect x="40" y="690" width="50" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="65" y="703.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <text class="stage-title" x="40" y="732">Road access analysed</text>
+          <text class="stage-detail" x="40" y="748">Which settlements keep a mapped route to care</text>
+          <text class="chip-text mono" x="444" y="732" text-anchor="end" fill="var(--muted)">POST /impact</text>
+          <line class="flow" x1="242" y1="752" x2="242" y2="786" marker-end="url(#arrow)"/>
+          <rect class="stage-box" x="24" y="786" width="436" height="76" rx="16"/>
+          <rect x="40" y="800" width="64" height="19" rx="9.5" fill="var(--ai-bg)"/>
+          <text class="chip-text" x="72" y="813.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
+          <rect x="112" y="800" width="90" height="19" rx="9.5" fill="var(--person-bg)"/>
+          <text class="chip-text" x="157" y="813.5" text-anchor="middle" fill="var(--person)">A REVIEWER</text>
+          <text class="stage-title" x="40" y="842">Alert drafted, then approved</text>
+          <text class="stage-detail" x="40" y="858">Confirmed facts only, every sentence cited</text>
 
-          <line class="flow" x1="248" y1="92" x2="248" y2="124" marker-end="url(#arrow)"/>
-
-          <!-- 2 -->
-          <rect class="stage-box" x="28" y="126" width="440" height="76" rx="16"/>
-          <rect x="44" y="140" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
-          <text class="chip-text" x="74" y="153.5" text-anchor="middle" fill="var(--computed)">CODE</text>
-          <text class="stage-title" x="44" y="178">Saved before anything else</text>
-          <text class="stage-detail" x="44" y="194">The original is immutable, media is hashed and kept private</text>
-          <text class="chip-text mono" x="484" y="170" fill="var(--muted)">SHA-256 · EXIF</text>
-
-          <line class="flow" x1="248" y1="202" x2="248" y2="234" marker-end="url(#arrow)"/>
-
-          <!-- 3 -->
-          <rect class="stage-box" x="28" y="236" width="440" height="76" rx="16"/>
-          <rect x="44" y="250" width="52" height="19" rx="9.5" fill="var(--ai-bg)"/>
-          <text class="chip-text" x="70" y="263.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
-          <text class="stage-title" x="44" y="288">Read into claims</text>
-          <text class="stage-detail" x="44" y="304">Each claim carries the words it came from, or is labelled an interpretation</text>
-          <text class="chip-text mono" x="484" y="280" fill="var(--muted)">POST /extract</text>
-
-          <line class="flow" x1="248" y1="312" x2="248" y2="344" marker-end="url(#arrow)"/>
-
-          <!-- 4 -->
-          <rect class="stage-box" x="28" y="346" width="440" height="76" rx="16"/>
-          <rect x="44" y="360" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
-          <text class="chip-text" x="74" y="373.5" text-anchor="middle" fill="var(--computed)">CODE</text>
-          <text class="stage-title" x="44" y="398">Checked before it is believed</text>
-          <text class="stage-detail" x="44" y="414">The excerpt must appear in the original; places resolve, or stay unresolved</text>
-          <text class="chip-text mono" x="484" y="390" fill="var(--muted)">Zod · gazetteer</text>
-
-          <line class="flow" x1="248" y1="422" x2="248" y2="454" marker-end="url(#arrow)"/>
-
-          <!-- 5 -->
-          <rect class="stage-box" x="28" y="456" width="440" height="76" rx="16"/>
-          <rect x="44" y="470" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
-          <text class="chip-text" x="74" y="483.5" text-anchor="middle" fill="var(--computed)">CODE</text>
-          <rect x="110" y="470" width="52" height="19" rx="9.5" fill="var(--ai-bg)"/>
-          <text class="chip-text" x="136" y="483.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
-          <text class="stage-title" x="44" y="508">Grouped with other reports</text>
-          <text class="stage-detail" x="44" y="524">Distance, time, hazard and wording; a copy never counts as a second witness</text>
-          <text class="chip-text mono" x="484" y="500" fill="var(--muted)">POST /match</text>
-
-          <line class="flow" x1="248" y1="532" x2="248" y2="564" marker-end="url(#arrow)"/>
-
-          <!-- 6 -->
-          <rect class="stage-box" x="28" y="566" width="440" height="76" rx="16"/>
-          <rect x="44" y="580" width="92" height="19" rx="9.5" fill="var(--person-bg)"/>
-          <text class="chip-text" x="90" y="593.5" text-anchor="middle" fill="var(--person)">A REVIEWER</text>
-          <text class="stage-title" x="44" y="618">A person settles it</text>
-          <text class="stage-detail" x="44" y="634">Confirm, correct, reject or ask for more; nothing merges itself</text>
-          <text class="chip-text mono" x="484" y="610" fill="var(--muted)">/api/review</text>
-
-          <line class="flow" x1="248" y1="642" x2="248" y2="674" marker-end="url(#arrow)"/>
-
-          <!-- 7 -->
-          <rect class="stage-box" x="28" y="676" width="440" height="76" rx="16"/>
-          <rect x="44" y="690" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
-          <text class="chip-text" x="74" y="703.5" text-anchor="middle" fill="var(--computed)">CODE</text>
-          <text class="stage-title" x="44" y="728">Road access analysed</text>
-          <text class="stage-detail" x="44" y="744">Which settlements keep a mapped route to care, and which lose one</text>
-          <text class="chip-text mono" x="484" y="720" fill="var(--muted)">POST /impact</text>
-
-          <line class="flow" x1="248" y1="752" x2="248" y2="784" marker-end="url(#arrow)"/>
-
-          <!-- 8 -->
-          <rect class="stage-box" x="28" y="786" width="440" height="76" rx="16"/>
-          <rect x="44" y="800" width="52" height="19" rx="9.5" fill="var(--ai-bg)"/>
-          <text class="chip-text" x="70" y="813.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
-          <rect x="102" y="800" width="92" height="19" rx="9.5" fill="var(--person-bg)"/>
-          <text class="chip-text" x="148" y="813.5" text-anchor="middle" fill="var(--person)">A REVIEWER</text>
-          <text class="stage-title" x="44" y="838">Alert drafted, then approved</text>
-          <text class="stage-detail" x="44" y="854">Confirmed facts only, every sentence cited. The app never sends it</text>
-
-          <!-- Guardrails, on the right, aligned to the stages they belong to. -->
+          <!-- Guardrails. Kept at the same width as each other and short enough to fit inside
+              them: an annotation that runs past its own box is worse than no annotation. -->
           <g>
-            <rect class="zone" x="500" y="236" width="192" height="76" rx="14"/>
-            <text class="zone-label" x="516" y="262">NEVER FROM THE MODEL</text>
-            <text class="stage-detail" x="516" y="282">No real IDs, no coordinates, no</text>
-            <text class="stage-detail" x="516" y="297">number that is not in its sources.</text>
+            <rect class="zone" x="484" y="236" width="222" height="88" rx="14"/>
+            <text class="zone-label" x="500" y="262">NEVER FROM THE MODEL</text>
+            <text class="stage-detail" x="500" y="284">No real IDs, no coordinates,</text>
+            <text class="stage-detail" x="500" y="299">and no number that is not in</text>
+            <text class="stage-detail" x="500" y="314">the words it cited.</text>
           </g>
           <g>
-            <rect class="zone" x="500" y="566" width="192" height="76" rx="14"/>
-            <text class="zone-label" x="516" y="592">EVERY ACTION RECORDED</text>
-            <text class="stage-detail" x="516" y="612">An append-only trail names the person,</text>
-            <text class="stage-detail" x="516" y="627">the model or the rule behind each change.</text>
+            <rect class="zone" x="484" y="566" width="222" height="88" rx="14"/>
+            <text class="zone-label" x="500" y="592">EVERY ACTION RECORDED</text>
+            <text class="stage-detail" x="500" y="614">An append-only trail names</text>
+            <text class="stage-detail" x="500" y="629">the person, the model or the</text>
+            <text class="stage-detail" x="500" y="644">rule behind each change.</text>
           </g>
         </svg>
         <figcaption>A report is stored before any model reads it, so a Gemini failure never loses a submission. Every arrow that leaves the model points at code that checks it before anything downstream believes it.</figcaption>
@@ -397,9 +491,9 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--bor
 
     <div class="figwrap">
       <figure>
-        <svg viewBox="0 0 720 508" width="720" role="img" aria-label="Use case diagram: a community reporter, a reviewer, and the automated system, with the use cases each of them drives.">
+        <svg viewBox="0 0 720 532" width="720" role="img" aria-label="Use case diagram: a community reporter, a reviewer, and the automated system, with the use cases each of them drives.">
           <!-- System boundary -->
-          <rect class="zone" x="16" y="16" width="688" height="468" rx="20"/>
+          <rect class="zone" x="16" y="16" width="688" height="496" rx="20"/>
           <text class="zone-label" x="36" y="42">AAPATVANI AI</text>
 
           <!-- Actor: community reporter -->
@@ -421,7 +515,7 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--bor
           <text class="uc-sub" x="48" y="291">on the landing page, before reporting</text>
 
           <!-- Actor: reviewer -->
-          <line x1="240" y1="34" x2="240" y2="484" class="zone" stroke-dasharray="4 6"/>
+          <line x1="240" y1="34" x2="240" y2="512" class="zone" stroke-dasharray="4 6"/>
 
           <rect class="actor-node" x="260" y="58" width="192" height="40" rx="12"/>
           <circle cx="280" cy="78" r="5" fill="var(--person)"/>
@@ -449,7 +543,7 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--bor
           <text class="uc-sub" x="272" y="415">timeline · activity · evidence chain</text>
 
           <!-- Actor: automated -->
-          <line x1="484" y1="34" x2="484" y2="484" class="zone" stroke-dasharray="4 6"/>
+          <line x1="484" y1="34" x2="484" y2="512" class="zone" stroke-dasharray="4 6"/>
 
           <rect class="actor-node" x="504" y="58" width="176" height="40" rx="12"/>
           <circle cx="524" cy="78" r="5" fill="var(--ai)"/>
