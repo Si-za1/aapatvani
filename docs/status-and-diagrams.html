@@ -282,107 +282,98 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--bor
 
     <div class="figwrap">
       <figure>
-        <svg viewBox="0 0 720 636" width="720" role="img" aria-label="Architecture: two clients talk to one Next.js app on Cloud Run, which reaches Gemini, Firestore and Cloud Storage, with the road dataset shipped inside the image.">
-          <defs>
-            <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--border)"/>
-            </marker>
-          </defs>
-
-          <!-- Clients -->
-          <rect class="stage-box" x="42" y="14" width="252" height="60" rx="14"/>
-          <circle cx="64" cy="44" r="5" fill="var(--reported)"/>
-          <text class="stage-title" x="80" y="42">Community reporter</text>
-          <text class="stage-detail" x="80" y="58">A phone browser, no account</text>
-
-          <rect class="stage-box" x="426" y="14" width="252" height="60" rx="14"/>
-          <circle cx="448" cy="44" r="5" fill="var(--person)"/>
-          <text class="stage-title" x="464" y="42">Reviewer</text>
-          <text class="stage-detail" x="464" y="58">Signed in, named in the record</text>
-
-          <line class="flow" x1="168" y1="74" x2="168" y2="106" marker-end="url(#a2)"/>
-          <line class="flow" x1="552" y1="74" x2="552" y2="106" marker-end="url(#a2)"/>
-
-          <!-- The app boundary -->
-          <rect class="zone" x="20" y="108" width="680" height="264" rx="20"/>
-          <text class="zone-label" x="40" y="132">ONE DEPLOYABLE · NEXT.JS 16 ON CLOUD RUN</text>
-
-          <rect class="stage-box" x="40" y="146" width="200" height="86" rx="14"/>
-          <text class="stage-title" x="56" y="172">Pages</text>
-          <text class="stage-detail" x="56" y="190">Server components that read</text>
-          <text class="stage-detail" x="56" y="205">the store directly</text>
-          <text class="uc-sub mono" x="56" y="222">13 routes</text>
-
-          <rect class="stage-box" x="256" y="146" width="200" height="86" rx="14"/>
-          <text class="stage-title" x="272" y="172">Route handlers</text>
-          <text class="stage-detail" x="272" y="190">Intake, extraction, review,</text>
-          <text class="stage-detail" x="272" y="205">impact, alerts, media</text>
-          <text class="uc-sub mono" x="272" y="222">21 handlers</text>
-
-          <rect class="stage-box" x="472" y="146" width="208" height="86" rx="14"/>
-          <text class="stage-title" x="488" y="172">The gate</text>
-          <text class="stage-detail" x="488" y="190">A cheap cookie check in the proxy,</text>
-          <text class="stage-detail" x="488" y="205">then every page and handler</text>
-          <text class="stage-detail" x="488" y="220">verifies its own session</text>
-
-          <!-- Inner modules -->
-          <rect class="stage-box" x="40" y="246" width="640" height="106" rx="14"/>
-          <text class="zone-label" x="56" y="270">MODULES · NOTHING HERE IS REACHABLE FROM A BROWSER</text>
-
-          <rect x="56" y="282" width="118" height="54" rx="10" fill="var(--ai-bg)"/>
-          <text class="uc-text" x="115" y="305" text-anchor="middle" fill="var(--ai)">ai</text>
-          <text class="uc-sub" x="115" y="322" text-anchor="middle" fill="var(--ai)">Gemini calls</text>
-
-          <rect x="182" y="282" width="118" height="54" rx="10" fill="var(--computed-bg)"/>
-          <text class="uc-text" x="241" y="305" text-anchor="middle" fill="var(--computed)">evidence</text>
-          <text class="uc-sub" x="241" y="322" text-anchor="middle" fill="var(--computed)">aliases · excerpts</text>
-
-          <rect x="308" y="282" width="118" height="54" rx="10" fill="var(--computed-bg)"/>
-          <text class="uc-text" x="367" y="305" text-anchor="middle" fill="var(--computed)">matching</text>
-          <text class="uc-sub" x="367" y="322" text-anchor="middle" fill="var(--computed)">scores · copies</text>
-
-          <rect x="434" y="282" width="118" height="54" rx="10" fill="var(--computed-bg)"/>
-          <text class="uc-text" x="493" y="305" text-anchor="middle" fill="var(--computed)">geo</text>
-          <text class="uc-sub" x="493" y="322" text-anchor="middle" fill="var(--computed)">graph · blast radius</text>
-
-          <rect x="560" y="282" width="104" height="54" rx="10" fill="var(--surface-2)"/>
-          <text class="uc-text" x="612" y="305" text-anchor="middle" fill="var(--fg)">db · auth</text>
-          <text class="uc-sub" x="612" y="322" text-anchor="middle" fill="var(--muted)">storage</text>
-
-          <!-- Arrows to the services -->
-          <line class="flow" x1="176" y1="372" x2="176" y2="412" marker-end="url(#a2)"/>
-          <line class="flow" x1="360" y1="372" x2="360" y2="412" marker-end="url(#a2)"/>
-          <line class="flow" x1="544" y1="372" x2="544" y2="412" marker-end="url(#a2)"/>
-          <text class="chip-text" x="196" y="396" fill="var(--muted)">model calls · server-side only</text>
-
-          <!-- Services -->
-          <rect class="stage-box" x="40" y="414" width="230" height="80" rx="14"/>
-          <circle cx="60" cy="440" r="5" fill="var(--ai)"/>
-          <text class="stage-title" x="76" y="445">Gemini 3.8 Flash</text>
-          <text class="stage-detail" x="56" y="466">Extraction, comparison, drafts</text>
-          <text class="stage-detail" x="56" y="481">gemini-embedding-001 for matching</text>
-
-          <rect class="stage-box" x="286" y="414" width="180" height="80" rx="14"/>
-          <text class="stage-title" x="302" y="445">Firestore</text>
-          <text class="stage-detail" x="302" y="466">Reports, claims, incidents,</text>
-          <text class="stage-detail" x="302" y="481">reviews, the audit trail</text>
-
-          <rect class="stage-box" x="482" y="414" width="198" height="80" rx="14"/>
-          <text class="stage-title" x="498" y="445">Cloud Storage</text>
-          <text class="stage-detail" x="498" y="466">Private photos and audio,</text>
-          <text class="stage-detail" x="498" y="481">streamed to reviewers only</text>
-
-          <!-- What ships with the app -->
-          <rect class="stage-box" x="40" y="512" width="640" height="58" rx="14" style="stroke-dasharray:6 4"/>
-          <circle cx="60" cy="541" r="5" fill="var(--computed)"/>
-          <text class="stage-title" x="76" y="538">The road dataset ships inside the image</text>
-          <text class="stage-detail" x="76" y="555">11,340 junctions, 36 health facilities, 187 settlements — an OpenStreetMap extract, pre-processed, versioned, ODbL</text>
-
-          <!-- Swappable note -->
-          <text class="uc-sub" x="40" y="598">Every backend above can be replaced by an environment variable: DATA_BACKEND, MEDIA_BACKEND, AUTH_MODE.</text>
-          <text class="uc-sub" x="40" y="614">On a laptop the app runs end to end on a file store, local media and a passcode — no cloud account needed to develop it.</text>
+                        <svg viewBox="0 0 1400 780" width="1400" role="img" aria-label="Architecture: two browsers reach one Next.js app on Cloud Run inside a Google Cloud project, which reaches Gemini, Firestore, Cloud Storage and Firebase Auth from the server, with the road dataset shipped inside the image.">
+          <rect x="30" y="140" width="260" height="300" rx="14" fill="none" stroke="#5b6b7a" stroke-width="1.6" stroke-dasharray="7 5" opacity="0.5"/>
+          <rect x="44" y="139" width="85.2" height="22" rx="11" fill="#5b6b7a"/>
+          <text x="55" y="154.5" fill="#ffffff" font-size="11.5" font-weight="700" letter-spacing="0.02em">Browsers</text>
+          <rect x="320" y="60" width="1050" height="560" rx="14" fill="none" stroke="#2f6f9f" stroke-width="1.6" stroke-dasharray="7 5" opacity="0.5"/>
+          <rect x="334" y="49" width="174.0" height="22" rx="11" fill="#2f6f9f"/>
+          <text x="345" y="64.5" fill="#ffffff" font-size="11.5" font-weight="700" letter-spacing="0.02em">Google Cloud project</text>
+          <rect x="350" y="96" width="990" height="176" rx="14" fill="none" stroke="#415111" stroke-width="1.6" stroke-dasharray="7 5" opacity="0.5"/>
+          <rect x="364" y="85" width="151.8" height="22" rx="11" fill="#415111"/>
+          <text x="375" y="100.5" fill="#ffffff" font-size="11.5" font-weight="700" letter-spacing="0.02em">Cloud Run service</text>
+          <rect x="131" y="180" width="58" height="58" rx="14" fill="#5b6b7a"/>
+          <rect x="149" y="202" width="22" height="34" rx="5" fill="none" stroke="#fff" stroke-width="2.4"/><circle cx="160" cy="230" r="2.2" fill="#fff"/>
+          <text x="160" y="259" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Community reporter</text>
+          <text x="160" y="275" text-anchor="middle" fill="#6f6a5e" font-size="10.5">a phone browser</text>
+          <text x="160" y="289" text-anchor="middle" fill="#6f6a5e" font-size="10.5">no account</text>
+          <rect x="131" y="300" width="58" height="58" rx="14" fill="#5b6b7a"/>
+          <rect x="143" y="311" width="34" height="23" rx="4" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M 152 341 L 168 341" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M 160 334 L 160 341" stroke="#fff" stroke-width="2.4"/>
+          <text x="160" y="379" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Reviewer</text>
+          <text x="160" y="395" text-anchor="middle" fill="#6f6a5e" font-size="10.5">signed in</text>
+          <text x="160" y="409" text-anchor="middle" fill="#6f6a5e" font-size="10.5">named in the record</text>
+          <text x="380" y="128" fill="#6f6a5e" font-size="10.5" font-weight="700" letter-spacing="0.06em">ONE PROCESS, ONE IMAGE</text>
+          <rect x="381" y="146" width="58" height="58" rx="14" fill="#415111"/>
+          <rect x="394" y="160" width="32" height="30" rx="4" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M 394 170 L 426 170" stroke="#fff" stroke-width="2"/><circle cx="401" cy="165" r="2.4" fill="#fff"/>
+          <text x="410" y="225" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Next.js 16 app</text>
+          <text x="470" y="164" fill="#1c1f18" font-size="12" font-weight="600">13 pages · 21 route handlers</text>
+          <text x="470" y="182" fill="#6f6a5e" font-size="10.5">server components read the store directly</text>
+          <text x="470" y="208" fill="#1c1f18" font-size="12" font-weight="600">the gate: a cookie check, then every page verifies its own session</text>
+          <text x="470" y="234" fill="#1c1f18" font-size="12" font-weight="600">modules: ai · evidence · matching · geo · db · storage · auth</text>
+          <text x="470" y="252" fill="#6f6a5e" font-size="10.5">nothing in this process is reachable from a browser</text>
+          <text x="380" y="306" fill="#6f6a5e" font-size="10.5" font-weight="700" letter-spacing="0.06em">REACHED FROM THE SERVER, WITH THE SERVICE ACCOUNT</text>
+          <rect x="831" y="340" width="58" height="58" rx="14" fill="#d9612f"/>
+          <path d="M 860 353 C 863 364 865 366 876 369 C 865 372 863 374 860 385 C 857 374 855 372 844 369 C 855 366 857 364 860 353 Z" fill="#fff"/>
+          <text x="860" y="419" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Gemini</text>
+          <text x="860" y="435" text-anchor="middle" fill="#6f6a5e" font-size="10.5">Agent Platform · 3.8 Flash</text>
+          <text x="860" y="449" text-anchor="middle" fill="#6f6a5e" font-size="10.5">embeddings for matching</text>
+          <line x1="860" y1="272" x2="860" y2="340" stroke="#8b8578" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <rect x="820" y="295.0" width="81" height="22" rx="11" fill="#ffffff" stroke="#ece4da"/>
+          <text x="860" y="310.0" text-anchor="middle" fill="#1c1f18" font-size="11" font-weight="600">no API key</text>
+          <rect x="981" y="340" width="58" height="58" rx="14" fill="#6a5cb8"/>
+          <rect x="995" y="355" width="30" height="7" rx="3.5" fill="#fff"/><rect x="995" y="365" width="30" height="7" rx="3.5" fill="#fff"/><rect x="995" y="375" width="30" height="7" rx="3.5" fill="#fff"/>
+          <text x="1010" y="419" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Firestore</text>
+          <text x="1010" y="435" text-anchor="middle" fill="#6f6a5e" font-size="10.5">reports · claims · incidents</text>
+          <text x="1010" y="449" text-anchor="middle" fill="#6f6a5e" font-size="10.5">reviews, audit trail</text>
+          <line x1="1010" y1="272" x2="1010" y2="340" stroke="#8b8578" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <rect x="966" y="295.0" width="87" height="22" rx="11" fill="#ffffff" stroke="#ece4da"/>
+          <text x="1010" y="310.0" text-anchor="middle" fill="#1c1f18" font-size="11" font-weight="600">server-only</text>
+          <rect x="1131" y="340" width="58" height="58" rx="14" fill="#a8701c"/>
+          <path d="M 1144 356 L 1176 356 L 1171 383 L 1149 383 Z" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M 1147 365 L 1173 365" stroke="#fff" stroke-width="2"/>
+          <text x="1160" y="419" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Cloud Storage</text>
+          <text x="1160" y="435" text-anchor="middle" fill="#6f6a5e" font-size="10.5">photos and voice notes</text>
+          <text x="1160" y="449" text-anchor="middle" fill="#6f6a5e" font-size="10.5">private, reviewer-only</text>
+          <line x1="1160" y1="272" x2="1160" y2="340" stroke="#8b8578" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <rect x="1110" y="295.0" width="100" height="22" rx="11" fill="#ffffff" stroke="#ece4da"/>
+          <text x="1160" y="310.0" text-anchor="middle" fill="#1c1f18" font-size="11" font-weight="600">private media</text>
+          <rect x="1281" y="340" width="58" height="58" rx="14" fill="#2f6f9f"/>
+          <path d="M 1310 353 L 1324 359 V 371 C 1324 380 1316 385 1310 387 C 1304 385 1296 380 1296 371 V 359 Z" fill="none" stroke="#fff" stroke-width="2.4"/><circle cx="1310" cy="369" r="4.5" fill="#fff"/>
+          <text x="1310" y="419" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Firebase Auth</text>
+          <text x="1310" y="435" text-anchor="middle" fill="#6f6a5e" font-size="10.5">reviewer sign-in</text>
+          <text x="1310" y="449" text-anchor="middle" fill="#6f6a5e" font-size="10.5">or the passcode</text>
+          <line x1="1310" y1="272" x2="1310" y2="340" stroke="#8b8578" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <rect x="1276" y="295.0" width="68" height="22" rx="11" fill="#ffffff" stroke="#ece4da"/>
+          <text x="1310" y="310.0" text-anchor="middle" fill="#1c1f18" font-size="11" font-weight="600">sessions</text>
+          <rect x="380" y="480" width="930" height="62" rx="12" fill="none" stroke="#415111" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6"/>
+          <rect x="400" y="501" width="20" height="20" rx="6" fill="#415111"/>
+          <text x="432" y="509" fill="#1c1f18" font-size="12" font-weight="700">The OpenStreetMap extract ships inside the image</text>
+          <text x="432" y="527" fill="#6f6a5e" font-size="10.5">11,340 junctions · 36 health facilities · 187 settlements — pre-processed offline, versioned, ODbL, so the geography is deterministic and needs no network</text>
+          <rect x="320" y="650" width="1050" height="110" rx="14" fill="none" stroke="#8a4b8f" stroke-width="1.6" stroke-dasharray="7 5" opacity="0.5"/>
+          <rect x="334" y="639" width="144.4" height="22" rx="11" fill="#8a4b8f"/>
+          <text x="345" y="654.5" fill="#ffffff" font-size="11.5" font-weight="700" letter-spacing="0.02em">Build and deploy</text>
+          <rect x="531" y="676" width="58" height="58" rx="14" fill="#8a4b8f"/>
+          <polygon points="560.0,688.0 574.7,696.5 574.7,713.5 560.0,722.0 545.3,713.5 545.3,696.5" fill="none" stroke="#fff" stroke-width="2.4"/><circle cx="560" cy="705" r="5" fill="#fff"/>
+          <text x="560" y="755" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Cloud Build</text>
+          <text x="560" y="771" text-anchor="middle" fill="#6f6a5e" font-size="10.5">builds the image</text>
+          <rect x="791" y="676" width="58" height="58" rx="14" fill="#8a4b8f"/>
+          <path d="M 820 689 L 837 699 L 820 709 L 803 699 Z" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M 803 708 L 820 718 L 837 708" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+          <text x="820" y="755" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Artifact Registry</text>
+          <text x="820" y="771" text-anchor="middle" fill="#6f6a5e" font-size="10.5">holds the image</text>
+          <rect x="1051" y="676" width="58" height="58" rx="14" fill="#415111"/>
+          <rect x="1059" y="690" width="42" height="30" rx="7" fill="none" stroke="#fff" stroke-width="2.4"/><rect x="1065" y="694" width="6" height="22" rx="3" fill="#fff"/><rect x="1076" y="694" width="6" height="22" rx="3" fill="#fff"/><rect x="1087" y="694" width="6" height="22" rx="3" fill="#fff"/>
+          <text x="1080" y="755" text-anchor="middle" fill="#1c1f18" font-size="12.5" font-weight="700">Cloud Run</text>
+          <text x="1080" y="771" text-anchor="middle" fill="#6f6a5e" font-size="10.5">serves it</text>
+          <line x1="618" y1="705" x2="762" y2="705" stroke="#8b8578" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <rect x="668" y="694.0" width="43" height="22" rx="11" fill="#ffffff" stroke="#ece4da"/>
+          <text x="690" y="709.0" text-anchor="middle" fill="#1c1f18" font-size="11" font-weight="600">push</text>
+          <line x1="878" y1="705" x2="1022" y2="705" stroke="#8b8578" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <rect x="922" y="694.0" width="56" height="22" rx="11" fill="#ffffff" stroke="#ece4da"/>
+          <text x="950" y="709.0" text-anchor="middle" fill="#1c1f18" font-size="11" font-weight="600">deploy</text>
+          <line x1="290" y1="255" x2="350" y2="220" stroke="#8b8578" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <rect x="295" y="226.5" width="50" height="22" rx="11" fill="#ffffff" stroke="#ece4da"/>
+          <text x="320" y="241.5" text-anchor="middle" fill="#1c1f18" font-size="11" font-weight="600">HTTPS</text>
         </svg>
-        <figcaption>The model is the only component outside the process that work must cross a network boundary to reach, and it is reached from the server with the Cloud Run service account, so there is no API key in the image to leak.</figcaption>
+        <figcaption>One deployable, one image. The model is the only service the app reaches across a network to think with, and it is reached with the Cloud Run service account rather than a key, so there is nothing in the image to leak. Every backend behind the app can be swapped by an environment variable, which is how it runs end to end on a laptop with no cloud account at all.</figcaption>
       </figure>
     </div>
   </section>

@@ -108,11 +108,7 @@ async function Landing() {
             </Link>
           </div>
 
-          {/* The two boundaries, kept together as one group so that spreading this column over the
-              height of the page opens the space around them rather than between them: they are the
-              last thing read before somebody decides to report, and they belong beside the button. */}
-          <div className="flex flex-col gap-[clamp(0.4rem,1vh,0.8rem)]">
-            {/* Below the button: what can actually be reported. Each icon sits in its own soft badge
+          {/* Below the button: what can actually be reported. Each icon sits in its own soft badge
               rather than floating next to the word, which is what makes the row read as a set. */}
           <div className="flex flex-col gap-[clamp(0.4rem,1vh,0.75rem)]">
             <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
@@ -137,7 +133,12 @@ async function Landing() {
             </ul>
           </div>
 
-          <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
+          {/* The two boundaries, on their own and with room on both sides. They are the last thing
+              read before somebody decides to report, so they should not be crowded against the
+              hazards above them or the emergency line below — the same margin top and bottom, which
+              is what makes the column read as spaced rather than merely gapped. */}
+          <div className="my-[clamp(0.4rem,1.6vh,1.25rem)] flex flex-col gap-[clamp(0.5rem,1.3vh,0.95rem)]">
+            <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
               <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame" aria-hidden />
               <span lang={locale}>{t("landing.trustDont")}</span>
             </p>
