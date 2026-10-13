@@ -53,10 +53,22 @@ export function loadDataset(id: string): Promise<LoadedDataset | null> {
   return pending;
 }
 
-export async function loadManifest(id: string): Promise<DatasetManifest | null> {
+/**
+ * Just the manifest, without the graph. The reviewer shell names the area a deployment actually
+ * covers on every page, and re-reading the same small file on every one of them would be silly, so
+ * the promise is kept once per process.
+ */
+const manifests = new Map<string, Promise<DatasetManifest | null>>();
+
+export function loadManifest(id: string): Promise<DatasetManifest | null> {
   const dir = DATASET_DIRS[id];
-  if (!dir) return null;
-  return readJson<DatasetManifest>(path.join(process.cwd(), dir, "dataset.json")).catch(() => null);
+  if (!dir) return Promise.resolve(null);
+  let pending = manifests.get(id);
+  if (!pending) {
+    pending = readJson<DatasetManifest>(path.join(process.cwd(), dir, "dataset.json")).catch(() => null);
+    manifests.set(id, pending);
+  }
+  return pending;
 }
 
 /** Datasets configured for a region, optionally only those covering a point. */

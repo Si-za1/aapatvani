@@ -19,6 +19,11 @@ export function hazardLabel(region: RegionConfig, id: string | undefined): strin
   return getHazard(region, id)?.label ?? (id ? id.replace(/_/g, " ") : "Unclear");
 }
 
+/** The icon for a hazard id. Unknown or unstated falls back to the warning triangle, never to nothing. */
+export function hazardIcon(region: RegionConfig, id: string | undefined): HazardDef["icon"] {
+  return getHazard(region, id)?.icon ?? "unclear";
+}
+
 /** "same", "compatible", "different" or "unknown" for two hazard ids in a region. */
 export function hazardRelation(
   region: RegionConfig,

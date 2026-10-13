@@ -51,7 +51,7 @@ async function Screen() {
         description="Reports the system believes describe the same event. Only a reviewer settles a grouping."
       />
 
-      <div className="flex flex-col gap-4 px-5 py-6 sm:px-8">
+      <div className="flex flex-col gap-4">
         {incidents.length === 0 ? (
           <p className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
             <Scale className="size-6 text-muted-foreground" aria-hidden />

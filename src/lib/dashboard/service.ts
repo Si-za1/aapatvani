@@ -42,6 +42,12 @@ export interface ActivityEntry {
 }
 
 export interface DashboardData {
+  /**
+   * When this picture was taken. The clock is read once, here, rather than at each call site: two
+   * reads a millisecond apart can disagree about what "the last 24 hours" contains, and the page
+   * needs the same moment to say good morning with.
+   */
+  generatedAt: string;
   stats: {
     incidents: number;
     candidateIncidents: number;
@@ -61,9 +67,9 @@ export interface DashboardData {
 
 const AWAITING: Report["status"][] = ["extracted", "extraction_failed"];
 
-function withinWindow(iso: string, hours: number | undefined): boolean {
+function withinWindow(iso: string, hours: number | undefined, now: number): boolean {
   if (!hours) return true;
-  return Date.parse(iso) >= Date.now() - hours * 3_600_000;
+  return Date.parse(iso) >= now - hours * 3_600_000;
 }
 
 function incidentTone(status: IncidentStatus): MapPoint["tone"] {
@@ -73,6 +79,7 @@ function incidentTone(status: IncidentStatus): MapPoint["tone"] {
 }
 
 export async function dashboardData(filters: DashboardFilters = {}): Promise<DashboardData> {
+  const now = Date.now();
   const db = getDb();
   const [allIncidents, allReports] = await Promise.all([
     db.incidents.list({ orderBy: { field: "lastReportedAt", direction: "desc" } }),
@@ -87,12 +94,12 @@ export async function dashboardData(filters: DashboardFilters = {}): Promise<Das
   const incidents = allIncidents.filter((incident) => {
     if (filters.hazard && incident.hazard.category !== filters.hazard) return false;
     if (filters.statuses?.length && !filters.statuses.includes(incident.status)) return false;
-    if (!withinWindow(incident.lastReportedAt, filters.windowHours)) return false;
+    if (!withinWindow(incident.lastReportedAt, filters.windowHours, now)) return false;
     return true;
   });
   const visibleReports = reports.filter((report) => {
     if (filters.hazard && report.reporterHazard !== filters.hazard) return false;
-    if (!withinWindow(report.submittedAt, filters.windowHours)) return false;
+    if (!withinWindow(report.submittedAt, filters.windowHours, now)) return false;
     return true;
   });
 
@@ -146,6 +153,7 @@ export async function dashboardData(filters: DashboardFilters = {}): Promise<Das
   }));
 
   return {
+    generatedAt: new Date(now).toISOString(),
     stats: {
       incidents: allIncidents.length,
       candidateIncidents: allIncidents.filter((i) => i.status === "candidate").length,
@@ -154,7 +162,7 @@ export async function dashboardData(filters: DashboardFilters = {}): Promise<Das
       reports: reports.length,
       awaitingReview: reports.filter((r) => AWAITING.includes(r.status)).length,
       aiUnavailable: reports.filter((r) => r.status === "ai_unavailable" || r.status === "received").length,
-      last24h: reports.filter((r) => withinWindow(r.submittedAt, 24)).length,
+      last24h: reports.filter((r) => withinWindow(r.submittedAt, 24, now)).length,
     },
     incidents,
     activity,

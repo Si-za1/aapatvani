@@ -23,7 +23,18 @@ const WINDOWS = [
   { value: "720", label: "Last 30 days" },
 ] as const;
 
-export function ReportFilters({ hazards, regionId, total }: { hazards: string[]; regionId: string; total: number }) {
+export function ReportFilters({
+  hazards,
+  regionId,
+  total,
+  defaultStatus,
+}: {
+  hazards: string[];
+  regionId: string;
+  total: number;
+  /** From the reviewer's own settings, so the page opens where they left it. */
+  defaultStatus: (typeof STATUSES)[number]["value"];
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -31,8 +42,8 @@ export function ReportFilters({ hazards, regionId, total }: { hazards: string[];
 
   const hazard = params.get("hazard") ?? "";
   const window = params.get("window") ?? "";
-  const status = params.get("status") ?? "awaiting";
-  const active = Boolean(hazard || window) || status !== "awaiting";
+  const status = params.get("status") ?? defaultStatus;
+  const active = Boolean(hazard || window) || status !== defaultStatus;
 
   function update(mutate: (next: URLSearchParams) => void) {
     const next = new URLSearchParams(params.toString());

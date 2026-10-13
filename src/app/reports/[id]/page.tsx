@@ -111,7 +111,7 @@ async function Screen({ params }: { params: PageProps<"/reports/[id]">["params"]
         ) : null}
       </PageHeader>
 
-      <div className="px-5 pt-4 sm:px-8">
+      <div>
         <Link href="/reports" className="inline-flex items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
           <ArrowLeft className="size-4" aria-hidden />
           All reports

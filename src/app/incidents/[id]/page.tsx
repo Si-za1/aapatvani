@@ -141,7 +141,7 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
         <DataLabelBadge label={incident.dataLabel} />
       </PageHeader>
 
-      <div className="flex flex-col gap-4 px-5 pt-4 sm:px-8">
+      <div className="flex flex-col gap-4">
         <Link href="/incidents" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
           <ArrowLeft className="size-4" aria-hidden />
           All incidents
@@ -172,7 +172,7 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
         canRunModel={aiStatus().configured}
       />
 
-      <div className="flex flex-col gap-8 border-t border-border px-5 py-8 sm:px-8">
+      <div className="mt-8 flex flex-col gap-8 border-t border-border pt-8">
         <ImpactPanel
           incidentId={incident.id}
           assessment={assessment}

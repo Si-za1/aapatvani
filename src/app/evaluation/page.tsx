@@ -46,7 +46,7 @@ async function Screen() {
         ) : null}
       </PageHeader>
 
-      <div className="flex flex-col gap-6 px-5 py-6 sm:px-8">
+      <div className="flex flex-col gap-6">
         {shown === null ? (
           <p className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
             <BarChart3 className="size-6 text-muted-foreground" aria-hidden />

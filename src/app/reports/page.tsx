@@ -11,6 +11,7 @@ import { requireReviewer } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import type { Report } from "@/lib/domain/schemas";
 import { getEnv } from "@/lib/env";
+import { getReviewerPrefs } from "@/lib/prefs";
 import { isWithinHours, relativeTime } from "@/lib/time";
 
 // The review queue, as cards grouped by what kind of incident they describe.
@@ -52,7 +53,10 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
   const claimsByReport = new Map<string, number>();
   for (const claim of claims) claimsByReport.set(claim.reportId, (claimsByReport.get(claim.reportId) ?? 0) + 1);
 
-  const statusFilter = typeof params.status === "string" ? params.status : "awaiting";
+  // No status in the URL means "whatever this reviewer set as their default", which is why the
+  // absence of the parameter and the word "all" are different things.
+  const prefs = await getReviewerPrefs();
+  const statusFilter = typeof params.status === "string" ? params.status : prefs.queue;
   const hazardFilter = typeof params.hazard === "string" ? params.hazard : undefined;
   const windowHours = typeof params.window === "string" ? Number(params.window) || undefined : undefined;
 
@@ -80,10 +84,15 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
         title="Reports"
         description="Every report as it arrived, grouped by the kind of incident it describes. Open one to compare the original against what was read from it."
       >
-        <ReportFilters hazards={hazardsInUse} regionId={region.id} total={reports.length} />
+        <ReportFilters
+          hazards={hazardsInUse}
+          regionId={region.id}
+          total={reports.length}
+          defaultStatus={prefs.queue}
+        />
       </PageHeader>
 
-      <div className="flex flex-col gap-9 px-6 pb-10 sm:px-10">
+      <div className="flex flex-col gap-9">
         {reports.length === 0 ? (
           <p className="flex flex-col items-center gap-2 rounded-3xl border border-dashed border-border px-6 py-16 text-center">
             <Inbox className="size-6 text-muted-foreground" aria-hidden />

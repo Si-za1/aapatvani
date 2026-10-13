@@ -21,6 +21,7 @@ export const config = {
     "/alerts/:path*",
     "/evaluation/:path*",
     "/activity/:path*",
+    "/settings/:path*",
     "/data/:path*",
   ],
 };

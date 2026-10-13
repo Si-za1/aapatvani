@@ -47,6 +47,20 @@ export function relativeTime(iso: string | undefined, now: number = Date.now()):
   return `${Math.round(abs / day)} d ${suffix}`;
 }
 
+/**
+ * "Good morning" and its relatives, in the region's own time zone rather than the server's, because
+ * a responder in Sindhupalchok reading this at 06:00 should not be wished a good evening by a
+ * machine running in Mumbai.
+ */
+export function greeting(iso: string, timeZone = "Asia/Kathmandu"): string {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", { timeZone, hour: "numeric", hourCycle: "h23" }).format(new Date(iso)),
+  );
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
 export function hoursBetween(a: string, b: string): number {
   return Math.abs(new Date(a).getTime() - new Date(b).getTime()) / 3_600_000;
 }
