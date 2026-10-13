@@ -27,6 +27,7 @@ We build in chunks and commit at the end of each one.
 | 11 | Timeline: the evidence chain drawn on a horizontal axis, filtered by hazard, cut by day, week or month | ✅ Done |
 | 12 | Incident board: one tinted panel per hazard, with cards, filters and a board/list switch | ✅ Done |
 | 13 | Charts, done properly: a validated chart palette, the activity record redrawn, and the blast radius drawn as before-and-after | ✅ Done |
+| 14 | An incident overview, the findings as a deck, and the homepage's hazard panel | ✅ Done |
 |, | Vision deck (PDF) + 3-minute demo video | ⬜ |
 
 **Checks passing now:** `npm run typecheck`, `npm run lint`, `npm test` (208 tests), `npm run build`. Once credentials exist, `npm run check:models` verifies the model IDs, structured output and embeddings against the real key/project.
@@ -422,6 +423,15 @@ We use the Larcha–Tatopani stretch: a fictional landslide in real geography, l
 
 ## 14. Progress log
 
+- **2026-10-13 (overview, a deck, and the hazard panel):** Three things, all of them about reading rather than deciding.
+
+  **The incident page opens on an Overview.** Four facts in a strip are not an overview, so the first tab is now a real one, built entirely from records that already exist and read in the order a responder reads them: **What is reported** (the status and what it means, the hazard and where it came from, the location, the first and latest report), **Why we think so** (the independent-source count, every report labelled *a witness* or *a copy*, and what the claims say about the road), **What disagrees** (open contradictions, and how many claims nobody has read), **What the roads say** (the analysis in a responder's words, with three counts), and **What needs a person** — the part every other screen leaves you to assemble, as a list of jumps in the order it should be done.
+
+  **Findings are a deck.** A dozen of them in a column, each with the same two buttons, hides how much is left and makes the last one look like the first. Now: one finding in front of you, a bar with one segment per finding still waiting, *1 of 12*, the two decisions, and backwards/forwards. Deciding advances by itself — a reviewer who has read a finding and pressed Confirm has told us everything we need about it, and a second press for the same thought is a tax. The cards stacked behind are the finding after this one and the one after that, so the depth on screen is the work remaining. The dumbbell chart moved out of the per-group lists and above the deck, where it now summarises every access finding rather than only the undecided ones.
+
+  **The homepage's hazard list is a panel.** A soft surface with four hazards carrying a line each — *"A hillside has given way and the road is covered"* — because the name alone asks a frightened person to already know the right word, and the rest listed by name underneath, since the form offers every one of them and leaving them out would say they are not reportable. Four blurbs written in both languages; a region whose hazards are not in that map shows the name alone rather than a missing key. The page still fits one screen at 1920×1080, 1440×900, 1366×700 and 1280×660.
+
+  208 tests pass, typecheck, lint and build clean; verified on a production build.
 - **2026-10-13 (the record cards were never the same width):** Reported as "some are big, some are small", and the first fix missed it because it measured the wrong thing: **heights were already uniform to the pixel**, and I checked heights, found them equal, and moved on. The widths were not. Each cell was a `flex` box, so the card inside it was a flex item and sized itself **to its own text** — one-line entries drew a narrow card, two-line entries a wide one, inside columns that were all `456px`. Measured across six consecutive cards: 360, 317, 303, 456, 456, 456. A plain block cell fixes it, and all forty-one cards are now **456 × 182, one width and one height**. The lesson is in which measurement I trusted: "are they the same height" was the easy question and the wrong one.
 
   The link chips are visible now. **The report** is a solid coral chip and **The incident** a solid olive one, both with white text and an icon, and the technical action code (`impact.confirmed`) sits on a white chip instead of 8%-ink, which was closer to a smudge than a label. They were always links; they just did not look like anything, which is why "how do I get to the report from here" was a fair question to ask.

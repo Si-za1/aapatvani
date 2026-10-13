@@ -16,6 +16,18 @@ import { getLocale } from "@/lib/prefs";
 // can be reported, what we will not do), and the explanation of how it works on the right as cards,
 // because nobody reads three steps before deciding to report, they read them afterwards, if at all.
 
+/**
+ * The line under a hazard's name, for the ones that have one. A region whose hazards are not in this
+ * map shows the name alone rather than a missing key, which is what the Philippines configuration
+ * would do today.
+ */
+const BLURB: Record<string, "hazard.landslide.blurb" | "hazard.flood.blurb" | "hazard.debris_flow.blurb" | "hazard.glof.blurb"> = {
+  landslide: "hazard.landslide.blurb",
+  flood: "hazard.flood.blurb",
+  debris_flow: "hazard.debris_flow.blurb",
+  glof: "hazard.glof.blurb",
+};
+
 export default function Home() {
   return (
     // One screen, no scrolling, at every size a browser is likely to be opened at. The page scales
@@ -93,26 +105,52 @@ async function Landing() {
             </Link>
           </div>
 
-          {/* Below the button: what can actually be reported. Each icon sits in its own soft badge
-              rather than floating next to the word, which is what makes the row read as a set. */}
-          <div className="flex flex-col gap-[clamp(0.5rem,1.2vh,1rem)]">
+          {/* Below the button: what can actually be reported, on one soft panel.
+              Four of them carry a line saying what the hazard looks like from the ground, because the
+              name alone asks a frightened person to know the right word; the rest are listed by name,
+              since the form offers every one of them and leaving them out would say they are not
+              reportable. */}
+          <div className="flex flex-col gap-[clamp(0.5rem,1.2vh,0.85rem)]">
             <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
               {t("landing.hazardsTitle")}
             </h2>
-            <ul className="flex flex-wrap gap-[clamp(0.35rem,0.8vh,0.5rem)]">
-              {hazards.map((hazard) => (
-                <li
-                  key={hazard.id}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card py-[clamp(0.2rem,0.5vh,0.375rem)] pr-4 pl-1.5 text-xs font-semibold"
-                  title={locale === "ne" ? hazard.labelLocal : hazard.label}
-                >
-                  <span className="grid size-7 shrink-0 place-items-center rounded-xl bg-sand">
-                    <HazardGlyph icon={hazard.icon} className="size-4 text-ink-soft" />
-                  </span>
-                  <span lang={locale}>{locale === "ne" ? hazard.labelLocal : hazard.label}</span>
-                </li>
-              ))}
-            </ul>
+
+            <div className="rounded-2xl bg-sand/60 p-[clamp(0.5rem,1.2vh,0.9rem)]">
+              <ul className="grid grid-cols-2 gap-[clamp(0.4rem,1vh,0.75rem)] lg:grid-cols-4">
+                {hazards.slice(0, 4).map((hazard) => (
+                  <li key={hazard.id} className="flex flex-col gap-[clamp(0.3rem,0.8vh,0.6rem)]">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-card shadow-[0_1px_2px_rgba(28,31,24,0.06)]">
+                      <HazardGlyph icon={hazard.icon} className="size-[18px] text-ink-soft" />
+                    </span>
+                    <span className="flex flex-col">
+                      <span className="text-[clamp(0.78rem,1.5vh,0.875rem)] font-semibold" lang={locale}>
+                        {locale === "ne" ? hazard.labelLocal : hazard.label}
+                      </span>
+                      {BLURB[hazard.id] ? (
+                        <span
+                          className="text-[clamp(0.68rem,1.3vh,0.78rem)] leading-snug text-muted-foreground [@media(max-height:640px)]:hidden"
+                          lang={locale}
+                        >
+                          {t(BLURB[hazard.id])}
+                        </span>
+                      ) : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* The rest, by name. Nothing is hidden, and the line is quiet enough not to compete
+                  with the four above it. */}
+              <p className="mt-[clamp(0.4rem,1vh,0.75rem)] border-t border-border/70 pt-[clamp(0.35rem,0.9vh,0.6rem)] text-[clamp(0.65rem,1.25vh,0.75rem)] text-muted-foreground">
+                <span lang={locale}>{t("landing.hazardsMore")}: </span>
+                <span lang={locale}>
+                  {hazards
+                    .slice(4)
+                    .map((hazard) => (locale === "ne" ? hazard.labelLocal : hazard.label))
+                    .join(" · ")}
+                </span>
+              </p>
+            </div>
           </div>
 
           {/* What we will not do, stated plainly, no panel, because a box would make it look like a

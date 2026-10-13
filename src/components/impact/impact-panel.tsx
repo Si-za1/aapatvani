@@ -11,6 +11,7 @@
 
 import { useState } from "react";
 import { Dumbbell } from "@/components/charts/dumbbell";
+import { FindingDeck } from "@/components/impact/finding-deck";
 import { ImpactRose } from "@/components/impact/impact-rose";
 import { useRouter } from "next/navigation";
 import {
@@ -38,13 +39,6 @@ const FINDING_ORDER: ImpactCandidate["finding"][] = [
   "nearby",
 ];
 
-const FINDING_LABEL: Record<ImpactCandidate["finding"], string> = {
-  possibly_blocked: "Road possibly blocked",
-  lost_access: "Places that lose road access to care",
-  longer_route: "Places whose route to care becomes much longer",
-  catchment_affected: "Health facilities whose catchment changes",
-  nearby: "Nearby, being close does not mean affected",
-};
 
 export interface ImpactPanelProps {
   incidentId: string;
@@ -145,10 +139,22 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, now, ca
   const reviewed = assessment.candidates.filter((c) => c.review.status !== "unreviewed");
   const confirmed = assessment.candidates.filter((c) => c.review.status === "confirmed" || c.review.status === "edited");
 
-  const groups = FINDING_ORDER.map((finding) => ({
-    finding,
-    items: unreviewed.filter((c) => c.finding === finding),
-  })).filter((group) => group.items.length > 0);
+  // Every place whose route to care changed, whatever its review state: the chart is the shape of
+  // the finding, not the state of the paperwork.
+  const accessRows = assessment.candidates
+    .filter(
+      (candidate) =>
+        candidate.kind === "settlement_access" &&
+        (candidate.finding === "lost_access" || candidate.finding === "longer_route"),
+    )
+    .sort((a, b) => (b.metrics.beforeM ?? 0) - (a.metrics.beforeM ?? 0))
+    .map((candidate) => ({
+      key: candidate.id,
+      label: candidate.name,
+      detail: candidate.access?.find((entry) => entry.target === "any_health_facility")?.afterFacilityName,
+      beforeM: candidate.metrics.beforeM ?? null,
+      afterM: candidate.metrics.afterM ?? null,
+    }));
 
   return (
     <section aria-labelledby="impact-heading" className="flex flex-col gap-4">
@@ -265,52 +271,27 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, now, ca
           </span>
         </h3>
 
-        {groups.length === 0 ? (
+        {/* The shape of the access findings, before the sentences about them: one row per place,
+            and the length of its line is how much further the road to care became. */}
+        {accessRows.length > 0 ? (
+          <Dumbbell before="Route to care before" after="With the blockage assumed" rows={accessRows} />
+        ) : null}
+
+        {/* Then the decisions, one at a time. A dozen findings stacked in a column each with the
+            same two buttons hides how much is left and makes the last one look like the first. */}
+        {unreviewed.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border bg-card px-4 py-4 text-sm text-muted-foreground">
             Every finding has been reviewed.
           </p>
         ) : (
-          groups.map((group) => (
-            <div key={group.finding} className="flex flex-col gap-2">
-              <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {FINDING_LABEL[group.finding]} · {group.items.length}
-              </h4>
-
-              {/* The shape of the finding, before the sentences about it. Every row is one place,
-                  and the length of its line is how much further the road to care became. */}
-              {group.finding === "lost_access" || group.finding === "longer_route" ? (
-                <Dumbbell
-                  before="Route to care before"
-                  after="With the blockage assumed"
-                  rows={group.items
-                    .filter((candidate) => candidate.kind === "settlement_access")
-                    .map((candidate) => ({
-                      key: candidate.id,
-                      label: candidate.name,
-                      detail: candidate.access?.find((entry) => entry.target === "any_health_facility")
-                        ?.afterFacilityName,
-                      beforeM: candidate.metrics.beforeM ?? null,
-                      afterM: candidate.metrics.afterM ?? null,
-                    }))}
-                />
-              ) : null}
-              <ul className="flex flex-col gap-2">
-                {group.items.slice(0, 30).map((candidate) => (
-                  <CandidateCard
-                    key={candidate.id}
-                    candidate={candidate}
-                    now={now}
-                    busy={busy === candidate.id}
-                    disabled={busy !== null}
-                    onReview={(decision) => void review(candidate.id, decision)}
-                  />
-                ))}
-              </ul>
-              {group.items.length > 30 ? (
-                <p className="text-xs text-muted-foreground">Showing 30 of {group.items.length}.</p>
-              ) : null}
-            </div>
-          ))
+          <FindingDeck
+            candidates={[...unreviewed].sort(
+              (a, b) => FINDING_ORDER.indexOf(a.finding) - FINDING_ORDER.indexOf(b.finding) || b.severity - a.severity,
+            )}
+            busy={busy !== null}
+            disabled={busy !== null}
+            onReview={(id, decision) => void review(id, decision)}
+          />
         )}
 
         {reviewed.length > 0 ? (

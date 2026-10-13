@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/av/app-shell";
+import { IncidentOverview } from "@/components/review/incident-overview";
 import { IncidentTabs } from "@/components/review/incident-tabs";
 import { AlertPanel } from "@/components/alerts/alert-panel";
 import { DataLabelBadge, ReviewBadge } from "@/components/av/trust-labels";
@@ -187,8 +188,25 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
           of them at once, one under the other, with the road analysis two thousand pixels down. */}
       <div className="pt-6">
         <IncidentTabs
-          fallback="evidence"
+          fallback="overview"
           tabs={[
+            {
+              key: "overview",
+              label: "Overview",
+              content: (
+                <IncidentOverview
+                  incident={incident}
+                  reports={reports}
+                  copyOf={Object.fromEntries(members.filter((m) => m.copyOf).map((m) => [m.reportId, m.copyOf]))}
+                  claims={claims}
+                  assessment={assessment}
+                  openContradictions={contradictions.filter((c) => c.status === "open").length}
+                  settledContradictions={contradictions.filter((c) => c.status !== "open").length}
+                  regionId={region.id}
+                  now={now}
+                />
+              ),
+            },
             {
               key: "evidence",
               label: "Evidence",
