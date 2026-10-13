@@ -76,6 +76,7 @@ export function IncidentWorkspace({
   contradictions,
   reportLabels,
   canRunModel,
+  section = "all",
 }: {
   incidentId: string;
   members: MemberView[];
@@ -83,6 +84,8 @@ export function IncidentWorkspace({
   contradictions: ContradictionView[];
   reportLabels: Record<string, string>;
   canRunModel: boolean;
+  /** This part of the workspace is shown on its own tab, rather than the whole thing at once. */
+  section?: "all" | "evidence" | "grouping";
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
@@ -115,10 +118,13 @@ export function IncidentWorkspace({
   const settledContradictions = contradictions.filter((c) => c.status !== "open");
 
   return (
-    <div className="flex flex-col gap-6 px-5 py-6 sm:px-8">
+    <div className="flex flex-col gap-6">
       {note ? <p className="rounded-2xl bg-moss-tint px-4 py-3 text-sm text-moss-strong">{note}</p> : null}
 
-      <section aria-labelledby="members-heading" className="flex flex-col gap-3">
+      <section
+        aria-labelledby="members-heading"
+        className={cn("flex-col gap-3", section === "grouping" ? "hidden" : "flex")}
+      >
         <h2 id="members-heading" className="text-sm font-semibold">
           Reports in this incident
           <span className="ml-2 font-normal text-muted-foreground">
@@ -204,7 +210,10 @@ export function IncidentWorkspace({
         </ul>
       </section>
 
-      <section aria-labelledby="suggestions-heading" className="flex flex-col gap-3">
+      <section
+        aria-labelledby="suggestions-heading"
+        className={cn("flex-col gap-3", section === "evidence" ? "hidden" : "flex")}
+      >
         <h2 id="suggestions-heading" className="text-sm font-semibold">
           Suggested matches
           <span className="ml-2 font-normal text-muted-foreground">
@@ -270,7 +279,10 @@ export function IncidentWorkspace({
         ) : null}
       </section>
 
-      <section aria-labelledby="contradictions-heading" className="flex flex-col gap-3">
+      <section
+        aria-labelledby="contradictions-heading"
+        className={cn("flex-col gap-3", section === "evidence" ? "hidden" : "flex")}
+      >
         <h2 id="contradictions-heading" className="text-sm font-semibold">
           Contradictions
           <span className="ml-2 font-normal text-muted-foreground">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/av/app-shell";
+import { IncidentTabs } from "@/components/review/incident-tabs";
 import { AlertPanel } from "@/components/alerts/alert-panel";
 import { DataLabelBadge, ReviewBadge } from "@/components/av/trust-labels";
 import { ImpactMapPanel } from "@/components/impact/impact-map-panel";
@@ -128,6 +129,10 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
     resolution: c.resolution ? { byName: c.resolution.byName, note: c.resolution.note } : undefined,
   }));
 
+  // Read once, here, and handed to the client components that need it, so that what the server
+  // renders and what the browser hydrates agree about what time it is.
+  const now = new Date().toISOString();
+
   const status = STATUS_TONE[incident.status];
   const unreviewed = claims.filter((c) => c.review.status === "unreviewed").length;
   const reportLabels = Object.fromEntries(reports.map((r) => [r.id, r.referenceCode]));
@@ -142,119 +147,154 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
       </PageHeader>
 
       <div className="flex flex-col gap-4">
-        <Link href="/incidents" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
-          <ArrowLeft className="size-4" aria-hidden />
-          All incidents
-        </Link>
-
-        {/* This page is long, and the parts of it a reviewer needs are far apart. These are jumps,
-            not tabs: everything stays on one page, because an incident is one thing and its
-            membership, its road analysis and its alert are not three screens. */}
-        <nav aria-label="On this page" className="flex flex-wrap items-center gap-1.5 pt-1">
-          {[
-            { href: "#membership", label: "Membership", state: undefined },
-            {
-              href: "#impact",
-              label: "Impact analysis",
-              // The road analysis is the part of this page nobody can find, so the jump to it also
-              // says whether there is anything there to find.
-              state: assessment ? `run · v${assessment.version}` : "not run yet",
-            },
-            { href: "#alert", label: "Alert draft", state: alert ? alert.status : "not drafted" },
-          ].map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              {item.label}
-              {item.state ? (
-                <span className="rounded-full bg-sand px-1.5 py-0.5 text-[10px] font-semibold text-ink-soft">
-                  {item.state}
-                </span>
-              ) : null}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
-            <MapPin className="size-4" aria-hidden />
-            {incident.location
-              ? `${incident.location.lat.toFixed(5)}, ${incident.location.lng.toFixed(5)} ±${incident.location.uncertaintyM} m (${incident.location.source.replace("_", " ")})`
-              : "No location established"}
-          </span>
-          <span>First reported {formatDateTime(incident.firstReportedAt, region.timezone)}</span>
-          <span>
-            {incident.independentSources} independent source{incident.independentSources === 1 ? "" : "s"}
-          </span>
-          <ReviewBadge status={unreviewed > 0 ? "unreviewed" : "confirmed"} />
-          {unreviewed > 0 ? <span>{unreviewed} claims still unreviewed</span> : null}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <Link href="/incidents" className="inline-flex w-fit items-center gap-2 text-sm font-medium text-ink-soft hover:underline">
+            <ArrowLeft className="size-4" aria-hidden />
+            All incidents
+          </Link>
         </div>
+
+        {/* What this is, in one strip. The responder's first three questions are what happened, why we
+            think so, and where, and they are answered here before anything else on the page. */}
+        <dl className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 xl:grid-cols-4">
+          <Fact label="Where">
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              {incident.location
+                ? `${incident.location.lat.toFixed(4)}, ${incident.location.lng.toFixed(4)} ±${incident.location.uncertaintyM} m`
+                : "No location established"}
+            </span>
+          </Fact>
+          <Fact label="Why we think so">
+            {members.length} report{members.length === 1 ? "" : "s"} · {incident.independentSources} independent
+            {unreviewed > 0 ? ` · ${unreviewed} claim${unreviewed === 1 ? "" : "s"} unchecked` : ""}
+          </Fact>
+          <Fact label="Road analysis">
+            {assessment ? `Run, version ${assessment.version} · ${assessment.candidates.length} findings` : "Not run yet"}
+          </Fact>
+          <Fact label="Alert">
+            {alert ? `${alert.status[0].toUpperCase()}${alert.status.slice(1)} · nothing is ever sent` : "Not drafted"}
+          </Fact>
+        </dl>
+
+        <p className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+          <span>First reported {formatDateTime(incident.firstReportedAt, region.timezone)}</span>
+          <ReviewBadge status={unreviewed > 0 ? "unreviewed" : "confirmed"} />
+        </p>
       </div>
 
-      <section id="membership" className="scroll-mt-24">
-        <IncidentWorkspace
-          incidentId={incident.id}
-          members={members}
-          suggestions={suggestionViews}
-          contradictions={contradictionViews}
-          reportLabels={reportLabels}
-          canRunModel={aiStatus().configured}
-        />
-      </section>
-
-      <div className="mt-8 flex flex-col gap-8 border-t border-border pt-8">
-        <section id="impact" className="scroll-mt-24">
-          <ImpactPanel
-            incidentId={incident.id}
-            assessment={assessment}
-            history={assessments
-              .slice()
-              .sort((a, b) => b.version - a.version)
-              .map((entry) => ({
-                id: entry.id,
-                version: entry.version,
-                createdAt: entry.createdAt,
-                createdBy: entry.createdBy.name,
-                status: entry.status,
-                candidates: entry.candidates.length,
-              }))}
-            timeZone={region.timezone}
-            canRunModel={aiStatus().configured}
-            map={
-              assessment && incident.location ? (
-                <ImpactMapPanel
-                  assessment={assessment}
-                  incident={{ lat: incident.location.lat, lng: incident.location.lng, label: incident.title }}
-                  center={[incident.location.lat, incident.location.lng]}
-                  zoom={13}
-                  tileUrl={env.map.tileUrl}
-                  attribution={env.map.attribution}
+      {/* Four parts, one at a time. The heaviest thing here was never any single section; it was all
+          of them at once, one under the other, with the road analysis two thousand pixels down. */}
+      <div className="pt-6">
+        <IncidentTabs
+          fallback="evidence"
+          tabs={[
+            {
+              key: "evidence",
+              label: "Evidence",
+              badge: String(members.length),
+              content: (
+                <IncidentWorkspace
+                  incidentId={incident.id}
+                  members={members}
+                  suggestions={[]}
+                  contradictions={[]}
+                  reportLabels={reportLabels}
+                  canRunModel={aiStatus().configured}
+                  section="evidence"
                 />
-            ) : null
-          }
-          />
-        </section>
-
-        <section id="alert" className="scroll-mt-24">
-          <AlertPanel
-            incidentId={incident.id}
-            draft={alert}
-            readiness={alertReadiness({ claims })}
-            confirmedClaims={claims.filter((c) => c.review.status === "confirmed" || c.review.status === "edited").length}
-            confirmedImpacts={confirmedCandidates(assessment).length}
-            openContradictions={contradictions.filter((c) => c.status === "open").length}
-            citationLabels={Object.fromEntries([
-              ...claims.map((claim) => [claim.id, (claim.editedStatement ?? claim.statementEn).slice(0, 60)]),
-              ...(assessment?.candidates ?? []).map((candidate) => [candidate.id, candidate.name.slice(0, 60)]),
-              ...contradictions.map((contradiction) => [contradiction.id, contradiction.kind.replace("_", " ")]),
-            ])}
-            timeZone={region.timezone}
-            canRunModel={aiStatus().configured}
-          />
-        </section>
+              ),
+            },
+            {
+              key: "grouping",
+              label: "Grouping",
+              badge: String(suggestions.filter((s) => s.status === "pending").length + contradictions.filter((c) => c.status === "open").length),
+              attention: contradictions.some((c) => c.status === "open"),
+              content: (
+                <IncidentWorkspace
+                  incidentId={incident.id}
+                  members={[]}
+                  suggestions={suggestionViews}
+                  contradictions={contradictionViews}
+                  reportLabels={reportLabels}
+                  canRunModel={aiStatus().configured}
+                  section="grouping"
+                />
+              ),
+            },
+            {
+              key: "impact",
+              label: "Impact",
+              badge: assessment ? `v${assessment.version}` : "not run",
+              attention: !assessment,
+              content: (
+                <ImpactPanel
+                  incidentId={incident.id}
+                  assessment={assessment}
+                  history={assessments
+                    .slice()
+                    .sort((a, b) => b.version - a.version)
+                    .map((entry) => ({
+                      id: entry.id,
+                      version: entry.version,
+                      createdAt: entry.createdAt,
+                      createdBy: entry.createdBy.name,
+                      status: entry.status,
+                      candidates: entry.candidates.length,
+                    }))}
+                  timeZone={region.timezone}
+                  now={now}
+                  canRunModel={aiStatus().configured}
+                  map={
+                    assessment && incident.location ? (
+                      <ImpactMapPanel
+                        assessment={assessment}
+                        incident={{ lat: incident.location.lat, lng: incident.location.lng, label: incident.title }}
+                        center={[incident.location.lat, incident.location.lng]}
+                        zoom={13}
+                        tileUrl={env.map.tileUrl}
+                        attribution={env.map.attribution}
+                      />
+                    ) : null
+                  }
+                />
+              ),
+            },
+            {
+              key: "alert",
+              label: "Alert draft",
+              badge: alert ? alert.status : "none",
+              content: (
+                <AlertPanel
+                  incidentId={incident.id}
+                  draft={alert}
+                  readiness={alertReadiness({ claims })}
+                  confirmedClaims={claims.filter((c) => c.review.status === "confirmed" || c.review.status === "edited").length}
+                  confirmedImpacts={confirmedCandidates(assessment).length}
+                  openContradictions={contradictions.filter((c) => c.status === "open").length}
+                  citationLabels={Object.fromEntries([
+                    ...claims.map((claim) => [claim.id, (claim.editedStatement ?? claim.statementEn).slice(0, 60)]),
+                    ...(assessment?.candidates ?? []).map((candidate) => [candidate.id, candidate.name.slice(0, 60)]),
+                    ...contradictions.map((contradiction) => [contradiction.id, contradiction.kind.replace("_", " ")]),
+                  ])}
+                  timeZone={region.timezone}
+                  canRunModel={aiStatus().configured}
+                />
+              ),
+            },
+          ]}
+        />
       </div>
     </AppShell>
+  );
+}
+
+/** One fact in the strip at the top: a small label, and the answer. */
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1 bg-card px-4 py-3">
+      <dt className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{label}</dt>
+      <dd className="text-sm">{children}</dd>
+    </div>
   );
 }

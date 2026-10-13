@@ -11,6 +11,7 @@
 
 import { useState } from "react";
 import { Dumbbell } from "@/components/charts/dumbbell";
+import { ImpactRose } from "@/components/impact/impact-rose";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -50,12 +51,19 @@ export interface ImpactPanelProps {
   assessment: ImpactAssessment | null;
   history: Array<{ id: string; version: number; createdAt: string; createdBy: string; status: string; candidates: number }>;
   timeZone: string;
+  /**
+   * The moment this page was rendered, passed in rather than read here. `relativeTime` falls back to
+   * the clock, and this is a Client Component: the server would say "2 h ago" and the browser would
+   * say "2 h ago" a few milliseconds later, which is enough for React to throw the whole tree away
+   * and re-render it, and for the page to flicker on every load.
+   */
+  now: string;
   canRunModel: boolean;
   /** Renders the map; passed in so the Leaflet bundle stays out of this component. */
   map: React.ReactNode;
 }
 
-export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunModel, map }: ImpactPanelProps) {
+export function ImpactPanel({ incidentId, assessment, history, timeZone, now, canRunModel, map }: ImpactPanelProps) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -188,7 +196,22 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
 
       {note ? <p className="rounded-2xl bg-moss-tint px-4 py-3 text-sm text-moss-strong">{note}</p> : null}
 
-      {map}
+      {/* The two halves of "where": the map says which roads, the rose says how far and which way.
+          Both, side by side, because either one alone leaves the reader doing the other's job. */}
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <div className="min-w-0">{map}</div>
+        {assessment.inputs.location ? (
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <h3 className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              How far, and which way
+            </h3>
+            <ImpactRose
+              centre={{ lat: assessment.inputs.location.lat, lng: assessment.inputs.location.lng }}
+              candidates={assessment.candidates}
+            />
+          </div>
+        ) : null}
+      </div>
 
       {assessment.aiExplanation ? (
         <div className="flex flex-col gap-1.5 rounded-2xl bg-violet-tint px-4 py-3.5 text-sm text-violet-strong">
@@ -276,6 +299,7 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
                   <CandidateCard
                     key={candidate.id}
                     candidate={candidate}
+                    now={now}
                     busy={busy === candidate.id}
                     disabled={busy !== null}
                     onReview={(decision) => void review(candidate.id, decision)}
@@ -302,7 +326,14 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
             {showReviewed ? (
               <ul className="flex flex-col gap-2">
                 {reviewed.slice(0, 40).map((candidate) => (
-                  <CandidateCard key={candidate.id} candidate={candidate} busy={false} disabled onReview={() => undefined} />
+                  <CandidateCard
+                    key={candidate.id}
+                    candidate={candidate}
+                    now={now}
+                    busy={false}
+                    disabled
+                    onReview={() => undefined}
+                  />
                 ))}
               </ul>
             ) : null}
@@ -332,11 +363,14 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
 
 function CandidateCard({
   candidate,
+  now,
   busy,
   disabled,
   onReview,
 }: {
   candidate: ImpactCandidate;
+  /** The render moment, from the page, so the relative label matches on both sides. */
+  now: string;
   busy: boolean;
   disabled: boolean;
   onReview: (decision: "confirmed" | "dismissed") => void;
@@ -431,7 +465,7 @@ function CandidateCard({
           </Button>
         </div>
       ) : candidate.review.at ? (
-        <p className="text-xs text-muted-foreground">Reviewed {relativeTime(candidate.review.at)}</p>
+        <p className="text-xs text-muted-foreground">Reviewed {relativeTime(candidate.review.at, Date.parse(now))}</p>
       ) : null}
 
       {candidate.review.note ? <p className="text-xs text-muted-foreground">Note: {candidate.review.note}</p> : null}

@@ -50,15 +50,19 @@ export function RecordCard({ event, timeZone }: { event: AuditEvent; timeZone: s
         <ActorBadge actor={event.actor.kind} name={event.actor.name} />
       </header>
 
-      <p className="line-clamp-2 text-sm leading-relaxed">{event.summary}</p>
+      {/* Exactly two lines of room, whether the sentence needs one or two. Clipping alone still
+          lets a short entry collapse, and a card whose text stops early leaves its chips floating
+          at a different height from its neighbour's — the boxes match but nothing inside them
+          lines up, which is what reads as untidy. */}
+      <p className="line-clamp-2 min-h-12 text-sm leading-6">{event.summary}</p>
 
       {event.note ? (
-        <p className="line-clamp-2 border-l-2 border-foreground/15 pl-3 text-xs leading-relaxed text-foreground/70 italic">
+        <p className="line-clamp-1 border-l-2 border-foreground/15 pl-3 text-xs leading-5 text-foreground/70 italic">
           {event.note}
         </p>
       ) : null}
 
-      <footer className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
+      <footer className="mt-3 flex flex-wrap items-center gap-1.5">
         <code className="rounded-full bg-foreground/8 px-2 py-0.5 font-mono text-[10px] text-foreground/60">
           {event.action}
         </code>
