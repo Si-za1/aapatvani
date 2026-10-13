@@ -32,8 +32,8 @@ const SURFACE: Record<Actor["kind"], string> = {
  * stay legible on any of the four tinted surfaces behind them, including their own.
  */
 const TARGET = {
-  report: { label: "The report", className: "bg-card text-coral-strong", Icon: FileText },
-  incident: { label: "The incident", className: "bg-card text-moss-strong", Icon: Layers },
+  report: { label: "The report", className: "bg-coral-strong text-white", Icon: FileText },
+  incident: { label: "The incident", className: "bg-moss-strong text-white", Icon: Layers },
 } as const;
 
 export function RecordCard({ event, timeZone }: { event: AuditEvent; timeZone: string }) {
@@ -63,7 +63,9 @@ export function RecordCard({ event, timeZone }: { event: AuditEvent; timeZone: s
       ) : null}
 
       <footer className="mt-3 flex flex-wrap items-center gap-1.5">
-        <code className="rounded-full bg-foreground/8 px-2 py-0.5 font-mono text-[10px] text-foreground/60">
+        {/* The technical name of the action, quiet but legible: it is the field an engineer would
+            search for, and at 8% ink it was closer to a smudge than to a label. */}
+        <code className="rounded-full bg-card/70 px-2 py-0.5 font-mono text-[10px] font-medium text-foreground/70">
           {event.action}
         </code>
         {targets.map(({ key, href }) => {
@@ -73,7 +75,7 @@ export function RecordCard({ event, timeZone }: { event: AuditEvent; timeZone: s
               key={key}
               href={href}
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold transition-transform hover:scale-[1.04]",
+                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow-sm transition-transform hover:scale-[1.06]",
                 chip.className,
               )}
             >

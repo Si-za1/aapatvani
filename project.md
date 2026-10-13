@@ -422,6 +422,11 @@ We use the Larcha–Tatopani stretch: a fictional landslide in real geography, l
 
 ## 14. Progress log
 
+- **2026-10-13 (the record cards were never the same width):** Reported as "some are big, some are small", and the first fix missed it because it measured the wrong thing: **heights were already uniform to the pixel**, and I checked heights, found them equal, and moved on. The widths were not. Each cell was a `flex` box, so the card inside it was a flex item and sized itself **to its own text** — one-line entries drew a narrow card, two-line entries a wide one, inside columns that were all `456px`. Measured across six consecutive cards: 360, 317, 303, 456, 456, 456. A plain block cell fixes it, and all forty-one cards are now **456 × 182, one width and one height**. The lesson is in which measurement I trusted: "are they the same height" was the easy question and the wrong one.
+
+  The link chips are visible now. **The report** is a solid coral chip and **The incident** a solid olive one, both with white text and an icon, and the technical action code (`impact.confirmed`) sits on a white chip instead of 8%-ink, which was closer to a smudge than a label. They were always links; they just did not look like anything, which is why "how do I get to the report from here" was a fair question to ask.
+
+  208 tests pass, typecheck, lint and build clean; verified on a production build.
 - **2026-10-13 (a shorter incident page, a chart for the blast radius, and two real bugs):** Four things, and the last two are the ones that matter.
 
   **The incident workspace is four panels behind a switch and a strip of facts.** It ran to **6,069 px**: membership, fourteen suggested matches, three contradictions, a road analysis and an alert draft, one under the other, with the road analysis two thousand pixels down. It is now **1,070 px** — a facts strip answering what/why/where (**Where · Why we think so · Road analysis · Alert**), then **Evidence · Grouping · Impact · Alert draft**. Nothing was removed; every action is still on the page, in the panel it belongs to. The switch carries each part's state, so a reviewer can see the road analysis has been run, or has not, without opening it, and the open panel lives in the URL like every other view in this app.

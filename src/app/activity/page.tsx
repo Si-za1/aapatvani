@@ -138,9 +138,12 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
                       {group.entries.length}
                     </span>
                   </h3>
+                  {/* Each cell is a plain block, not a flex box. As a flex item the card sized
+                      itself to its own text, so a one-line entry drew a narrow card and a two-line
+                      one drew a wide one, inside columns that were all the same width. */}
                   <ul className="grid auto-rows-fr gap-3 md:grid-cols-2">
                     {group.entries.slice(0, 60).map((event) => (
-                      <li key={event.id} className="flex">
+                      <li key={event.id}>
                         <RecordCard event={event} timeZone={region.timezone} />
                       </li>
                     ))}
