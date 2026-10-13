@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { History, Quote, ShieldCheck } from "lucide-react";
+import { History } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/av/app-shell";
 import { SectionCard } from "@/components/av/cards";
 import { ACTOR_TONE } from "@/components/av/trust-labels";
@@ -85,12 +85,6 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
 
   const now = new Date().toISOString();
   const groups = groupEntries(events, "day", now, region.timezone);
-  // A sign-in is a person, but it is not a decision: this card is for the moments where somebody
-  // looked at the evidence and said something about it.
-  const decisions = all
-    .filter((event) => event.actor.kind === "human" && event.targetType !== "session")
-    .slice(0, 3);
-
   return (
     <AppShell current="/activity" reviewer={reviewer}>
       <PageHeader
@@ -121,7 +115,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
         </div>
       </PageHeader>
 
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_21rem]">
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_19rem]">
         <SectionCard
           title="The record"
           note={`${events.length} ${events.length === 1 ? "entry" : "entries"}, newest first`}
@@ -144,7 +138,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
                       {group.entries.length}
                     </span>
                   </h3>
-                  <ul className="grid gap-3 md:grid-cols-2">
+                  <ul className="grid auto-rows-fr gap-3 md:grid-cols-2">
                     {group.entries.slice(0, 60).map((event) => (
                       <li key={event.id} className="flex">
                         <RecordCard event={event} timeZone={region.timezone} />
@@ -163,56 +157,9 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
           ) : null}
         </SectionCard>
 
-        <div className="flex flex-col gap-5">
+        <div className="xl:sticky xl:top-20">
           <SectionCard title="Who did what" note="The whole record">
             <StackedBar slices={slices} total={all.length} unit="event" />
-          </SectionCard>
-
-          <SectionCard title="Decisions, in their own words">
-            {decisions.length === 0 ? (
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Nobody has decided anything on this deployment yet. Every entry above is the app and the model
-                working on their own, which is why nothing here says Confirmed.
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-3.5">
-                {decisions.map((event) => (
-                  <li key={event.id} className="flex gap-2.5">
-                    <Quote className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
-                    <span className="flex flex-col gap-0.5">
-                      <span className="text-xs leading-relaxed">{event.note ?? event.summary}</span>
-                      <span className="text-[11px] text-muted-foreground">{event.actor.name}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </SectionCard>
-
-          <SectionCard title="How to read this page">
-            <ul className="flex flex-col gap-2.5 text-xs leading-relaxed text-muted-foreground">
-              <li className="flex gap-2.5">
-                <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
-                <span>
-                  Every entry says who or what caused it. A model&rsquo;s reading and a person&rsquo;s decision never
-                  look alike, on this page or anywhere else in the app.
-                </span>
-              </li>
-              <li className="flex gap-2.5">
-                <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
-                <span>
-                  Nothing is edited or deleted. A correction is a new entry, so the trail still shows what was
-                  believed before it.
-                </span>
-              </li>
-              <li className="flex gap-2.5">
-                <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
-                <span>
-                  The word Confirmed only ever appears after a named reviewer acts. On this deployment it has not,
-                  and the numbers above say so.
-                </span>
-              </li>
-            </ul>
           </SectionCard>
         </div>
       </div>

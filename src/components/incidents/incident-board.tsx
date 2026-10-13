@@ -137,25 +137,27 @@ export function IncidentCard({ incident, reportCount }: { incident: Incident; re
         </span>
       </span>
 
-      {incident.openContradictions > 0 || incident.latestImpactId || incident.latestAlertId ? (
-        <span className="flex flex-wrap items-center gap-1.5 border-t border-border/70 pt-3">
-          {incident.openContradictions > 0 ? (
-            <Flag tone="bg-flame-tint text-flame-strong" Icon={GitCompareArrows}>
-              {incident.openContradictions} contradiction{incident.openContradictions === 1 ? "" : "s"}
-            </Flag>
-          ) : null}
-          {incident.latestImpactId ? (
-            <Flag tone="bg-moss-tint text-moss-strong" Icon={Calculator}>
-              Blast radius run
-            </Flag>
-          ) : null}
-          {incident.latestAlertId ? (
-            <Flag tone="bg-violet-tint text-violet-strong" Icon={TriangleAlert}>
-              Alert drafted
-            </Flag>
-          ) : null}
-        </span>
-      ) : null}
+      <span className="flex flex-wrap items-center gap-1.5 border-t border-border/70 pt-3">
+        {incident.openContradictions > 0 ? (
+          <Flag tone="bg-flame-tint text-flame-strong" Icon={GitCompareArrows}>
+            {incident.openContradictions} contradiction{incident.openContradictions === 1 ? "" : "s"}
+          </Flag>
+        ) : null}
+        {/* Always shown, in one state or the other. The road analysis is the part of this product
+            nobody finds by accident, and a chip that only appears once you have run it is a chip
+            that never tells you it is there. */}
+        <Flag
+          tone={incident.latestImpactId ? "bg-moss-tint text-moss-strong" : "bg-stone-tint text-stone-strong"}
+          Icon={Calculator}
+        >
+          {incident.latestImpactId ? "Blast radius run" : "Blast radius not run"}
+        </Flag>
+        {incident.latestAlertId ? (
+          <Flag tone="bg-violet-tint text-violet-strong" Icon={TriangleAlert}>
+            Alert drafted
+          </Flag>
+        ) : null}
+      </span>
 
       {incident.verification ? (
         <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-leaf-strong">

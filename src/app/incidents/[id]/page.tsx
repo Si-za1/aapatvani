@@ -152,16 +152,27 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
             membership, its road analysis and its alert are not three screens. */}
         <nav aria-label="On this page" className="flex flex-wrap items-center gap-1.5 pt-1">
           {[
-            { href: "#membership", label: "Membership" },
-            { href: "#impact", label: "Impact analysis" },
-            { href: "#alert", label: "Alert draft" },
+            { href: "#membership", label: "Membership", state: undefined },
+            {
+              href: "#impact",
+              label: "Impact analysis",
+              // The road analysis is the part of this page nobody can find, so the jump to it also
+              // says whether there is anything there to find.
+              state: assessment ? `run · v${assessment.version}` : "not run yet",
+            },
+            { href: "#alert", label: "Alert draft", state: alert ? alert.status : "not drafted" },
           ].map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               {item.label}
+              {item.state ? (
+                <span className="rounded-full bg-sand px-1.5 py-0.5 text-[10px] font-semibold text-ink-soft">
+                  {item.state}
+                </span>
+              ) : null}
             </a>
           ))}
         </nav>
