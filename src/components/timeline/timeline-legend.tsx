@@ -1,21 +1,22 @@
-// How to read the rail.
+// How to read the line.
 //
-// Every node on the timeline carries a colour, an icon and a word, and the word is on the node
-// itself. This card is here because the colour is the fastest thing to read and the slowest thing to
-// trust, so the four producers are spelled out once, with what each of them actually means and how
-// much of this view each accounts for.
+// Every node carries a colour, an icon and a word, and the word is on the node itself. This strip is
+// here because the colour is the fastest thing to read and the slowest thing to trust, so the four
+// producers are spelled out once, with what each actually means and how much of this view it
+// accounts for. It runs along the bottom rather than down a side column, because the line wants the
+// whole width.
 
 import { ACTOR_TONE } from "@/components/av/trust-labels";
 import { SectionCard } from "@/components/av/cards";
 import type { Actor } from "@/lib/domain/schemas";
-import type { TimelineEntry } from "@/lib/timeline/service";
+import type { TimelineEntry } from "@/lib/timeline/types";
 import { cn } from "@/lib/utils";
 
-const MEANING: Record<Actor["kind"], { blurb: string }> = {
-  public: { blurb: "What a member of the community sent in, in their own words." },
-  ai: { blurb: "What Gemini read from a report. Labelled as an interpretation, never as fact." },
-  system: { blurb: "What deterministic code worked out over the road network, map data or grouping rules." },
-  human: { blurb: "What a named reviewer decided. This is the only source of the word Confirmed." },
+const MEANING: Record<Actor["kind"], string> = {
+  public: "What a member of the community sent in, in their own words. These are the pills above the line.",
+  ai: "What Gemini read from a report. Labelled as an interpretation, never as fact.",
+  system: "What deterministic code worked out over the road network, the map data or the grouping rules.",
+  human: "What a named reviewer decided. The only source of the word Confirmed.",
 };
 
 const ORDER: Actor["kind"][] = ["public", "ai", "system", "human"];
@@ -26,7 +27,7 @@ export function TimelineLegend({ entries }: { entries: TimelineEntry[] }) {
 
   return (
     <SectionCard title="Who produced what" note="In this view">
-      <ul className="flex flex-col gap-3.5">
+      <ul className="grid gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
         {ORDER.map((kind) => {
           const tone = ACTOR_TONE[kind];
           const count = counts.get(kind) ?? 0;
@@ -41,21 +42,14 @@ export function TimelineLegend({ entries }: { entries: TimelineEntry[] }) {
               <span className="flex min-w-0 flex-col gap-1">
                 <span className="flex items-baseline gap-2">
                   <span className="text-sm font-semibold">{tone.label}</span>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {count} {count === 1 ? "entry" : "entries"}
-                  </span>
+                  <span className="text-xs text-muted-foreground tabular-nums">{count}</span>
                 </span>
-                <span className="text-xs leading-relaxed text-muted-foreground">{MEANING[kind].blurb}</span>
+                <span className="text-xs leading-relaxed text-muted-foreground">{MEANING[kind]}</span>
               </span>
             </li>
           );
         })}
       </ul>
-
-      <p className="mt-5 border-t border-border/70 pt-4 text-xs leading-relaxed text-muted-foreground">
-        Nothing here is rewritten to make the story tidier. A claim a reviewer rejected stays on the rail as a
-        rejection, and a correction shows the correction.
-      </p>
     </SectionCard>
   );
 }

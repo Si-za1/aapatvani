@@ -5,7 +5,7 @@
 // though it is still the previous afternoon in UTC, and a grouping that quietly used the server's
 // clock would put it in the wrong bucket on a Cloud Run machine in Mumbai.
 
-import type { TimelineEntry } from "./service";
+import type { TimelineEntry } from "./types";
 
 export type Granularity = "day" | "week" | "month";
 

@@ -14,35 +14,10 @@ import "server-only";
 // would be exactly the kind of guess this product exists to avoid.
 
 import { getDb } from "@/lib/db";
-import type { Actor } from "@/lib/domain/schemas";
+import { KIND_ORDER } from "./types";
+import type { TimelineData, TimelineEntry } from "./types";
 
-export type TimelineKind = "report" | "read" | "review" | "incident" | "impact" | "alert";
-
-export interface TimelineEntry {
-  id: string;
-  /** When this entered the record. */
-  at: string;
-  kind: TimelineKind;
-  /** Who produced it, using the same four kinds the trust model does. */
-  actor: Actor["kind"];
-  title: string;
-  detail?: string;
-  /** The reporter's verbatim words, when the entry rests on them. */
-  quote?: string;
-  /** What this entry is about, for the line under it. A reference code or a title. */
-  about?: string;
-  href?: string;
-  /** The hazard category this entry belongs to, for the filter. */
-  hazard?: string;
-}
-
-export interface TimelineData {
-  entries: TimelineEntry[];
-  /** Categories present in the data, with how many entries each has. */
-  categories: Array<{ id: string; count: number }>;
-  /** When this picture was taken, so the grouping can say "today" without reading the clock again. */
-  generatedAt: string;
-}
+export type { TimelineData, TimelineEntry, TimelineKind } from "./types";
 
 const QUOTE_LIMIT = 160;
 
@@ -254,8 +229,7 @@ export async function timelineData(category?: string): Promise<TimelineData> {
   // report, then the model reading it, then a person deciding. Left to the sort alone that would be
   // whatever order the loop above happened to use, which is a detail of this function rather than a
   // property of the evidence.
-  const rank: Record<TimelineKind, number> = { report: 0, read: 1, review: 2, incident: 3, impact: 4, alert: 5 };
-  scoped.sort((a, b) => b.at.localeCompare(a.at) || rank[a.kind] - rank[b.kind]);
+  scoped.sort((a, b) => b.at.localeCompare(a.at) || KIND_ORDER[a.kind] - KIND_ORDER[b.kind]);
 
   return {
     entries: scoped,
