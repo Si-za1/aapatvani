@@ -19,7 +19,7 @@ import type { TimelineEntry } from "@/lib/timeline/types";
 import { formatTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
-export function TimelineAxes({ groups, regionId }: { groups: TimelineGroup[]; regionId: string }) {
+export function TimelineAxes({ groups, regionId }: { groups: TimelineGroup<TimelineEntry>[]; regionId: string }) {
   return (
     <div className="flex flex-col gap-9">
       {groups.map((group) => (

@@ -5,8 +5,6 @@
 // though it is still the previous afternoon in UTC, and a grouping that quietly used the server's
 // clock would put it in the wrong bucket on a Cloud Run machine in Mumbai.
 
-import type { TimelineEntry } from "./types";
-
 export type Granularity = "day" | "week" | "month";
 
 export const GRANULARITIES: Array<{ value: Granularity; label: string }> = [
@@ -15,10 +13,10 @@ export const GRANULARITIES: Array<{ value: Granularity; label: string }> = [
   { value: "month", label: "Month" },
 ];
 
-export interface TimelineGroup {
+export interface TimelineGroup<T> {
   key: string;
   label: string;
-  entries: TimelineEntry[];
+  entries: T[];
 }
 
 /** A calendar date in a time zone, as three numbers. No Date arithmetic on the wall clock. */
@@ -103,18 +101,18 @@ function shiftMonth(date: LocalDate, months: number): LocalDate {
  * The first three labels are spoken rather than dated, because "Today" is easier to read than a date
  * and the reader already knows what day it is.
  */
-export function groupEntries(
-  entries: TimelineEntry[],
+export function groupEntries<T extends { at: string }>(
+  entries: T[],
   granularity: Granularity,
   now: string,
   timeZone = "Asia/Kathmandu",
-): TimelineGroup[] {
+): Array<TimelineGroup<T>> {
   const today = localDate(now, timeZone);
   const yesterdayKey = today ? dayKey(addDays(today, -1)) : null;
   const thisWeek = today ? weekStart(today) : null;
   const lastWeekKey = thisWeek ? dayKey(addDays(thisWeek, -7)) : null;
 
-  const groups = new Map<string, TimelineGroup>();
+  const groups = new Map<string, TimelineGroup<T>>();
 
   for (const entry of entries) {
     const date = localDate(entry.at, timeZone);

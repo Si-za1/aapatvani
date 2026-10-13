@@ -1,26 +1,29 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { History } from "lucide-react";
+import { History, Quote, ShieldCheck } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/av/app-shell";
-import { ActorBadge, actorTone } from "@/components/av/trust-labels";
-import { Card } from "@/components/ui/card";
+import { SectionCard } from "@/components/av/cards";
+import { ACTOR_TONE } from "@/components/av/trust-labels";
+import { RecordCard } from "@/components/activity/record-card";
+import { StackedBar, type Slice } from "@/components/charts/stacked-bar";
+import { getRegion } from "@/config/regions";
 import { requireReviewer } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import { formatDateTime } from "@/lib/time";
+import type { Actor } from "@/lib/domain/schemas";
+import { getEnv } from "@/lib/env";
+import { groupEntries } from "@/lib/timeline/group";
 import { cn } from "@/lib/utils";
 
 // The audit trail (feature M5). Append-only: nothing here is ever edited or deleted, so the page can
 // answer "who decided this, and when?" long after the decision.
 //
-// The three actor kinds are kept visibly apart, a model's output and a person's decision must never
-// look like the same kind of statement. That is the whole trust model in one screen.
+// Laid out as a record rather than a log. Grouped by day, with each entry on a surface tinted by
+// whoever produced it, so the shape of a week is legible before any of the sentences are. Down the
+// side, what the record is made of and what it is for, because the point of this page is not that
+// events exist but that a person's decisions and a model's output are never the same kind of thing.
 
 export const metadata: Metadata = { title: "Activity" };
-
-// The three actor kinds are kept visibly apart by ActorBadge, which also keeps this page, the
-// notification bell and the timeline from inventing three slightly different mappings of the same
-// four producers.
 
 const FILTERS = [
   { key: "all", label: "Everything" },
@@ -30,9 +33,26 @@ const FILTERS = [
   { key: "public", label: "Reporters" },
 ] as const;
 
+/** The chart tokens in their fixed order: reported, AI, computed, reviewer. */
+const CHART: Record<Actor["kind"], string> = {
+  public: "var(--chart-1)",
+  ai: "var(--chart-2)",
+  system: "var(--chart-3)",
+  human: "var(--chart-4)",
+};
+
+const ACTOR_ORDER: Actor["kind"][] = ["public", "ai", "system", "human"];
+
+const HINT: Record<Actor["kind"], string> = {
+  public: "Submitted by a member of the community.",
+  ai: "Read or written by Gemini.",
+  system: "Done by this app's own rules.",
+  human: "Decided by a named reviewer.",
+};
+
 export default function ActivityPage({ searchParams }: PageProps<"/activity">) {
   return (
-    <Suspense fallback={<div className="h-96 animate-pulse bg-sand" aria-hidden />}>
+    <Suspense fallback={<div className="h-[36rem] animate-pulse rounded-3xl bg-sand/60" aria-hidden />}>
       <Screen searchParams={searchParams} />
     </Suspense>
   );
@@ -42,17 +62,34 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
   const reviewer = await requireReviewer("/activity");
   const params = await searchParams;
   const actor = (FILTERS.find((f) => f.key === params.actor)?.key ?? "all") as (typeof FILTERS)[number]["key"];
+  const env = getEnv();
+  const region = getRegion(env.defaultRegionId);
 
   const db = getDb();
   const all = await db.events.list({ orderBy: { field: "at", direction: "desc" } });
   const events = actor === "all" ? all : all.filter((event) => event.actor.kind === actor);
 
-  const counts = {
-    human: all.filter((e) => e.actor.kind === "human").length,
-    ai: all.filter((e) => e.actor.kind === "ai").length,
-    system: all.filter((e) => e.actor.kind === "system").length,
-    public: all.filter((e) => e.actor.kind === "public").length,
-  };
+  const counts = Object.fromEntries(
+    ACTOR_ORDER.map((kind) => [kind, all.filter((event) => event.actor.kind === kind).length]),
+  ) as Record<Actor["kind"], number>;
+
+  // The chart always describes the whole record, never the filtered view: a filter that repainted
+  // the totals would make "how much of this is a machine's work" unanswerable.
+  const slices: Slice[] = ACTOR_ORDER.map((kind) => ({
+    key: kind,
+    label: ACTOR_TONE[kind].label,
+    value: counts[kind],
+    hint: HINT[kind],
+    color: CHART[kind],
+  }));
+
+  const now = new Date().toISOString();
+  const groups = groupEntries(events, "day", now, region.timezone);
+  // A sign-in is a person, but it is not a decision: this card is for the moments where somebody
+  // looked at the evidence and said something about it.
+  const decisions = all
+    .filter((event) => event.actor.kind === "human" && event.targetType !== "session")
+    .slice(0, 3);
 
   return (
     <AppShell current="/activity" reviewer={reviewer}>
@@ -63,7 +100,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
         <div className="flex flex-wrap items-center gap-1.5">
           {FILTERS.map((option) => {
             const active = option.key === actor;
-            const count = option.key === "all" ? all.length : counts[option.key as keyof typeof counts];
+            const count = option.key === "all" ? all.length : counts[option.key as Actor["kind"]];
             return (
               <Link
                 key={option.key}
@@ -71,7 +108,9 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
-                  active ? "border-transparent bg-primary text-primary-foreground" : "border-border bg-card hover:bg-accent",
+                  active
+                    ? "border-transparent bg-primary text-primary-foreground"
+                    : "border-border bg-card hover:bg-accent",
                 )}
               >
                 {option.label}
@@ -82,60 +121,100 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
         </div>
       </PageHeader>
 
-      <div className="flex flex-col gap-4">
-        {events.length === 0 ? (
-          <p className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
-            <History className="size-6 text-muted-foreground" aria-hidden />
-            <span className="text-sm font-medium">Nothing recorded yet</span>
-            <span className="text-sm text-muted-foreground">
-              Submitting a report, reading it, grouping reports and every review action all appear here.
-            </span>
-          </p>
-        ) : (
-          <ol className="flex flex-col gap-2">
-            {events.slice(0, 200).map((event) => {
-              const tone = actorTone(event.actor.kind);
-              return (
-                <li key={event.id}>
-                  <Card className="flex-row items-start gap-3 p-3.5">
-                    <span
-                      className={cn(
-                        "mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full",
-                        tone.className,
-                      )}
-                      aria-hidden
-                    >
-                      <tone.Icon className="size-3.5" />
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_21rem]">
+        <SectionCard
+          title="The record"
+          note={`${events.length} ${events.length === 1 ? "entry" : "entries"}, newest first`}
+        >
+          {events.length === 0 ? (
+            <p className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border px-6 py-14 text-center">
+              <History className="size-6 text-muted-foreground" aria-hidden />
+              <span className="text-sm font-medium">Nothing recorded yet</span>
+              <span className="max-w-md text-sm text-muted-foreground">
+                Submitting a report, reading it, grouping reports and every review action all appear here.
+              </span>
+            </p>
+          ) : (
+            <div className="flex flex-col gap-7">
+              {groups.map((group) => (
+                <section key={group.key} aria-label={group.label}>
+                  <h3 className="mb-3 flex items-baseline gap-3 text-sm font-bold tracking-tight">
+                    {group.label}
+                    <span className="text-xs font-normal text-muted-foreground tabular-nums">
+                      {group.entries.length}
                     </span>
-                    <div className="flex min-w-0 flex-1 flex-col gap-1">
-                      <p className="text-sm">{event.summary}</p>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                        <ActorBadge actor={event.actor.kind} name={event.actor.name} />
-                        <span className="font-mono">{event.action}</span>
-                        <span>{formatDateTime(event.at, "Asia/Kathmandu")}</span>
-                        {event.reportId ? (
-                          <Link href={`/reports/${event.reportId}`} className="underline">
-                            the report
-                          </Link>
-                        ) : null}
-                        {event.incidentId ? (
-                          <Link href={`/incidents/${event.incidentId}`} className="underline">
-                            the incident
-                          </Link>
-                        ) : null}
-                      </div>
-                      {event.note ? <p className="text-xs text-muted-foreground">Note: {event.note}</p> : null}
-                    </div>
-                  </Card>
-                </li>
-              );
-            })}
-          </ol>
-        )}
+                  </h3>
+                  <ul className="grid gap-3 md:grid-cols-2">
+                    {group.entries.slice(0, 60).map((event) => (
+                      <li key={event.id} className="flex">
+                        <RecordCard event={event} timeZone={region.timezone} />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          )}
 
-        {events.length > 200 ? (
-          <p className="text-center text-xs text-muted-foreground">Showing the 200 most recent of {events.length}.</p>
-        ) : null}
+          {events.length > 200 ? (
+            <p className="mt-5 border-t border-border/70 pt-4 text-center text-xs text-muted-foreground">
+              Showing the 200 most recent of {events.length}.
+            </p>
+          ) : null}
+        </SectionCard>
+
+        <div className="flex flex-col gap-5">
+          <SectionCard title="Who did what" note="The whole record">
+            <StackedBar slices={slices} total={all.length} unit="event" />
+          </SectionCard>
+
+          <SectionCard title="Decisions, in their own words">
+            {decisions.length === 0 ? (
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Nobody has decided anything on this deployment yet. Every entry above is the app and the model
+                working on their own, which is why nothing here says Confirmed.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3.5">
+                {decisions.map((event) => (
+                  <li key={event.id} className="flex gap-2.5">
+                    <Quote className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
+                    <span className="flex flex-col gap-0.5">
+                      <span className="text-xs leading-relaxed">{event.note ?? event.summary}</span>
+                      <span className="text-[11px] text-muted-foreground">{event.actor.name}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </SectionCard>
+
+          <SectionCard title="How to read this page">
+            <ul className="flex flex-col gap-2.5 text-xs leading-relaxed text-muted-foreground">
+              <li className="flex gap-2.5">
+                <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
+                <span>
+                  Every entry says who or what caused it. A model&rsquo;s reading and a person&rsquo;s decision never
+                  look alike, on this page or anywhere else in the app.
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
+                <span>
+                  Nothing is edited or deleted. A correction is a new entry, so the trail still shows what was
+                  believed before it.
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-leaf-strong" aria-hidden />
+                <span>
+                  The word Confirmed only ever appears after a named reviewer acts. On this deployment it has not,
+                  and the numbers above say so.
+                </span>
+              </li>
+            </ul>
+          </SectionCard>
+        </div>
       </div>
     </AppShell>
   );

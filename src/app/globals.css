@@ -129,11 +129,19 @@
   --border: #ece4da;
   --input: #e6ddd1;
   --ring: #7d8f3f;
-  --chart-1: var(--av-moss-strong);
-  --chart-2: var(--av-violet-strong);
-  --chart-3: var(--av-coral-strong);
-  --chart-4: var(--av-amber-strong);
-  --chart-5: var(--av-leaf-strong);
+  /* Chart marks, which are a different job from UI tints and need their own steps.
+     The tints above are surfaces: they are meant to sit behind text and be quiet, so they are pale,
+     low-chroma, and moss and leaf are the same hue at two lightnesses. Drawn as chart marks they
+     fail on three counts: two of them read as gray, and moss against leaf lands at ΔE 14 for normal
+     vision, so even a reader with full colour vision cannot tell those two slices apart. These four
+     are the same four families stepped for marks instead, and they pass the palette checks: the
+     lightness band, the chroma floor, colour-vision separation and contrast against the card.
+     Fixed order, never cycled: reported, AI, computed, reviewer. */
+  --chart-1: #d9612f; /* reported by the community */
+  --chart-2: #6a5cb8; /* read by the model */
+  --chart-3: #8aa03c; /* computed over the map data */
+  --chart-4: #527013; /* decided by a reviewer */
+  --chart-5: #7a5410; /* reserved: the fifth slot, unstyled for now */
   --sidebar: var(--av-ink);
   --sidebar-foreground: #f3f4e9;
   --sidebar-primary: #fefefe;

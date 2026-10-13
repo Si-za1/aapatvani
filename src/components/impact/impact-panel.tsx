@@ -10,6 +10,7 @@
 // never add a finding of its own.
 
 import { useState } from "react";
+import { Dumbbell } from "@/components/charts/dumbbell";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -251,6 +252,25 @@ export function ImpactPanel({ incidentId, assessment, history, timeZone, canRunM
               <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {FINDING_LABEL[group.finding]} · {group.items.length}
               </h4>
+
+              {/* The shape of the finding, before the sentences about it. Every row is one place,
+                  and the length of its line is how much further the road to care became. */}
+              {group.finding === "lost_access" || group.finding === "longer_route" ? (
+                <Dumbbell
+                  before="Route to care before"
+                  after="With the blockage assumed"
+                  rows={group.items
+                    .filter((candidate) => candidate.kind === "settlement_access")
+                    .map((candidate) => ({
+                      key: candidate.id,
+                      label: candidate.name,
+                      detail: candidate.access?.find((entry) => entry.target === "any_health_facility")
+                        ?.afterFacilityName,
+                      beforeM: candidate.metrics.beforeM ?? null,
+                      afterM: candidate.metrics.afterM ?? null,
+                    }))}
+                />
+              ) : null}
               <ul className="flex flex-col gap-2">
                 {group.items.slice(0, 30).map((candidate) => (
                   <CandidateCard
