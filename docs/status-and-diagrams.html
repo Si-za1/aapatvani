@@ -476,104 +476,58 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--bor
 
   <section class="card">
     <div>
-      <h2>Use cases, by who drives them</h2>
-      <p class="lede" style="margin-top:.35rem">Three actors outside the system, and the work each of them can start. The dashed links are the ones a reviewer never triggers directly: the system does them on their behalf, and says so.</p>
+      <h2>Use cases</h2>
+      <p class="lede" style="margin-top:.35rem">Three actors outside the system. A community reporter starts the two use cases on the left; a reviewer decides the four it is answerable for; Gemini does the reading and the comparing, and never a decision.</p>
     </div>
 
     <div class="figwrap">
       <figure>
-        <svg viewBox="0 0 720 532" width="720" role="img" aria-label="Use case diagram: a community reporter, a reviewer, and the automated system, with the use cases each of them drives.">
-          <!-- System boundary -->
-          <rect class="zone" x="16" y="16" width="688" height="496" rx="20"/>
-          <text class="zone-label" x="36" y="42">AAPATVANI AI</text>
-
-          <!-- Actor: community reporter -->
-          <rect class="actor-node" x="36" y="58" width="192" height="40" rx="12"/>
-          <circle cx="56" cy="78" r="5" fill="var(--reported)"/>
-          <text class="actor-label" x="70" y="83">Community reporter</text>
-          <text class="uc-sub" x="36" y="116">No account, no personal data</text>
-
-          <rect class="uc-box" x="36" y="128" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="48" y="150">Submit a report</text>
-          <text class="uc-sub" x="48" y="167">text · photo · voice · location</text>
-
-          <rect class="uc-box" x="36" y="190" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="48" y="212">Read the receipt</text>
-          <text class="uc-sub" x="48" y="229">their own report, and what was read</text>
-
-          <rect class="uc-box" x="36" y="252" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="48" y="274">See emergency numbers</text>
-          <text class="uc-sub" x="48" y="291">on the landing page, before reporting</text>
-
-          <!-- Actor: reviewer -->
-          <line x1="240" y1="34" x2="240" y2="512" class="zone" stroke-dasharray="4 6"/>
-
-          <rect class="actor-node" x="260" y="58" width="192" height="40" rx="12"/>
-          <circle cx="280" cy="78" r="5" fill="var(--person)"/>
-          <text class="actor-label" x="294" y="83">Reviewer</text>
-          <text class="uc-sub" x="260" y="116">Signed in, named in the record</text>
-
-          <rect class="uc-box" x="260" y="128" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="272" y="150">Check a claim</text>
-          <text class="uc-sub" x="272" y="167">confirm · correct · reject · more info</text>
-
-          <rect class="uc-box" x="260" y="190" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="272" y="212">Settle a grouping</text>
-          <text class="uc-sub" x="272" y="229">merge or separate, with the score shown</text>
-
-          <rect class="uc-box" x="260" y="252" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="272" y="274">Decide on a finding</text>
-          <text class="uc-sub" x="272" y="291">confirm or dismiss, one at a time</text>
-
-          <rect class="uc-box" x="260" y="314" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="272" y="336">Approve an alert</text>
-          <text class="uc-sub" x="272" y="353">the app never sends anything</text>
-
-          <rect class="uc-box" x="260" y="376" width="192" height="52" rx="12"/>
-          <text class="uc-text" x="272" y="398">Read the record</text>
-          <text class="uc-sub" x="272" y="415">timeline · activity · evidence chain</text>
-
-          <!-- Actor: automated -->
-          <line x1="484" y1="34" x2="484" y2="512" class="zone" stroke-dasharray="4 6"/>
-
-          <rect class="actor-node" x="504" y="58" width="176" height="40" rx="12"/>
-          <circle cx="524" cy="78" r="5" fill="var(--ai)"/>
-          <text class="actor-label" x="538" y="83">Gemini</text>
-          <text class="uc-sub" x="504" y="116">Server-side, service account</text>
-
-          <rect class="uc-box" x="504" y="128" width="176" height="52" rx="12"/>
-          <text class="uc-text" x="516" y="150">Read a report</text>
-          <text class="uc-sub" x="516" y="167">claims, each with its source</text>
-
-          <rect class="uc-box" x="504" y="190" width="176" height="52" rx="12"/>
-          <text class="uc-text" x="516" y="212">Compare two reports</text>
-          <text class="uc-sub" x="516" y="229">same event, with its reasons</text>
-
-          <rect class="uc-box" x="504" y="252" width="176" height="52" rx="12"/>
-          <text class="uc-text" x="516" y="274">Draft an alert</text>
-          <text class="uc-sub" x="516" y="291">confirmed facts, every sentence cited</text>
-
-          <rect class="actor-node" x="504" y="314" width="176" height="40" rx="12"/>
-          <circle cx="524" cy="334" r="5" fill="var(--computed)"/>
-          <text class="actor-label" x="538" y="339">The engine</text>
-          <text class="uc-sub" x="504" y="372">Deterministic, no model</text>
-
-          <rect class="uc-box" x="504" y="384" width="176" height="52" rx="12"/>
-          <text class="uc-text" x="516" y="406">Run the road analysis</text>
-          <text class="uc-sub" x="516" y="423">who keeps a route to care</text>
-
-          <rect class="uc-box" x="504" y="446" width="176" height="52" rx="12"/>
-          <text class="uc-text" x="516" y="468">Verify every citation</text>
-          <text class="uc-sub" x="516" y="485">excerpts, aliases, numbers</text>
-
-          <!-- The automated work exists to serve a reviewer's decision. -->
-          <path class="link-dashed" d="M 504 154 C 480 154 480 154 456 154"/>
-          <path class="link-dashed" d="M 504 216 C 480 216 480 216 456 216"/>
-          <path class="link-dashed" d="M 504 278 C 480 278 480 340 456 340"/>
-          <path class="link-dashed" d="M 504 410 C 480 410 480 278 456 278"/>
-
+                <svg viewBox="0 0 1400 720" width="1400" role="img" aria-label="Use case diagram: a community reporter, a reviewer and Gemini, and the use cases each of them reaches inside the AapatVani AI system boundary.">
+          <rect x="470" y="40" width="420" height="600" fill="none" stroke="#1a1a1a" stroke-width="1.6"/>
+          <text x="680.0" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a1a">AapatVani AI</text>
+          <ellipse cx="680.0" cy="128" rx="118" ry="29" fill="#fdf5d6" stroke="#c9c0a0" stroke-width="1.1"/>
+          <text x="680.0" y="132.5" text-anchor="middle" font-size="12.5" fill="#1a1a1a">Submit a report</text>
+          <ellipse cx="680.0" cy="204" rx="118" ry="29" fill="#fdf5d6" stroke="#c9c0a0" stroke-width="1.1"/>
+          <text x="680.0" y="208.5" text-anchor="middle" font-size="12.5" fill="#1a1a1a">Read the receipt</text>
+          <ellipse cx="680.0" cy="280" rx="118" ry="29" fill="#fdf5d6" stroke="#c9c0a0" stroke-width="1.1"/>
+          <text x="680.0" y="284.5" text-anchor="middle" font-size="12.5" fill="#1a1a1a">Read a report into claims</text>
+          <ellipse cx="680.0" cy="356" rx="118" ry="29" fill="#fdf5d6" stroke="#c9c0a0" stroke-width="1.1"/>
+          <text x="680.0" y="353" text-anchor="middle" font-size="12.5" fill="#1a1a1a">Group reports</text>
+          <text x="680.0" y="370" text-anchor="middle" font-size="12.5" fill="#1a1a1a">into an incident</text>
+          <ellipse cx="680.0" cy="432" rx="118" ry="29" fill="#fdf5d6" stroke="#c9c0a0" stroke-width="1.1"/>
+          <text x="680.0" y="436.5" text-anchor="middle" font-size="12.5" fill="#1a1a1a">Check a claim</text>
+          <ellipse cx="680.0" cy="508" rx="118" ry="29" fill="#fdf5d6" stroke="#c9c0a0" stroke-width="1.1"/>
+          <text x="680.0" y="512.5" text-anchor="middle" font-size="12.5" fill="#1a1a1a">Run the road analysis</text>
+          <ellipse cx="680.0" cy="584" rx="118" ry="29" fill="#fdf5d6" stroke="#c9c0a0" stroke-width="1.1"/>
+          <text x="680.0" y="588.5" text-anchor="middle" font-size="12.5" fill="#1a1a1a">Approve an alert</text>
+          <circle cx="250" cy="300" r="13" fill="none" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 250 313 L 250 360" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 222 332 L 278 332" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 250 360 L 226 400" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 250 360 L 274 400" stroke="#1a1a1a" stroke-width="1.6"/>
+          <text x="250" y="428" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Community reporter</text>
+          <circle cx="1150" cy="120" r="13" fill="none" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1150 133 L 1150 180" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1122 152 L 1178 152" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1150 180 L 1126 220" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1150 180 L 1174 220" stroke="#1a1a1a" stroke-width="1.6"/>
+          <text x="1150" y="248" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Reviewer</text>
+          <circle cx="1150" cy="440" r="13" fill="none" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1150 453 L 1150 500" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1122 472 L 1178 472" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1150 500 L 1126 540" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M 1150 500 L 1174 540" stroke="#1a1a1a" stroke-width="1.6"/>
+          <text x="1150" y="568" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Gemini</text>
+          <path d="M 280 300 L 470 128" stroke="#333" stroke-width="1.1"/>
+          <path d="M 280 300 L 470 204" stroke="#333" stroke-width="1.1"/>
+          <path d="M 1120 120 L 890 280" stroke="#333" stroke-width="1.1"/>
+          <path d="M 1120 120 L 890 356" stroke="#333" stroke-width="1.1"/>
+          <path d="M 1120 440 L 890 356" stroke="#333" stroke-width="1.1"/>
+          <path d="M 1120 440 L 890 432" stroke="#333" stroke-width="1.1"/>
+          <path d="M 1120 440 L 890 508" stroke="#333" stroke-width="1.1"/>
+          <path d="M 1120 440 L 890 584" stroke="#333" stroke-width="1.1"/>
         </svg>
-        <figcaption>The community actor has no account and never sees the responder side. The dashed links are work the system does so that a reviewer can decide, and nothing downstream of a model is trusted until code has checked it.</figcaption>
+        <figcaption>Two of the seven use cases are reached by more than one actor, and that is the design: a grouping is proposed by the system and settled by a person, and an alert is drafted by the model and approved by a person. The community reporter has no account and never reaches the responder side.</figcaption>
       </figure>
     </div>
   </section>
