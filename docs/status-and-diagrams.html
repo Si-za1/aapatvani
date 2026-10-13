@@ -1,0 +1,510 @@
+<title>AapatVani Build Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* ---------------------------------------------------------------------------
+   Design plan
+   Colour  The product's own palette, so this page reads as AapatVani's rather
+           than as a generic report about it: warm page, near-white cards, a
+           deep olive ink, and the four semantic hues the app already uses
+           (coral = reported, violet = AI, moss = computed, leaf = a person).
+   Type    Plus Jakarta Sans, the product's own face, with IBM Plex Mono for
+           route paths and identifiers.
+   Layout  A ledger at the top, then each diagram on its own ground. Both
+           diagrams are drawn left-to-right or top-to-bottom inside their own
+           scroll container so the page body never scrolls sideways.
+--------------------------------------------------------------------------- */
+:root {
+  --bg: #f8f5f0;
+  --surface: #ffffff;
+  --surface-2: #f2e8df;
+  --fg: #1c1f18;
+  --muted: #6f6a5e;
+  --border: #e6ddd1;
+  --ink: #415111;
+  --ink-soft: #5c6b28;
+  --reported: #9a3a1c;   --reported-bg: #fee7de;
+  --ai: #504e76;         --ai-bg: #eeedf7;
+  --computed: #4c5a1c;   --computed-bg: #eaeeda;
+  --person: #415111;     --person-bg: #f1f6dd;
+  --warn: #7a5410;       --warn-bg: #fdf0d5;
+  --critical: #a83a12;   --critical-bg: #fde3d8;
+  --shadow: 0 1px 2px rgb(28 31 24 / 0.05);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16180f;
+    --surface: #1e2116;
+    --surface-2: #262a1b;
+    --fg: #eceadf;
+    --muted: #a3a08f;
+    --border: #33372a;
+    --ink: #d2e186;
+    --ink-soft: #b6c46e;
+    --reported: #f0a184;   --reported-bg: #3a231a;
+    --ai: #b9b7e0;         --ai-bg: #282740;
+    --computed: #b7c98a;   --computed-bg: #2a3018;
+    --person: #d2e186;     --person-bg: #2b3316;
+    --warn: #e8c778;       --warn-bg: #382d14;
+    --critical: #f0a082;   --critical-bg: #3d2116;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16180f;
+  --surface: #1e2116;
+  --surface-2: #262a1b;
+  --fg: #eceadf;
+  --muted: #a3a08f;
+  --border: #33372a;
+  --ink: #d2e186;
+  --ink-soft: #b6c46e;
+  --reported: #f0a184;   --reported-bg: #3a231a;
+  --ai: #b9b7e0;         --ai-bg: #282740;
+  --computed: #b7c98a;   --computed-bg: #2a3018;
+  --person: #d2e186;     --person-bg: #2b3316;
+  --warn: #e8c778;       --warn-bg: #382d14;
+  --critical: #f0a082;   --critical-bg: #3d2116;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding-block: 2.5rem 4rem;
+  padding-inline: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(1.6rem, 4.2vw, 2.35rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  margin: 0.4rem 0 0;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: 1.15rem;
+  letter-spacing: -0.015em;
+  font-weight: 700;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h3 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 46rem; }
+
+code, .mono {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
+}
+
+/* The header states the one number that matters and the date it was taken. */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.masthead .stamp { text-align: right; }
+.masthead .stamp b { display: block; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.masthead .stamp span { font-size: 0.78rem; color: var(--muted); }
+
+.grid-2 { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+@media (min-width: 46rem) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.35rem 1.4rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+/* A ledger: one line per item, state on the right, because the reader is
+   scanning for what is not done. */
+ul.ledger { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+ul.ledger li {
+  display: flex;
+  gap: 0.85rem;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.87rem;
+}
+ul.ledger li:first-child { border-top: 0; }
+ul.ledger .what { flex: 1; min-width: 0; }
+ul.ledger .note { color: var(--muted); font-size: 0.8rem; }
+
+.pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pill.done { background: var(--person-bg); color: var(--person); }
+.pill.open { background: var(--warn-bg); color: var(--warn); }
+.pill.blocked { background: var(--critical-bg); color: var(--critical); }
+
+.figwrap { overflow-x: auto; }
+figure { margin: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+figcaption { color: var(--muted); font-size: 0.84rem; max-width: 46rem; }
+svg { display: block; height: auto; max-width: 100%; }
+svg text { font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif; }
+
+/* Diagram primitives, all from tokens so both themes are drawn the same way. */
+.stage-box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
+.stage-title { fill: var(--fg); font-size: 13.5px; font-weight: 700; }
+.stage-detail { fill: var(--muted); font-size: 11.5px; }
+.actor-label { fill: var(--fg); font-size: 12.5px; font-weight: 700; }
+.chip-text { font-size: 10px; font-weight: 700; }
+.flow { stroke: var(--border); stroke-width: 2; fill: none; }
+.zone { fill: none; stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.zone-label { fill: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; }
+.uc-box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
+.uc-text { fill: var(--fg); font-size: 11.5px; font-weight: 600; }
+.uc-sub { fill: var(--muted); font-size: 10px; }
+.link { stroke: var(--muted); stroke-width: 1.2; fill: none; opacity: 0.55; }
+.link-dashed { stroke: var(--muted); stroke-width: 1.2; fill: none; stroke-dasharray: 4 4; opacity: 0.65; }
+.actor-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+
+footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">AapatVani AI · Google Cloud AI Builder Cup 2026</p>
+      <h1>What is built, what is left, and how it works</h1>
+      <p class="lede" style="margin-top:.6rem">Community reports in, traceable incident records out, with a person confirming every fact and approving every alert.</p>
+    </div>
+    <div class="stamp">
+      <b>208</b>
+      <span>tests passing · typecheck, lint and build clean<br>taken 13 Oct 2026</span>
+    </div>
+  </header>
+
+  <section class="grid-2">
+    <div class="card">
+      <h3>Built and verified</h3>
+      <ul class="ledger">
+        <li><span class="what">Public side: landing page, mobile report form in Nepali and English, receipt</span><span class="pill done">Done</span></li>
+        <li><span class="what">Backend: schemas, swappable data and media stores, sessions, rate limiting</span><span class="pill done">Done</span></li>
+        <li><span class="what">Gemini layer: extraction from text, photo and voice; embeddings; comparison; alert drafting; explanation</span><span class="pill done">Done</span></li>
+        <li><span class="what">Evidence rules: aliases, excerpt verification, gazetteer, origin assignment</span><span class="pill done">Done</span></li>
+        <li><span class="what">Matching: candidate scoring, copy detection, contradictions, incidents</span><span class="pill done">Done</span></li>
+        <li><span class="what">Blast radius over the real OSM road graph, 11,340 junctions</span><span class="pill done">Done</span></li>
+        <li><span class="what">Responder side: shell, board, workspaces, timeline, activity record, settings</span><span class="pill done">Done</span></li>
+        <li><span class="what">Evaluation harness over labelled scenarios, with a results page</span><span class="pill done">Done</span></li>
+        <li><span class="what">Dockerfile, Cloud Run documentation, README</span><span class="pill done">Done</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Outstanding</h3>
+      <ul class="ledger">
+        <li><span class="what">Gemini credentials, so the AI paths run live rather than against the scripted model <span class="note">— the one item everything else waits on</span></span><span class="pill blocked">Needs credentials</span></li>
+        <li><span class="what">Firestore, Cloud Storage and Firebase Auth</span><span class="pill blocked">Needs credentials</span></li>
+        <li><span class="what">Deploy to Cloud Run, and check the URL in a private window and on a phone</span><span class="pill blocked">Needs credentials</span></li>
+        <li><span class="what">The 3-minute demo video, which has to show Gemini working</span><span class="pill blocked">Needs credentials</span></li>
+        <li><span class="what">A live model-ID and quota check (<code>npm run check:models</code>)</span><span class="pill open">Not run</span></li>
+        <li><span class="what">The vision deck PDF</span><span class="pill open">Yours</span></li>
+        <li><span class="what">Theme and category in the submission form</span><span class="pill open">Yours</span></li>
+        <li><span class="what"><code>min-instances=1</code> and a budget alert for the judging window, 19 Oct – 6 Nov</span><span class="pill open">Before judging</span></li>
+        <li><span class="what">Report form on a real phone: camera, microphone, GPS</span><span class="pill open">Needs a device</span></li>
+        <li><span class="what">Demo images, if any are used <span class="note">— the mechanism is built, the choice is open</span></span><span class="pill open">Open question</span></li>
+      </ul>
+      <h3 style="margin-top:.6rem">Known, and deliberately not fixed</h3>
+      <ul class="ledger">
+        <li><span class="what">The build traces the whole project into the standalone output, because the region dataset is read through a path the bundler cannot follow <span class="note">— an image-size item, not a correctness one</span></span><span class="pill open">Accepted</span></li>
+        <li><span class="what">One disagreement among four reports raises three pairwise contradiction flags rather than one, which overstates the count on the board <span class="note">— each flag is individually correct and resolvable; the count should be grouped by the conflict</span></span><span class="pill open">Accepted</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <div>
+      <h2>Process flow: a report to an approved alert</h2>
+      <p class="lede" style="margin-top:.35rem">Every stage names who does it, because the whole point of the product is that a model's output and a person's decision are never the same kind of thing.</p>
+    </div>
+
+    <div class="figwrap">
+      <figure>
+        <svg viewBox="0 0 720 862" width="720" role="img" aria-label="Process flow from a community report through extraction, checking, grouping, review, road analysis and alert approval.">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--border)"/>
+            </marker>
+          </defs>
+
+          <!-- 1 -->
+          <rect class="stage-box" x="28" y="16" width="440" height="76" rx="16"/>
+          <rect x="44" y="30" width="104" height="19" rx="9.5" fill="var(--reported-bg)"/>
+          <text class="chip-text" x="96" y="43.5" text-anchor="middle" fill="var(--reported)">COMMUNITY</text>
+          <text class="stage-title" x="44" y="68">A report arrives</text>
+          <text class="stage-detail" x="44" y="84">Text, photo or voice, in Nepali or English, with a rough location</text>
+          <text class="chip-text mono" x="484" y="60" fill="var(--muted)">POST /api/reports</text>
+
+          <line class="flow" x1="248" y1="92" x2="248" y2="124" marker-end="url(#arrow)"/>
+
+          <!-- 2 -->
+          <rect class="stage-box" x="28" y="126" width="440" height="76" rx="16"/>
+          <rect x="44" y="140" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="74" y="153.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <text class="stage-title" x="44" y="178">Saved before anything else</text>
+          <text class="stage-detail" x="44" y="194">The original is immutable, media is hashed and kept private</text>
+          <text class="chip-text mono" x="484" y="170" fill="var(--muted)">SHA-256 · EXIF</text>
+
+          <line class="flow" x1="248" y1="202" x2="248" y2="234" marker-end="url(#arrow)"/>
+
+          <!-- 3 -->
+          <rect class="stage-box" x="28" y="236" width="440" height="76" rx="16"/>
+          <rect x="44" y="250" width="52" height="19" rx="9.5" fill="var(--ai-bg)"/>
+          <text class="chip-text" x="70" y="263.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
+          <text class="stage-title" x="44" y="288">Read into claims</text>
+          <text class="stage-detail" x="44" y="304">Each claim carries the words it came from, or is labelled an interpretation</text>
+          <text class="chip-text mono" x="484" y="280" fill="var(--muted)">POST /extract</text>
+
+          <line class="flow" x1="248" y1="312" x2="248" y2="344" marker-end="url(#arrow)"/>
+
+          <!-- 4 -->
+          <rect class="stage-box" x="28" y="346" width="440" height="76" rx="16"/>
+          <rect x="44" y="360" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="74" y="373.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <text class="stage-title" x="44" y="398">Checked before it is believed</text>
+          <text class="stage-detail" x="44" y="414">The excerpt must appear in the original; places resolve, or stay unresolved</text>
+          <text class="chip-text mono" x="484" y="390" fill="var(--muted)">Zod · gazetteer</text>
+
+          <line class="flow" x1="248" y1="422" x2="248" y2="454" marker-end="url(#arrow)"/>
+
+          <!-- 5 -->
+          <rect class="stage-box" x="28" y="456" width="440" height="76" rx="16"/>
+          <rect x="44" y="470" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="74" y="483.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <rect x="110" y="470" width="52" height="19" rx="9.5" fill="var(--ai-bg)"/>
+          <text class="chip-text" x="136" y="483.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
+          <text class="stage-title" x="44" y="508">Grouped with other reports</text>
+          <text class="stage-detail" x="44" y="524">Distance, time, hazard and wording; a copy never counts as a second witness</text>
+          <text class="chip-text mono" x="484" y="500" fill="var(--muted)">POST /match</text>
+
+          <line class="flow" x1="248" y1="532" x2="248" y2="564" marker-end="url(#arrow)"/>
+
+          <!-- 6 -->
+          <rect class="stage-box" x="28" y="566" width="440" height="76" rx="16"/>
+          <rect x="44" y="580" width="92" height="19" rx="9.5" fill="var(--person-bg)"/>
+          <text class="chip-text" x="90" y="593.5" text-anchor="middle" fill="var(--person)">A REVIEWER</text>
+          <text class="stage-title" x="44" y="618">A person settles it</text>
+          <text class="stage-detail" x="44" y="634">Confirm, correct, reject or ask for more; nothing merges itself</text>
+          <text class="chip-text mono" x="484" y="610" fill="var(--muted)">/api/review</text>
+
+          <line class="flow" x1="248" y1="642" x2="248" y2="674" marker-end="url(#arrow)"/>
+
+          <!-- 7 -->
+          <rect class="stage-box" x="28" y="676" width="440" height="76" rx="16"/>
+          <rect x="44" y="690" width="60" height="19" rx="9.5" fill="var(--computed-bg)"/>
+          <text class="chip-text" x="74" y="703.5" text-anchor="middle" fill="var(--computed)">CODE</text>
+          <text class="stage-title" x="44" y="728">Road access analysed</text>
+          <text class="stage-detail" x="44" y="744">Which settlements keep a mapped route to care, and which lose one</text>
+          <text class="chip-text mono" x="484" y="720" fill="var(--muted)">POST /impact</text>
+
+          <line class="flow" x1="248" y1="752" x2="248" y2="784" marker-end="url(#arrow)"/>
+
+          <!-- 8 -->
+          <rect class="stage-box" x="28" y="786" width="440" height="76" rx="16"/>
+          <rect x="44" y="800" width="52" height="19" rx="9.5" fill="var(--ai-bg)"/>
+          <text class="chip-text" x="70" y="813.5" text-anchor="middle" fill="var(--ai)">GEMINI</text>
+          <rect x="102" y="800" width="92" height="19" rx="9.5" fill="var(--person-bg)"/>
+          <text class="chip-text" x="148" y="813.5" text-anchor="middle" fill="var(--person)">A REVIEWER</text>
+          <text class="stage-title" x="44" y="838">Alert drafted, then approved</text>
+          <text class="stage-detail" x="44" y="854">Confirmed facts only, every sentence cited. The app never sends it</text>
+
+          <!-- Guardrails, on the right, aligned to the stages they belong to. -->
+          <g>
+            <rect class="zone" x="500" y="236" width="192" height="76" rx="14"/>
+            <text class="zone-label" x="516" y="262">NEVER FROM THE MODEL</text>
+            <text class="stage-detail" x="516" y="282">No real IDs, no coordinates, no</text>
+            <text class="stage-detail" x="516" y="297">number that is not in its sources.</text>
+          </g>
+          <g>
+            <rect class="zone" x="500" y="566" width="192" height="76" rx="14"/>
+            <text class="zone-label" x="516" y="592">EVERY ACTION RECORDED</text>
+            <text class="stage-detail" x="516" y="612">An append-only trail names the person,</text>
+            <text class="stage-detail" x="516" y="627">the model or the rule behind each change.</text>
+          </g>
+        </svg>
+        <figcaption>A report is stored before any model reads it, so a Gemini failure never loses a submission. Every arrow that leaves the model points at code that checks it before anything downstream believes it.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="card">
+    <div>
+      <h2>Use cases, by who drives them</h2>
+      <p class="lede" style="margin-top:.35rem">Three actors outside the system, and the work each of them can start. The dashed links are the ones a reviewer never triggers directly: the system does them on their behalf, and says so.</p>
+    </div>
+
+    <div class="figwrap">
+      <figure>
+        <svg viewBox="0 0 720 508" width="720" role="img" aria-label="Use case diagram: a community reporter, a reviewer, and the automated system, with the use cases each of them drives.">
+          <!-- System boundary -->
+          <rect class="zone" x="16" y="16" width="688" height="468" rx="20"/>
+          <text class="zone-label" x="36" y="42">AAPATVANI AI</text>
+
+          <!-- Actor: community reporter -->
+          <rect class="actor-node" x="36" y="58" width="192" height="40" rx="12"/>
+          <circle cx="56" cy="78" r="5" fill="var(--reported)"/>
+          <text class="actor-label" x="70" y="83">Community reporter</text>
+          <text class="uc-sub" x="36" y="116">No account, no personal data</text>
+
+          <rect class="uc-box" x="36" y="128" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="48" y="150">Submit a report</text>
+          <text class="uc-sub" x="48" y="167">text · photo · voice · location</text>
+
+          <rect class="uc-box" x="36" y="190" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="48" y="212">Read the receipt</text>
+          <text class="uc-sub" x="48" y="229">their own report, and what was read</text>
+
+          <rect class="uc-box" x="36" y="252" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="48" y="274">See emergency numbers</text>
+          <text class="uc-sub" x="48" y="291">on the landing page, before reporting</text>
+
+          <!-- Actor: reviewer -->
+          <line x1="240" y1="34" x2="240" y2="484" class="zone" stroke-dasharray="4 6"/>
+
+          <rect class="actor-node" x="260" y="58" width="192" height="40" rx="12"/>
+          <circle cx="280" cy="78" r="5" fill="var(--person)"/>
+          <text class="actor-label" x="294" y="83">Reviewer</text>
+          <text class="uc-sub" x="260" y="116">Signed in, named in the record</text>
+
+          <rect class="uc-box" x="260" y="128" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="272" y="150">Check a claim</text>
+          <text class="uc-sub" x="272" y="167">confirm · correct · reject · more info</text>
+
+          <rect class="uc-box" x="260" y="190" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="272" y="212">Settle a grouping</text>
+          <text class="uc-sub" x="272" y="229">merge or separate, with the score shown</text>
+
+          <rect class="uc-box" x="260" y="252" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="272" y="274">Decide on a finding</text>
+          <text class="uc-sub" x="272" y="291">confirm or dismiss, one at a time</text>
+
+          <rect class="uc-box" x="260" y="314" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="272" y="336">Approve an alert</text>
+          <text class="uc-sub" x="272" y="353">the app never sends anything</text>
+
+          <rect class="uc-box" x="260" y="376" width="192" height="52" rx="12"/>
+          <text class="uc-text" x="272" y="398">Read the record</text>
+          <text class="uc-sub" x="272" y="415">timeline · activity · evidence chain</text>
+
+          <!-- Actor: automated -->
+          <line x1="484" y1="34" x2="484" y2="484" class="zone" stroke-dasharray="4 6"/>
+
+          <rect class="actor-node" x="504" y="58" width="176" height="40" rx="12"/>
+          <circle cx="524" cy="78" r="5" fill="var(--ai)"/>
+          <text class="actor-label" x="538" y="83">Gemini</text>
+          <text class="uc-sub" x="504" y="116">Server-side, service account</text>
+
+          <rect class="uc-box" x="504" y="128" width="176" height="52" rx="12"/>
+          <text class="uc-text" x="516" y="150">Read a report</text>
+          <text class="uc-sub" x="516" y="167">claims, each with its source</text>
+
+          <rect class="uc-box" x="504" y="190" width="176" height="52" rx="12"/>
+          <text class="uc-text" x="516" y="212">Compare two reports</text>
+          <text class="uc-sub" x="516" y="229">same event, with its reasons</text>
+
+          <rect class="uc-box" x="504" y="252" width="176" height="52" rx="12"/>
+          <text class="uc-text" x="516" y="274">Draft an alert</text>
+          <text class="uc-sub" x="516" y="291">confirmed facts, every sentence cited</text>
+
+          <rect class="actor-node" x="504" y="314" width="176" height="40" rx="12"/>
+          <circle cx="524" cy="334" r="5" fill="var(--computed)"/>
+          <text class="actor-label" x="538" y="339">The engine</text>
+          <text class="uc-sub" x="504" y="372">Deterministic, no model</text>
+
+          <rect class="uc-box" x="504" y="384" width="176" height="52" rx="12"/>
+          <text class="uc-text" x="516" y="406">Run the road analysis</text>
+          <text class="uc-sub" x="516" y="423">who keeps a route to care</text>
+
+          <rect class="uc-box" x="504" y="446" width="176" height="52" rx="12"/>
+          <text class="uc-text" x="516" y="468">Verify every citation</text>
+          <text class="uc-sub" x="516" y="485">excerpts, aliases, numbers</text>
+
+          <!-- The automated work exists to serve a reviewer's decision. -->
+          <path class="link-dashed" d="M 504 154 C 480 154 480 154 456 154"/>
+          <path class="link-dashed" d="M 504 216 C 480 216 480 216 456 216"/>
+          <path class="link-dashed" d="M 504 278 C 480 278 480 340 456 340"/>
+          <path class="link-dashed" d="M 504 410 C 480 410 480 278 456 278"/>
+
+        </svg>
+        <figcaption>The community actor has no account and never sees the responder side. The dashed links are work the system does so that a reviewer can decide, and nothing downstream of a model is trusted until code has checked it.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>What the four colours mean, everywhere in the product</h3>
+    <ul class="ledger">
+      <li><span class="pill" style="background:var(--reported-bg);color:var(--reported)">Reported</span><span class="what">A community member said it. The words are in their text, which is not the same as true.</span></li>
+      <li><span class="pill" style="background:var(--ai-bg);color:var(--ai)">AI interpretation</span><span class="what">Gemini read it, and the cited excerpt or media item is stored with it.</span></li>
+      <li><span class="pill" style="background:var(--computed-bg);color:var(--computed)">Computed</span><span class="what">Deterministic code worked it out over a versioned dataset. The same inputs give the same answer.</span></li>
+      <li><span class="pill" style="background:var(--person-bg);color:var(--person)">Reviewer</span><span class="what">A named person decided it. This is the only source of the word Confirmed.</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    Every claim in this page comes from <code>project.md</code>, the working tracker, and from the code in the repository at commit <code>e0bf8c1</code>, which carries 13 pages and 21 API route handlers. Nothing here is projected or estimated.
+  </footer>
+
+</div>
