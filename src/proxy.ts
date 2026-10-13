@@ -20,6 +20,7 @@ export const config = {
     "/incidents/:path*",
     "/alerts/:path*",
     "/evaluation/:path*",
+    "/timeline/:path*",
     "/activity/:path*",
     "/settings/:path*",
     "/data/:path*",

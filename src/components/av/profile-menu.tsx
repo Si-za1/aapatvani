@@ -2,13 +2,14 @@
 
 // Who is signed in, and the two things they can do about it.
 //
-// The reviewer's own menu sits at the foot of the sidebar, under the destinations rather than among
-// them: Overview and Incidents are places the work is, this is a place the person is. Settings and
-// signing out both live here, and the gear in the top bar is a second way to reach the first,
-// because a setting nobody can find is a setting that does not exist.
+// The reviewer's own menu sits at the foot of the rail, under the destinations rather than among
+// them: Overview and Incidents are places the work is, this is a place the person is. In the rail it
+// is the initial alone; the name is in the menu it opens. Settings and signing out both live inside,
+// and the gear in the top bar is a second way to reach the first, because a setting nobody can find
+// is a setting that does not exist.
 
 import Link from "next/link";
-import { ChevronsUpDown, LogOut, Settings, UserRound } from "lucide-react";
+import { LogOut, Settings, UserRound } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,19 +27,12 @@ export function ProfileMenu({ reviewer }: { reviewer: Reviewer }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex w-full items-center gap-2.5 rounded-2xl px-1.5 py-2 text-left transition-colors hover:bg-sidebar-accent lg:px-2 lg:py-2.5"
-        title={reviewer.name}
+        className="grid size-10 shrink-0 place-items-center rounded-xl transition-colors hover:bg-sidebar-accent"
+        title={`${reviewer.name} · your account`}
       >
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-leaf text-sm font-bold text-leaf-strong">
+        <span className="grid size-9 place-items-center rounded-full bg-leaf text-sm font-bold text-leaf-strong">
           {initial}
         </span>
-        <span className="hidden min-w-0 flex-1 flex-col lg:flex">
-          <span className="truncate text-sm font-semibold">{reviewer.name}</span>
-          <span className="truncate text-[11px] text-sidebar-foreground/55">
-            {reviewer.mode === "firebase" ? "Google account" : "Passcode reviewer"}
-          </span>
-        </span>
-        <ChevronsUpDown className="hidden size-4 shrink-0 text-sidebar-foreground/45 lg:block" aria-hidden />
         <span className="sr-only">Your account</span>
       </DropdownMenuTrigger>
 

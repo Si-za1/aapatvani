@@ -9,21 +9,12 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Bell as BellIcon, Bot, User, Wrench } from "lucide-react";
+import { Bell as BellIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { Actor } from "@/lib/domain/schemas";
+import { ActorBadge, actorTone } from "@/components/av/trust-labels";
 import type { Notifications } from "@/lib/notifications";
 import { relativeTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
-
-// The same three-way split as the Activity page: a person's decision, a model's output and the
-// system's own work must never look like the same kind of statement.
-const ACTOR: Record<Actor["kind"], { label: string; className: string; Icon: typeof User }> = {
-  human: { label: "Person", className: "bg-leaf-tint text-leaf-strong", Icon: User },
-  ai: { label: "AI", className: "bg-violet-tint text-violet-strong", Icon: Bot },
-  system: { label: "System", className: "bg-moss-tint text-moss-strong", Icon: Wrench },
-  public: { label: "Reporter", className: "bg-coral-tint text-coral-strong", Icon: User },
-};
 
 export function NotificationBell({ notifications }: { notifications: Notifications }) {
   const router = useRouter();
@@ -80,7 +71,7 @@ export function NotificationBell({ notifications }: { notifications: Notificatio
         ) : (
           <ul className="flex max-h-[22rem] flex-col overflow-y-auto px-1.5 pb-1.5">
             {notifications.items.map((item) => {
-              const tone = ACTOR[item.actorKind] ?? ACTOR.system;
+              const tone = actorTone(item.actorKind);
               const body = (
                 <>
                   <span
@@ -94,9 +85,9 @@ export function NotificationBell({ notifications }: { notifications: Notificatio
                   </span>
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span className="text-[13px] leading-snug">{item.summary}</span>
-                    <span className="text-[11px] text-muted-foreground">
-                      {tone.label}
-                      {item.actorName ? ` · ${item.actorName}` : ""} · {relativeTime(item.at)}
+                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <ActorBadge actor={item.actorKind} name={item.actorName} />
+                      {relativeTime(item.at)}
                     </span>
                   </span>
                 </>

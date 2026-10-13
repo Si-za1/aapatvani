@@ -17,7 +17,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { DataLabel, Origin, ReviewStatus } from "@/lib/domain/schemas";
+import type { Actor, DataLabel, Origin, ReviewStatus } from "@/lib/domain/schemas";
 
 const ORIGIN: Record<Origin, { label: string; className: string; Icon: typeof Bot }> = {
   reporter: { label: "Reported", className: "bg-coral-tint text-coral-strong", Icon: MessageSquareQuote },
@@ -39,6 +39,46 @@ export function OriginBadge({ origin, className }: { origin: Origin; className?:
     >
       <Icon className="size-3" aria-hidden />
       {label}
+    </span>
+  );
+}
+
+/**
+ * Who did it, for the records that carry an actor rather than an origin: an audit event, a timeline
+ * entry, a notification. The two vocabularies name the same four producers, and this is the only
+ * place that says so, so the activity trail, the bell and the timeline cannot drift apart.
+ */
+export const ACTOR_TONE: Record<Actor["kind"], { label: string; className: string; Icon: typeof Bot }> = {
+  public: { label: ORIGIN.reporter.label, className: ORIGIN.reporter.className, Icon: ORIGIN.reporter.Icon },
+  ai: { label: ORIGIN.ai.label, className: ORIGIN.ai.className, Icon: ORIGIN.ai.Icon },
+  system: { label: ORIGIN.computed.label, className: ORIGIN.computed.className, Icon: ORIGIN.computed.Icon },
+  human: { label: ORIGIN.reviewer.label, className: ORIGIN.reviewer.className, Icon: ORIGIN.reviewer.Icon },
+};
+
+export function actorTone(kind: Actor["kind"]) {
+  return ACTOR_TONE[kind] ?? ACTOR_TONE.system;
+}
+
+/** The same badge as OriginBadge, for a record that knows its actor instead of its origin. */
+export function ActorBadge({
+  actor,
+  name,
+  className,
+}: {
+  actor: Actor["kind"];
+  /** Who, by name, when the record knows. Shown after the kind, quietly. */
+  name?: string;
+  className?: string;
+}) {
+  const { label, className: tone, Icon } = actorTone(actor);
+  return (
+    <span
+      className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", tone, className)}
+      title={name ? `${label} · ${name}` : `Origin: ${label}`}
+    >
+      <Icon className="size-3" aria-hidden />
+      {label}
+      {name ? <span className="font-normal opacity-75">· {name}</span> : null}
     </span>
   );
 }

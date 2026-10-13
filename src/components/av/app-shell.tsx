@@ -2,21 +2,22 @@
 //
 // Two pieces of furniture, and the rest is the page.
 //
-// On the left, a labelled sidebar rather than an icon rail: four destinations are easy to learn and
-// hard to guess, and a judge opening this for the first time should not have to hover to find out
-// what a shape means. It is the deep ink of the palette, which is the one large dark surface in the
-// app and marks where the responder side begins.
+// On the left, a narrow rail: the mark and the name at the top, then one icon per destination, and
+// the reviewer's own menu at the foot. Five destinations do not need a column of words competing
+// with the data, and every icon carries its name as a tooltip and to screen readers, so nothing here
+// is a guess. It is the deep ink of the palette, which is the one large dark surface in the app and
+// marks where the responder side begins.
 //
 // Along the top, one bar that holds everything which is not a destination: what region this
-// deployment is watching, what the bell has heard, and where the settings and the reviewer's own
-// menu live. The bell is a view of the audit trail, not a second record of it.
+// deployment is watching, what the bell has heard, and where settings live. The bell is a view of
+// the audit trail, not a second record of it.
 //
-// On a phone the sidebar turns into a horizontal strip, because a responder in the field is as
-// likely to be holding a phone as sitting at a desk.
+// On a phone the rail turns into a horizontal strip, because a responder in the field is as likely
+// to be holding a phone as sitting at a desk.
 
 import Link from "next/link";
 import { Suspense } from "react";
-import { History, Inbox, Layers, LayoutDashboard, MapPin, Settings } from "lucide-react";
+import { History, Inbox, Layers, LayoutDashboard, MapPin, Settings, SlidersVertical } from "lucide-react";
 import { Logo } from "@/components/av/logo";
 import { NotificationBell } from "@/components/av/notification-bell";
 import { ProfileMenu } from "@/components/av/profile-menu";
@@ -32,6 +33,7 @@ const NAV = [
   { href: "/dashboard", label: "Overview", Icon: LayoutDashboard },
   { href: "/reports", label: "Reports", Icon: Inbox },
   { href: "/incidents", label: "Incidents", Icon: Layers },
+  { href: "/timeline", label: "Timeline", Icon: SlidersVertical },
   { href: "/activity", label: "Activity", Icon: History },
 ] as const;
 
@@ -57,17 +59,24 @@ export async function AppShell({
       {/* On a phone the strip is pinned and so is the bar under it, so the bar starts where the
             strip ends: two stacked headers that both claim the top of the screen would hide one of
             them the moment anyone scrolled. The strip has an explicit height for that reason. */}
-      <aside className="sticky top-0 z-40 flex h-[3.25rem] shrink-0 items-center gap-2 bg-sidebar px-3 text-sidebar-foreground lg:h-screen lg:w-[15rem] lg:flex-col lg:items-stretch lg:gap-0 lg:px-4 lg:py-6">
-        <Link href="/dashboard" className="mr-1 flex shrink-0 items-center gap-2.5 lg:mr-0 lg:px-2">
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-leaf text-leaf-strong">
-            <Logo className="size-5" />
+      <aside className="sticky top-0 z-40 flex h-[3.25rem] shrink-0 items-center gap-1.5 bg-sidebar px-3 text-sidebar-foreground lg:h-screen lg:w-[5.5rem] lg:flex-col lg:gap-2 lg:px-3 lg:py-5">
+        {/* The mark and the name together, stacked, because a rail this narrow has no room for a
+            wordmark beside anything. The name is the one piece of type in the rail: everything else
+            is an icon with a name attached. */}
+        <Link
+          href="/dashboard"
+          className="mr-1 flex shrink-0 flex-col items-center gap-1.5 lg:mr-0"
+          title="AapatVani"
+        >
+          <span className="grid size-10 place-items-center rounded-xl bg-leaf text-leaf-strong">
+            <Logo className="size-6" />
           </span>
-          <span className="text-base font-bold tracking-tight">AapatVani</span>
+          <span className="hidden text-[10px] leading-none font-bold tracking-tight lg:block">AapatVani</span>
         </Link>
 
         <nav
           aria-label="Sections"
-          className="flex flex-1 items-center gap-1 overflow-x-auto lg:mt-8 lg:flex-col lg:items-stretch lg:gap-1 lg:overflow-visible"
+          className="flex flex-1 items-center gap-1 overflow-x-auto lg:mt-5 lg:flex-col lg:gap-2 lg:overflow-visible"
         >
           {NAV.map(({ href, label, Icon }) => {
             const active = current === href || current.startsWith(`${href}/`);
@@ -76,21 +85,22 @@ export async function AppShell({
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
+                title={label}
                 className={cn(
-                  "flex shrink-0 items-center gap-3 rounded-2xl px-2.5 py-2 text-sm font-medium transition-colors lg:px-3 lg:py-2.5",
+                  "grid size-10 shrink-0 place-items-center rounded-xl transition-colors",
                   active
                     ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
-                <Icon className="size-[18px] shrink-0" aria-hidden />
-                <span className="hidden sm:inline">{label}</span>
+                <Icon className="size-[18px]" aria-hidden />
+                <span className="sr-only">{label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="lg:mt-auto lg:border-t lg:border-sidebar-border/70 lg:pt-4">
+        <div className="lg:mt-auto">
           <ProfileMenu reviewer={reviewer} />
         </div>
       </aside>

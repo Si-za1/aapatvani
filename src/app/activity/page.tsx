@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bot, History, User, Wrench } from "lucide-react";
+import { History } from "lucide-react";
 import { AppShell, PageHeader } from "@/components/av/app-shell";
+import { ActorBadge, actorTone } from "@/components/av/trust-labels";
 import { Card } from "@/components/ui/card";
 import { requireReviewer } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import type { Actor } from "@/lib/domain/schemas";
 import { formatDateTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
@@ -18,12 +18,9 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Activity" };
 
-const ACTOR: Record<Actor["kind"], { label: string; className: string; Icon: typeof User }> = {
-  human: { label: "Person", className: "bg-leaf-tint text-leaf-strong", Icon: User },
-  ai: { label: "AI", className: "bg-violet-tint text-violet-strong", Icon: Bot },
-  system: { label: "System", className: "bg-moss-tint text-moss-strong", Icon: Wrench },
-  public: { label: "Reporter", className: "bg-coral-tint text-coral-strong", Icon: User },
-};
+// The three actor kinds are kept visibly apart by ActorBadge, which also keeps this page, the
+// notification bell and the timeline from inventing three slightly different mappings of the same
+// four producers.
 
 const FILTERS = [
   { key: "all", label: "Everything" },
@@ -97,20 +94,23 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/activity">["
         ) : (
           <ol className="flex flex-col gap-2">
             {events.slice(0, 200).map((event) => {
-              const actorTone = ACTOR[event.actor.kind] ?? ACTOR.system;
+              const tone = actorTone(event.actor.kind);
               return (
                 <li key={event.id}>
                   <Card className="flex-row items-start gap-3 p-3.5">
-                    <span className={cn("mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full", actorTone.className)} aria-hidden>
-                      <actorTone.Icon className="size-3.5" />
+                    <span
+                      className={cn(
+                        "mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full",
+                        tone.className,
+                      )}
+                      aria-hidden
+                    >
+                      <tone.Icon className="size-3.5" />
                     </span>
                     <div className="flex min-w-0 flex-1 flex-col gap-1">
                       <p className="text-sm">{event.summary}</p>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                        <span className={cn("rounded-full px-2 py-0.5 font-medium", actorTone.className)}>
-                          {actorTone.label}
-                          {event.actor.name ? ` · ${event.actor.name}` : ""}
-                        </span>
+                        <ActorBadge actor={event.actor.kind} name={event.actor.name} />
                         <span className="font-mono">{event.action}</span>
                         <span>{formatDateTime(event.at, "Asia/Kathmandu")}</span>
                         {event.reportId ? (
