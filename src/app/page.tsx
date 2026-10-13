@@ -17,9 +17,9 @@ import { getLocale } from "@/lib/prefs";
 // because nobody reads three steps before deciding to report, they read them afterwards, if at all.
 
 /**
- * The line under a hazard's name, for the ones that have one. A region whose hazards are not in this
- * map shows the name alone rather than a missing key, which is what the Philippines configuration
- * would do today.
+ * The line that says what a hazard looks like from the ground, for the ones that have one. A region
+ * whose hazards are not in this map shows the name alone rather than a missing key, which is what
+ * the Philippines configuration would do today.
  */
 const BLURB: Record<string, "hazard.landslide.blurb" | "hazard.flood.blurb" | "hazard.debris_flow.blurb" | "hazard.glof.blurb"> = {
   landslide: "hazard.landslide.blurb",
@@ -80,10 +80,11 @@ async function Landing() {
       </header>
 
       <section className="grid flex-1 gap-x-[clamp(1.5rem,3vw,3rem)] gap-y-[var(--gap)] px-6 pb-[clamp(0.4rem,1.8vh,2.5rem)] sm:px-[var(--pad)] md:grid-cols-[1.05fr_1fr] md:items-center">
-        {/* Left: what this is, and the one thing to do. Four things and no more — the hazards
-            moved to their own band below, because six stacked blocks is a column nobody reads.
-            The space between them opens up rather than pooling at the bottom. */}
-        <div className="flex flex-col gap-[var(--gap)] md:justify-between md:self-stretch">
+        {/* Left: what this is, the one thing to do, what can be reported, and the two boundaries.
+            The hazards are chips rather than cards: eleven of them have to fit above the fold on a
+            short laptop, and a chip that carries an icon and a word does that where a card with a
+            description cannot. */}
+        <div className="flex flex-col gap-[var(--gap)]">
           <h1
             className="max-w-xl text-[clamp(1.7rem,4.1vh,3.25rem)] leading-[1.06] font-bold tracking-[-0.025em]"
             lang={locale}
@@ -111,7 +112,32 @@ async function Landing() {
               height of the page opens the space around them rather than between them: they are the
               last thing read before somebody decides to report, and they belong beside the button. */}
           <div className="flex flex-col gap-[clamp(0.4rem,1vh,0.8rem)]">
-            <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
+            {/* Below the button: what can actually be reported. Each icon sits in its own soft badge
+              rather than floating next to the word, which is what makes the row read as a set. */}
+          <div className="flex flex-col gap-[clamp(0.4rem,1vh,0.75rem)]">
+            <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
+              {t("landing.hazardsTitle")}
+            </h2>
+            <ul className="flex flex-wrap gap-[clamp(0.3rem,0.7vh,0.45rem)]">
+              {hazards.map((hazard) => (
+                <li
+                  key={hazard.id}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card py-[clamp(0.15rem,0.4vh,0.3rem)] pr-4 pl-1.5 text-xs font-semibold"
+                  // The line the four hazard cards used to carry, kept as the tooltip: a chip has
+                  // no room for it, but "what does this actually look like" is still the question a
+                  // frightened person is asking.
+                  title={BLURB[hazard.id] ? `${locale === "ne" ? hazard.labelLocal : hazard.label} — ${t(BLURB[hazard.id])}` : locale === "ne" ? hazard.labelLocal : hazard.label}
+                >
+                  <span className="grid size-[clamp(1.4rem,2.9vh,1.75rem)] shrink-0 place-items-center rounded-xl bg-sand">
+                    <HazardGlyph icon={hazard.icon} className="size-[clamp(0.75rem,1.6vh,1rem)] text-ink-soft" />
+                  </span>
+                  <span lang={locale}>{locale === "ne" ? hazard.labelLocal : hazard.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
               <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame" aria-hidden />
               <span lang={locale}>{t("landing.trustDont")}</span>
             </p>
@@ -144,53 +170,6 @@ async function Landing() {
           </div>
         </div>
       </section>
-
-      {/* What can be reported, on its own band across the page. It was one more stack in the
-          left column, which made that column six things deep and the eye had nowhere to rest;
-          here it gets the full width, so each hazard has room for the line that says what it
-          actually looks like from the ground. */}
-      <section className="border-t border-border px-6 pt-[clamp(0.6rem,1.6vh,1.25rem)] pb-[clamp(0.5rem,1.4vh,1rem)] sm:px-[var(--pad)]">
-        <h2 className="mb-[clamp(0.4rem,1vh,0.75rem)] text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
-          {t("landing.hazardsTitle")}
-        </h2>
-
-        <div className="rounded-3xl bg-sand/60 px-[clamp(0.6rem,1.4vh,1.1rem)] py-[clamp(0.5rem,1.3vh,1rem)]">
-          <ul className="grid grid-cols-2 gap-x-[clamp(0.6rem,1.5vw,1.5rem)] gap-y-[clamp(0.4rem,1vh,0.75rem)] lg:grid-cols-4">
-            {hazards.slice(0, 4).map((hazard) => (
-              <li key={hazard.id} className="flex items-center gap-[clamp(0.4rem,1vh,0.7rem)]">
-                <span className="grid size-[clamp(2rem,4.4vh,2.5rem)] shrink-0 place-items-center rounded-2xl bg-card shadow-[0_1px_2px_rgba(28,31,24,0.06)]">
-                  <HazardGlyph icon={hazard.icon} className="size-[clamp(1rem,2.2vh,1.25rem)] text-ink-soft" />
-                </span>
-                <span className="flex min-w-0 flex-col">
-                  <span className="truncate text-[clamp(0.78rem,1.5vh,0.9rem)] font-semibold" lang={locale}>
-                    {locale === "ne" ? hazard.labelLocal : hazard.label}
-                  </span>
-                  {BLURB[hazard.id] ? (
-                    <span
-                      className="text-[clamp(0.68rem,1.3vh,0.78rem)] leading-snug text-muted-foreground [@media(max-height:660px)]:hidden"
-                      lang={locale}
-                    >
-                      {t(BLURB[hazard.id])}
-                    </span>
-                  ) : null}
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          {/* The rest, by name. Nothing is hidden, and the line is quiet enough not to compete. */}
-          <p className="mt-[clamp(0.35rem,0.9vh,0.7rem)] border-t border-border/70 pt-[clamp(0.3rem,0.8vh,0.6rem)] text-[clamp(0.65rem,1.25vh,0.75rem)] text-muted-foreground">
-            <span lang={locale}>{t("landing.hazardsMore")}: </span>
-            <span lang={locale}>
-              {hazards
-                .slice(4)
-                .map((hazard) => (locale === "ne" ? hazard.labelLocal : hazard.label))
-                .join(" · ")}
-            </span>
-          </p>
-        </div>
-      </section>
-
 
       {/* The emergency line, without a panel behind it: the flame icon and colour carry the weight,
           and a red block on a calm page is its own kind of alarm. The numbers are here, not just on
