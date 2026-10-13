@@ -80,8 +80,10 @@ async function Landing() {
       </header>
 
       <section className="grid flex-1 gap-x-[clamp(1.5rem,3vw,3rem)] gap-y-[var(--gap)] px-6 pb-[clamp(0.4rem,1.8vh,2.5rem)] sm:px-[var(--pad)] md:grid-cols-[1.05fr_1fr] md:items-center">
-        {/* Left: what this is, and the one thing to do. */}
-        <div className="flex flex-col gap-[var(--gap)]">
+        {/* Left: what this is, and the one thing to do. Four things and no more — the hazards
+            moved to their own band below, because six stacked blocks is a column nobody reads.
+            The space between them opens up rather than pooling at the bottom. */}
+        <div className="flex flex-col gap-[var(--gap)] md:justify-between md:self-stretch">
           <h1
             className="max-w-xl text-[clamp(1.7rem,4.1vh,3.25rem)] leading-[1.06] font-bold tracking-[-0.025em]"
             lang={locale}
@@ -105,65 +107,19 @@ async function Landing() {
             </Link>
           </div>
 
-          {/* What we will not do, stated plainly, no panel, because a box would make it look like a
-              feature rather than a boundary. */}
-          <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame" aria-hidden />
-            <span lang={locale}>{t("landing.trustDont")}</span>
-          </p>
+          {/* The two boundaries, kept together as one group so that spreading this column over the
+              height of the page opens the space around them rather than between them: they are the
+              last thing read before somebody decides to report, and they belong beside the button. */}
+          <div className="flex flex-col gap-[clamp(0.4rem,1vh,0.8rem)]">
+            <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
+              <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame" aria-hidden />
+              <span lang={locale}>{t("landing.trustDont")}</span>
+            </p>
 
-          <p className="flex items-center gap-2 text-xs text-muted-foreground">
-            <ShieldCheck className="size-4 shrink-0 text-leaf-strong" aria-hidden />
-            <span lang={locale}>{t("app.noPersonalData")}</span>
-          </p>
-
-          {/* Last on this side, after the button and the two reassurances: what somebody can actually
-              report. A person deciding whether to trust this reads "we do not predict" and "no name
-              needed" before they read a list of hazards. The four that carry a line say what the
-              hazard looks like from the ground, because the name alone asks a frightened person to
-              already know the right word; the rest are listed by name, since the form offers every
-              one of them and leaving them out would say they are not reportable. */}
-          <div className="flex flex-col gap-[clamp(0.5rem,1.2vh,0.85rem)]">
-            <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
-              {t("landing.hazardsTitle")}
-            </h2>
-
-            <div className="rounded-2xl bg-sand/60 p-[clamp(0.5rem,1.2vh,0.9rem)]">
-              <ul className="grid grid-cols-2 gap-[clamp(0.4rem,1vh,0.75rem)] lg:grid-cols-4">
-                {hazards.slice(0, 4).map((hazard) => (
-                  <li key={hazard.id} className="flex flex-col gap-[clamp(0.3rem,0.8vh,0.6rem)]">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-card shadow-[0_1px_2px_rgba(28,31,24,0.06)]">
-                      <HazardGlyph icon={hazard.icon} className="size-[18px] text-ink-soft" />
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="text-[clamp(0.78rem,1.5vh,0.875rem)] font-semibold" lang={locale}>
-                        {locale === "ne" ? hazard.labelLocal : hazard.label}
-                      </span>
-                      {BLURB[hazard.id] ? (
-                        <span
-                          className="text-[clamp(0.68rem,1.3vh,0.78rem)] leading-snug text-muted-foreground [@media(max-height:640px)]:hidden"
-                          lang={locale}
-                        >
-                          {t(BLURB[hazard.id])}
-                        </span>
-                      ) : null}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* The rest, by name. Nothing is hidden, and the line is quiet enough not to compete
-                  with the four above it. */}
-              <p className="mt-[clamp(0.4rem,1vh,0.75rem)] border-t border-border/70 pt-[clamp(0.35rem,0.9vh,0.6rem)] text-[clamp(0.65rem,1.25vh,0.75rem)] text-muted-foreground">
-                <span lang={locale}>{t("landing.hazardsMore")}: </span>
-                <span lang={locale}>
-                  {hazards
-                    .slice(4)
-                    .map((hazard) => (locale === "ne" ? hazard.labelLocal : hazard.label))
-                    .join(" · ")}
-                </span>
-              </p>
-            </div>
+            <p className="flex items-center gap-2 text-xs text-muted-foreground">
+              <ShieldCheck className="size-4 shrink-0 text-leaf-strong" aria-hidden />
+              <span lang={locale}>{t("app.noPersonalData")}</span>
+            </p>
           </div>
         </div>
 
@@ -188,6 +144,53 @@ async function Landing() {
           </div>
         </div>
       </section>
+
+      {/* What can be reported, on its own band across the page. It was one more stack in the
+          left column, which made that column six things deep and the eye had nowhere to rest;
+          here it gets the full width, so each hazard has room for the line that says what it
+          actually looks like from the ground. */}
+      <section className="border-t border-border px-6 pt-[clamp(0.6rem,1.6vh,1.25rem)] pb-[clamp(0.5rem,1.4vh,1rem)] sm:px-[var(--pad)]">
+        <h2 className="mb-[clamp(0.4rem,1vh,0.75rem)] text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
+          {t("landing.hazardsTitle")}
+        </h2>
+
+        <div className="rounded-3xl bg-sand/60 px-[clamp(0.6rem,1.4vh,1.1rem)] py-[clamp(0.5rem,1.3vh,1rem)]">
+          <ul className="grid grid-cols-2 gap-x-[clamp(0.6rem,1.5vw,1.5rem)] gap-y-[clamp(0.4rem,1vh,0.75rem)] lg:grid-cols-4">
+            {hazards.slice(0, 4).map((hazard) => (
+              <li key={hazard.id} className="flex items-center gap-[clamp(0.4rem,1vh,0.7rem)]">
+                <span className="grid size-[clamp(2rem,4.4vh,2.5rem)] shrink-0 place-items-center rounded-2xl bg-card shadow-[0_1px_2px_rgba(28,31,24,0.06)]">
+                  <HazardGlyph icon={hazard.icon} className="size-[clamp(1rem,2.2vh,1.25rem)] text-ink-soft" />
+                </span>
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate text-[clamp(0.78rem,1.5vh,0.9rem)] font-semibold" lang={locale}>
+                    {locale === "ne" ? hazard.labelLocal : hazard.label}
+                  </span>
+                  {BLURB[hazard.id] ? (
+                    <span
+                      className="text-[clamp(0.68rem,1.3vh,0.78rem)] leading-snug text-muted-foreground [@media(max-height:660px)]:hidden"
+                      lang={locale}
+                    >
+                      {t(BLURB[hazard.id])}
+                    </span>
+                  ) : null}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {/* The rest, by name. Nothing is hidden, and the line is quiet enough not to compete. */}
+          <p className="mt-[clamp(0.35rem,0.9vh,0.7rem)] border-t border-border/70 pt-[clamp(0.3rem,0.8vh,0.6rem)] text-[clamp(0.65rem,1.25vh,0.75rem)] text-muted-foreground">
+            <span lang={locale}>{t("landing.hazardsMore")}: </span>
+            <span lang={locale}>
+              {hazards
+                .slice(4)
+                .map((hazard) => (locale === "ne" ? hazard.labelLocal : hazard.label))
+                .join(" · ")}
+            </span>
+          </p>
+        </div>
+      </section>
+
 
       {/* The emergency line, without a panel behind it: the flame icon and colour carry the weight,
           and a red block on a calm page is its own kind of alarm. The numbers are here, not just on
