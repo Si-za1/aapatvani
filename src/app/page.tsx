@@ -83,7 +83,7 @@ async function Landing() {
         {/* Left: what this is, and the one thing to do. */}
         <div className="flex flex-col gap-[var(--gap)]">
           <h1
-            className="max-w-xl text-[clamp(1.45rem,3.3vh,2.75rem)] leading-[1.08] font-bold tracking-[-0.02em]"
+            className="max-w-xl text-[clamp(1.7rem,4.1vh,3.25rem)] leading-[1.06] font-bold tracking-[-0.025em]"
             lang={locale}
           >
             {t("app.tagline")}
@@ -105,11 +105,24 @@ async function Landing() {
             </Link>
           </div>
 
-          {/* Below the button: what can actually be reported, on one soft panel.
-              Four of them carry a line saying what the hazard looks like from the ground, because the
-              name alone asks a frightened person to know the right word; the rest are listed by name,
-              since the form offers every one of them and leaving them out would say they are not
-              reportable. */}
+          {/* What we will not do, stated plainly, no panel, because a box would make it look like a
+              feature rather than a boundary. */}
+          <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame" aria-hidden />
+            <span lang={locale}>{t("landing.trustDont")}</span>
+          </p>
+
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="size-4 shrink-0 text-leaf-strong" aria-hidden />
+            <span lang={locale}>{t("app.noPersonalData")}</span>
+          </p>
+
+          {/* Last on this side, after the button and the two reassurances: what somebody can actually
+              report. A person deciding whether to trust this reads "we do not predict" and "no name
+              needed" before they read a list of hazards. The four that carry a line say what the
+              hazard looks like from the ground, because the name alone asks a frightened person to
+              already know the right word; the rest are listed by name, since the form offers every
+              one of them and leaving them out would say they are not reportable. */}
           <div className="flex flex-col gap-[clamp(0.5rem,1.2vh,0.85rem)]">
             <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase" lang={locale}>
               {t("landing.hazardsTitle")}
@@ -152,18 +165,6 @@ async function Landing() {
               </p>
             </div>
           </div>
-
-          {/* What we will not do, stated plainly, no panel, because a box would make it look like a
-              feature rather than a boundary. */}
-          <p className="flex items-start gap-2.5 max-w-lg text-[13px] leading-relaxed text-muted-foreground">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-flame" aria-hidden />
-            <span lang={locale}>{t("landing.trustDont")}</span>
-          </p>
-
-          <p className="flex items-center gap-2 text-xs text-muted-foreground">
-            <ShieldCheck className="size-4 shrink-0 text-leaf-strong" aria-hidden />
-            <span lang={locale}>{t("app.noPersonalData")}</span>
-          </p>
         </div>
 
         {/* Right: how it works, as cards. Two staggered columns so the eye moves down the flow. */}

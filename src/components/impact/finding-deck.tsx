@@ -89,10 +89,10 @@ export function FindingDeck({
               style={{
                 // A card below the one in front, inset on both sides and showing past the bottom
                 // edge, so the depth on screen is the work left rather than decoration.
-                top: `${depth * 10}px`,
-                bottom: `${-depth * 7}px`,
-                left: `${depth * 12}px`,
-                right: `${depth * 12}px`,
+                top: `${depth * 11}px`,
+                bottom: `${-depth * 9}px`,
+                left: `${depth * 16}px`,
+                right: `${depth * 16}px`,
               }}
             />
           ) : null,
