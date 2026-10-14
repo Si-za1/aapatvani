@@ -268,7 +268,10 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="flex flex-col gap-3">
+    // `min-w-0` matters in the two-column media row: a fieldset will not shrink below its
+    // content's minimum width, and both a long filename and an <audio> element's intrinsic width
+    // are larger than one column, so without it the columns overlap instead of truncating.
+    <fieldset className="flex min-w-0 flex-col gap-3">
       <legend className="mb-1 flex w-full items-baseline gap-2">
         <span className="text-base font-semibold">{label}</span>
         {optional ? <span className="text-xs font-normal text-muted-foreground">{optional}</span> : null}

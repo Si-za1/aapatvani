@@ -150,9 +150,11 @@ export function VoiceRecorder({
   const recording = active !== null;
 
   return (
-    <div className="flex flex-col gap-2">
+    // `min-w-0` on both wrappers: an <audio> element has a ~300 px intrinsic width that a flex
+    // box will otherwise treat as a floor, which pushes this column wider than half the grid.
+    <div className="flex min-w-0 flex-col gap-2">
       {note ? (
-        <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
+        <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-border bg-card p-3">
           <div className="flex items-center gap-3">
             <Mic className="size-4 shrink-0 text-ink-soft" aria-hidden />
             <span className="text-sm font-medium">{formatSeconds(note.seconds)}</span>
