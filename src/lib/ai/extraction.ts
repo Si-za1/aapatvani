@@ -7,6 +7,7 @@ import { getHazard, type RegionConfig } from "@/config/regions";
 import type { Claim, ClaimBasis, Extraction, MediaItem, Origin, Report, ResolvedPlace } from "@/lib/domain/schemas";
 import { AliasRegistry } from "@/lib/evidence/aliases";
 import { canonicalText, locateExcerpt } from "@/lib/evidence/excerpt";
+import { stripMetadataForModel } from "@/lib/evidence/strip-metadata";
 import type { GazetteerEntry } from "@/lib/geo/dataset-types";
 import { resolvePlace, type PlaceMatch } from "@/lib/geo/gazetteer";
 import { newId } from "@/lib/ids";
@@ -185,7 +186,12 @@ export function buildExtractionPrompt(input: ExtractionInput): {
     budget -= data.length;
     const alias = isPhoto ? aliases.register("M", { kind: "photo", media: item }) : aliases.register("A", { kind: "audio", media: item });
     mediaLines.push(`- ${alias}: ${isPhoto ? "photo" : `voice note${item.durationSec ? ` (${Math.round(item.durationSec)} s)` : ""}`}`);
-    mediaParts.push({ text: `${alias} (${isPhoto ? "photo" : "voice note"}):` }, { inlineData: { mimeType: item.mimeType, data: data.toString("base64") } });
+    // A photo goes to the model without its EXIF block. The reporter agreed to a machine reading
+    // their picture; they did not agree to their coordinates going to a third party with it. The
+    // stored original keeps everything, so the reviewer still sees the true file and `readExif`
+    // has already captured what the contradiction rules use.
+    const outbound = isPhoto ? stripMetadataForModel(data, item.mimeType) : data;
+    mediaParts.push({ text: `${alias} (${isPhoto ? "photo" : "voice note"}):` }, { inlineData: { mimeType: item.mimeType, data: outbound.toString("base64") } });
   }
 
   const reporterHazard = report.reporterHazard ? getHazard(region, report.reporterHazard)?.label ?? report.reporterHazard : undefined;
