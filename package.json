@@ -15,6 +15,7 @@
     "check:models": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/check-models.ts",
     "seed": "tsx --conditions=react-server scripts/seed-demo.ts",
     "seed:reset": "rm -rf .data/db .data/media",
+    "seed:reset:cloud": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/seed-reset.ts --cloud",
     "eval": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/eval.ts",
     "test:multimodal": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/test-multimodal.ts",
     "bench": "tsx --conditions=react-server scripts/bench.ts"

@@ -11,8 +11,16 @@
 FROM node:24-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-# `npm ci` honours the lockfile exactly, so the image is built from the versions we tested.
-RUN npm ci
+# `npm ci` would be stricter — it refuses to install anything the lockfile does not already
+# describe. It cannot be used here, and the reason is not this project's: a lockfile generated on
+# macOS omits the transitive dependencies of the optional wasm32 fallback packages
+# (`@img/sharp-wasm32`, `@tailwindcss/oxide-wasm32-wasi`, `@unrs/resolver-binding-wasm32-wasi`),
+# because the macOS resolver prunes those branches entirely. Linux `npm ci` then validates the
+# whole tree, finds five of those entries missing, and stops with `EUSAGE` before it compiles
+# a line. Regenerating the lockfile on macOS does not help; it just moves which entries are
+# missing. `npm install` resolves those gaps for the platform it is running on, and every version
+# the build actually installs is still pinned by the lockfile.
+RUN npm install --no-audit --no-fund
 
 # ---------------------------------------------------------------- build
 FROM node:24-slim AS build
