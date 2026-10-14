@@ -26,6 +26,7 @@ import { getDb } from "@/lib/db";
 import type { IncidentStatus } from "@/lib/domain/schemas";
 import { getEnv } from "@/lib/env";
 import { confirmedCandidates, latestAssessment } from "@/lib/impact/service";
+import { describeLocation, incidentLocationView } from "@/lib/location-view";
 import { formatDateTime } from "@/lib/time";
 
 // The incident workspace (features M4/M9/M11). One screen for settling a grouping, analysing what a
@@ -69,6 +70,10 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
   ]);
 
   const reportIds = new Set(incident.reportIds);
+  // The strip answers "where", and "no location established" underneath a title that names the
+  // place is a contradiction the reader has to resolve themselves. §lib/location-view keeps the
+  // four states apart: mapped, approximate-from-a-name, named-but-unplaceable, and not given.
+  const whereText = describeLocation(incidentLocationView(incident, reports.filter((r) => reportIds.has(r.id))));
   const suggestions = allSuggestions.filter((s) => s.reportIds.some((rid) => reportIds.has(rid)));
   const claimsByReport = new Map<string, typeof claims>();
   for (const claim of claims) {
@@ -159,11 +164,12 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
             think so, and where, and they are answered here before anything else on the page. */}
         <dl className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 xl:grid-cols-4">
           <Fact label="Where">
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-              {incident.location
-                ? `${incident.location.lat.toFixed(4)}, ${incident.location.lng.toFixed(4)} ±${incident.location.uncertaintyM} m`
-                : "No location established"}
+            <span className="inline-flex items-start gap-1.5">
+              <MapPin className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="flex flex-col gap-0.5">
+                <span>{whereText.headline}</span>
+                <span className="text-xs font-normal text-muted-foreground">{whereText.qualifier}</span>
+              </span>
             </span>
           </Fact>
           <Fact label="Why we think so">
