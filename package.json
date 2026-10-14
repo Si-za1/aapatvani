@@ -16,6 +16,7 @@
     "seed": "tsx --conditions=react-server scripts/seed-demo.ts",
     "seed:reset": "rm -rf .data/db .data/media",
     "eval": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/eval.ts",
+    "test:multimodal": "tsx --env-file-if-exists=.env.local --conditions=react-server scripts/test-multimodal.ts",
     "bench": "tsx --conditions=react-server scripts/bench.ts"
   },
   "dependencies": {

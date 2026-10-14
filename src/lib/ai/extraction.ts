@@ -567,7 +567,12 @@ export async function runExtraction(input: ExtractionInput, llm: Llm | null): Pr
   };
 
   // Embedding for cross-lingual matching. Optional: a failure here never fails the extraction.
-  const embedText = (extraction.translationEn ?? input.report.text).trim();
+  //
+  // The transcript is the fallback, and it is not a rare one: a report that arrives as a voice note
+  // and nothing else has no text to translate, so `translationEn` is empty and there is nothing to
+  // embed. Without this, exactly the reporters who cannot write get no embedding and are matched on
+  // distance and time alone (§8.2).
+  const embedText = (extraction.translationEn || input.report.text || extraction.transcript?.text || "").trim();
   if (embedText) {
     try {
       const { vector, model } = await llm.embed(embedText.slice(0, 8000));

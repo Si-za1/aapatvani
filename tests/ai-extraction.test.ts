@@ -181,6 +181,27 @@ describe("extraction checks", () => {
     expect(failing.extraction.validation.warnings.join(" ")).toContain("Embedding failed");
   });
 
+  it("embeds a voice-only report from its transcript, which is all it has", async () => {
+    // Regression: there is no text to translate, so `translationEn` comes back empty and the old
+    // fallback chain ran out at `report.text`, which is also empty. The report got no embedding and
+    // could only ever be matched on distance and time, for exactly the reporters who cannot write.
+    const output = {
+      ...MODEL_OUTPUT,
+      translationEn: "",
+      transcript: { text: "तातोपानी जाने बाटो पहिरोले थुनियो", language: "ne" },
+      claims: [],
+      placeMentions: [],
+      timeMentions: [],
+      mediaNotes: [],
+    };
+    const report = makeReport({ text: "", media: [AUDIO] });
+    const llm = new FakeLlm([output]);
+    const { extraction } = await runExtraction(input({ report, media: [{ item: AUDIO, data: Buffer.from([1, 2]) }] }), llm);
+
+    expect(extraction.embedding).toEqual([0.6, 0.8]);
+    expect(llm.embedCalls).toEqual(["तातोपानी जाने बाटो पहिरोले थुनियो"]);
+  });
+
   it("records a failed extraction instead of throwing when the model misbehaves", async () => {
     const invalid = await runExtraction(input(), new FakeLlm(["nope", "{\"still\": \"wrong\"}"]));
     expect(invalid.extraction.status).toBe("failed");

@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+  Source for landslide-larcha.png. An illustration, not a photograph: it depicts the demo
+  scenario (debris covering the Arniko Highway near Larcha) in a deliberately stylised way so
+  that nobody can mistake it for a real image of a real event. Regenerate with data/eval/media/README.md.
+
+  Rendered by the command in data/eval/media/README.md.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html, body { margin: 0; padding: 0; }
+      svg { display: block; }
+    </style>
+  </head>
+  <body>
+    <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b9c6c9" />
+          <stop offset="100%" stop-color="#d8dedb" />
+        </linearGradient>
+        <linearGradient id="slope" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4d6135" />
+          <stop offset="100%" stop-color="#3b4a29" />
+        </linearGradient>
+        <linearGradient id="debris" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0%" stop-color="#8a7561" />
+          <stop offset="55%" stop-color="#6f5b48" />
+          <stop offset="100%" stop-color="#5a4938" />
+        </linearGradient>
+      </defs>
+
+      <!-- sky and ridgelines -->
+      <rect width="1024" height="768" fill="url(#sky)" />
+      <path d="M0 300 L150 232 L300 288 L430 214 L560 286 L700 226 L840 292 L1024 240 L1024 420 L0 420 Z" fill="#6b7a63" opacity="0.55" />
+      <path d="M0 352 L180 300 L340 350 L520 292 L680 352 L860 306 L1024 348 L1024 470 L0 470 Z" fill="#55663f" opacity="0.75" />
+
+      <!-- hillside -->
+      <path d="M0 470 L1024 430 L1024 768 L0 768 Z" fill="url(#slope)" />
+
+      <!-- the highway: a grey band cutting across the slope -->
+      <path d="M-20 700 C 200 656, 420 632, 640 596 C 800 570, 930 556, 1044 548 L1044 596 C 930 604, 802 620, 646 646 C 428 682, 208 712, -20 752 Z" fill="#8d8f8a" />
+      <path d="M-20 712 C 200 668, 420 644, 640 608 C 800 582, 930 568, 1044 560 L1044 566 C 930 574, 800 588, 640 614 C 420 650, 200 674, -20 718 Z" fill="#e8e6e0" opacity="0.75" />
+
+      <!-- the landslide: a debris mass burying the road -->
+      <path d="M300 214 C 372 196, 452 214, 508 262 C 560 306, 596 372, 620 448 C 646 530, 654 610, 640 668 L470 700 C 430 640, 396 560, 372 470 C 344 372, 316 292, 300 214 Z" fill="url(#debris)" />
+      <!-- wet scars running down the slope above the debris -->
+      <path d="M330 236 C 372 300, 404 372, 428 448 C 452 524, 468 596, 472 656" stroke="#4a3a2c" stroke-width="7" fill="none" opacity="0.45" />
+      <path d="M394 224 C 432 296, 466 372, 492 452 C 516 526, 532 600, 534 660" stroke="#4a3a2c" stroke-width="6" fill="none" opacity="0.35" />
+      <path d="M452 232 C 486 306, 516 384, 540 462" stroke="#4a3a2c" stroke-width="5" fill="none" opacity="0.3" />
+
+      <!-- boulders -->
+      <g fill="#6d6a63">
+        <ellipse cx="404" cy="574" rx="46" ry="34" />
+        <ellipse cx="520" cy="628" rx="38" ry="27" />
+        <ellipse cx="470" cy="500" rx="30" ry="22" />
+        <ellipse cx="560" cy="556" rx="24" ry="18" />
+      </g>
+      <g fill="#7d7a72">
+        <ellipse cx="440" cy="612" rx="28" ry="20" />
+        <ellipse cx="502" cy="470" rx="20" ry="15" />
+      </g>
+
+      <!-- a vehicle stopped short of the debris -->
+      <g transform="translate(792 566)">
+        <rect x="0" y="0" width="74" height="30" rx="6" fill="#b8452f" />
+        <rect x="8" y="-16" width="44" height="18" rx="4" fill="#a03c28" />
+        <circle cx="16" cy="32" r="9" fill="#2c2c2c" />
+        <circle cx="58" cy="32" r="9" fill="#2c2c2c" />
+      </g>
+
+      <!-- conifers -->
+      <g fill="#2f3d21">
+        <path d="M120 470 L146 400 L172 470 Z" /><path d="M124 502 L146 452 L168 502 Z" />
+        <path d="M206 462 L228 402 L250 462 Z" /><path d="M210 492 L228 452 L246 492 Z" />
+        <path d="M856 452 L880 384 L904 452 Z" /><path d="M860 486 L880 442 L900 486 Z" />
+      </g>
+
+      <!-- label so the fixture can never be mistaken for a real photograph -->
+      <g transform="translate(28 28)">
+        <rect x="0" y="0" width="404" height="46" rx="10" fill="#1c1c1c" opacity="0.62" />
+        <text x="18" y="30" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="#ffffff">
+          ILLUSTRATION · SYNTHETIC · NOT A REAL PHOTOGRAPH
+        </text>
+      </g>
+    </svg>
+  </body>
+</html>
