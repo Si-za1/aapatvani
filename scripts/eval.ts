@@ -10,8 +10,10 @@
 
 import path from "node:path";
 import { aiStatus, getLlm } from "@/lib/ai/gemini";
+import { guardLlm, QuotaBudgetError } from "@/lib/ai/quota";
 import { AiUnavailableError } from "@/lib/ai/types";
 import { latestEvalReport, saveEvalReport } from "@/lib/eval/results";
+import { SCENARIOS } from "@/lib/eval/scenarios";
 import { runEvaluation, prepareScratchStore, type EvalMode, type EvalReport } from "@/lib/eval/run";
 
 function arg(name: string): string | undefined {
@@ -69,8 +71,23 @@ function summarise(report: EvalReport): void {
 
 async function main(): Promise<void> {
   const requested = (arg("mode") ?? "auto") as EvalMode | "auto";
+  // `--scenario larcha-main` (or a comma-separated list) runs a subset. Needed on a metered key,
+  // where a full Gemini-mode run costs more requests in a day than the key allows.
+  const only = arg("scenario")?.split(",").map((s) => s.trim()).filter(Boolean);
   const status = aiStatus();
-  const llm = getLlm();
+  const base = getLlm();
+  // Metered, like the multimodal check. A Gemini-mode run is the single most expensive thing this
+  // project does — roughly forty to fifty-five requests — so it is the last run that should be
+  // allowed to discover a daily ceiling by hitting it.
+  const llm = base
+    ? guardLlm(base, {
+        onCall: (info) =>
+          console.log(
+            `  [${info.kind}] ${info.answered} #${info.countForAnswered} today · ${info.latencyMs} ms` +
+              (info.waitedMs > 500 ? ` · waited ${Math.round(info.waitedMs / 1000)} s` : ""),
+          ),
+      })
+    : null;
   const store = prepareScratchStore();
 
   const modes: EvalMode[] = requested === "auto" ? (llm ? ["oracle", "gemini"] : ["oracle"]) : [requested];
@@ -88,13 +105,25 @@ async function main(): Promise<void> {
 
   for (const mode of modes) {
     try {
-      const report = await runEvaluation(mode, store, mode === "gemini" ? llm : null);
+      const report = await runEvaluation(mode, store, mode === "gemini" ? llm : null, only);
       const file = await saveEvalReport(report);
       summarise(report);
+      if (only?.length) {
+        console.log(
+          `\n  NOTE: a subset — ${report.scenarios.length} of ${SCENARIOS.length} scenarios ran ` +
+            `(${only.join(", ")}). These numbers do not describe the full set.`,
+        );
+      }
       console.log(`\n  saved: ${path.relative(process.cwd(), file)}\n`);
     } catch (error) {
       if (error instanceof AiUnavailableError) {
         console.error(`Skipping ${mode} mode: no model configured.`);
+        continue;
+      }
+      if (error instanceof QuotaBudgetError) {
+        // Stopping is the correct outcome. A half-finished run saved as a result would be read as
+        // a complete one, which is worse than having no number at all.
+        console.error(`\n${error.message}\nStopping ${mode} mode with nothing saved.`);
         continue;
       }
       throw error;

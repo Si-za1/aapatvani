@@ -438,13 +438,30 @@ export async function runScenario(scenario: Scenario, mode: EvalMode, store: Eva
   };
 }
 
-export async function runEvaluation(mode: EvalMode, store: EvalStore, llm: Llm | null): Promise<EvalReport> {
+export async function runEvaluation(
+  mode: EvalMode,
+  store: EvalStore,
+  llm: Llm | null,
+  /**
+   * Run only these scenario ids. Gemini mode is the reason this exists: a full run makes roughly
+   * forty to fifty-five model requests, and a metered key allows a fraction of that per day. Running
+   * one scenario at a time turns a run that would die partway — producing a result that looks
+   * complete and is not — into several runs that each finish and say exactly what they covered.
+   */
+  scenarioIds?: string[],
+): Promise<EvalReport> {
   if (mode === "gemini" && !llm) {
     throw new AiUnavailableError();
   }
 
+  const chosen = scenarioIds?.length ? SCENARIOS.filter((s) => scenarioIds.includes(s.id)) : SCENARIOS;
+  if (scenarioIds?.length && chosen.length !== scenarioIds.length) {
+    const missing = scenarioIds.filter((id) => !SCENARIOS.some((s) => s.id === id));
+    throw new Error(`No such scenario: ${missing.join(", ")}. Available: ${SCENARIOS.map((s) => s.id).join(", ")}`);
+  }
+
   const results: ScenarioResult[] = [];
-  for (const scenario of SCENARIOS) {
+  for (const scenario of chosen) {
     results.push(await runScenario(scenario, mode, store, llm));
   }
 
