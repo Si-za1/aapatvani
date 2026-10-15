@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AapatVani AI — Project Documentation</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 18mm 16mm 20mm 16mm;
+      }
+      @page :first {
+        margin: 0;
+      }
+
+      :root {
+        --ink: #2b2b26;
+        --ink-soft: #5d5f52;
+        --muted: #7c7f70;
+        --olive: #415111;
+        --olive-soft: #eef0e2;
+        --page: #f8f5f0;
+        --card: #ffffff;
+        --rule: #ddd9cf;
+        --coral: #d9612f;
+        --coral-tint: #fbe9e1;
+        --violet: #6a5cb8;
+        --violet-tint: #ece9f8;
+        --moss: #8aa03c;
+        --moss-tint: #f0f2e2;
+        --leaf: #527013;
+        --leaf-tint: #e7efd9;
+        --amber: #b07d1a;
+        --amber-tint: #fbf0d8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 9.9pt;
+        line-height: 1.55;
+        color: var(--ink);
+        background: var(--card);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* ---------------------------------------------------------------- cover */
+      .cover {
+        height: 297mm;
+        padding: 40mm 20mm 20mm;
+        background: var(--olive);
+        color: #fff;
+        page-break-after: always;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+      .cover .mark {
+        width: 62px;
+        height: 62px;
+        border-radius: 18px;
+        background: var(--moss);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 14mm;
+      }
+      .cover h1 {
+        font-size: 40pt;
+        line-height: 1.05;
+        margin: 0 0 6mm;
+        letter-spacing: -0.02em;
+        font-weight: 700;
+      }
+      .cover .ne {
+        font-size: 17pt;
+        margin: 0 0 14mm;
+        opacity: 0.82;
+      }
+      .cover .lede {
+        font-size: 13pt;
+        line-height: 1.5;
+        max-width: 128mm;
+        opacity: 0.94;
+        margin: 0 0 auto;
+      }
+      .cover .meta {
+        border-top: 1px solid rgba(255, 255, 255, 0.28);
+        padding-top: 6mm;
+        font-size: 9.5pt;
+        opacity: 0.85;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3mm 10mm;
+      }
+      .cover .meta b {
+        display: block;
+        font-weight: 600;
+        opacity: 0.7;
+        font-size: 8pt;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 1mm;
+      }
+
+      /* ---------------------------------------------------------------- structure */
+      h2 {
+        font-size: 16pt;
+        margin: 0 0 4mm;
+        letter-spacing: -0.01em;
+        color: var(--olive);
+        page-break-after: avoid;
+      }
+      h3 {
+        font-size: 11.5pt;
+        margin: 7mm 0 2mm;
+        color: var(--ink);
+        page-break-after: avoid;
+      }
+      h4 {
+        font-size: 10pt;
+        margin: 5mm 0 1.5mm;
+        color: var(--ink-soft);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 8.2pt;
+        page-break-after: avoid;
+      }
+      section {
+        page-break-before: always;
+      }
+      section:first-of-type {
+        page-break-before: avoid;
+      }
+      p {
+        margin: 0 0 3mm;
+      }
+      ul,
+      ol {
+        margin: 0 0 3.5mm;
+        padding-left: 5.5mm;
+      }
+      li {
+        margin-bottom: 1.4mm;
+      }
+      code {
+        font-family: "SF Mono", Menlo, monospace;
+        font-size: 8.6pt;
+        background: var(--page);
+        padding: 0.5mm 1.2mm;
+        border-radius: 2mm;
+        border: 1px solid var(--rule);
+      }
+      pre {
+        background: #26261f;
+        color: #e8e6dd;
+        padding: 3.5mm 4mm;
+        border-radius: 3mm;
+        font-family: "SF Mono", Menlo, monospace;
+        font-size: 8.2pt;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+        margin: 0 0 4mm;
+        page-break-inside: avoid;
+      }
+      pre code {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: inherit;
+      }
+
+      .sec-num {
+        display: inline-block;
+        width: 9mm;
+        color: var(--moss);
+        font-weight: 700;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 0 4mm;
+        font-size: 9pt;
+        page-break-inside: avoid;
+      }
+      th {
+        text-align: left;
+        background: var(--olive-soft);
+        color: var(--olive);
+        font-weight: 600;
+        padding: 2mm 2.5mm;
+        border-bottom: 1px solid var(--rule);
+        font-size: 8.4pt;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      td {
+        padding: 2mm 2.5mm;
+        border-bottom: 1px solid var(--rule);
+        vertical-align: top;
+      }
+      tr {
+        page-break-inside: avoid;
+      }
+
+      .callout {
+        background: var(--page);
+        border-left: 3px solid var(--moss);
+        padding: 3.5mm 4mm;
+        margin: 0 0 4mm;
+        border-radius: 0 3mm 3mm 0;
+        page-break-inside: avoid;
+      }
+      .callout.warn {
+        border-left-color: var(--coral);
+        background: var(--coral-tint);
+      }
+      .callout.leaf {
+        border-left-color: var(--leaf);
+        background: var(--leaf-tint);
+      }
+      .callout b {
+        color: var(--ink);
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.8mm 2.4mm;
+        border-radius: 99px;
+        font-size: 8pt;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .p-rep {
+        background: var(--coral-tint);
+        color: var(--coral);
+      }
+      .p-ai {
+        background: var(--violet-tint);
+        color: var(--violet);
+      }
+      .p-com {
+        background: var(--moss-tint);
+        color: #5f7024;
+      }
+      .p-rev {
+        background: var(--leaf-tint);
+        color: var(--leaf);
+      }
+      .p-wait {
+        background: var(--amber-tint);
+        color: var(--amber);
+      }
+
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4mm;
+      }
+      .stat {
+        border: 1px solid var(--rule);
+        border-radius: 3mm;
+        padding: 3mm 3.5mm;
+        page-break-inside: avoid;
+      }
+      .stat .n {
+        font-size: 19pt;
+        font-weight: 700;
+        color: var(--olive);
+        line-height: 1;
+        display: block;
+        margin-bottom: 1.5mm;
+      }
+      .stat .l {
+        font-size: 8.4pt;
+        color: var(--muted);
+      }
+
+      .flow {
+        border: 1px solid var(--rule);
+        border-radius: 3mm;
+        overflow: hidden;
+        margin: 0 0 4mm;
+        page-break-inside: avoid;
+      }
+      .flow-row {
+        display: grid;
+        grid-template-columns: 24mm 26mm 1fr;
+        border-bottom: 1px solid var(--rule);
+      }
+      .flow-row:last-child {
+        border-bottom: 0;
+      }
+      .flow-row > div {
+        padding: 2.2mm 3mm;
+      }
+      .flow-row .stage {
+        font-weight: 600;
+        background: var(--page);
+      }
+      .flow-row .who {
+        color: var(--muted);
+        font-size: 8.6pt;
+      }
+
+      .footnote {
+        font-size: 8.4pt;
+        color: var(--muted);
+        border-top: 1px solid var(--rule);
+        padding-top: 2.5mm;
+        margin-top: 5mm;
+      }
+      .avoid {
+        page-break-inside: avoid;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ================================================================ COVER -->
+    <div class="cover">
+      <div class="mark">A</div>
+      <h1>AapatVani AI</h1>
+      <p class="ne">आपतवाणी · "the voice of disaster"</p>
+      <p class="lede">
+        Community disaster reports — Nepali or English, text, photo or voice — turned into
+        structured, traceable incident records, with an analysis of what a blocked road means for
+        the communities that depend on it. Every claim carries its provenance, and a person confirms
+        every fact.
+      </p>
+      <div class="meta">
+        <div><b>Submitted to</b>Google Cloud AI Builder Cup 2026</div>
+        <div><b>Theme</b>Sustainability &amp; Social Impact</div>
+        <div><b>Category</b>Social Good</div>
+        <div><b>Live prototype</b>aapatvani-5eehpwheiq-el.a.run.app</div>
+      </div>
+    </div>
+
+    <!-- ================================================================ 1 -->
+    <section>
+      <h2><span class="sec-num">01</span>What AapatVani is</h2>
+
+      <p>
+        AapatVani is a disaster-information system for the hill districts of Nepal. It takes the
+        fragments a community sends during a monsoon event — a Nepali text message, a photograph, a
+        forwarded message, a voice note from someone who saw it from a bus window — and turns them
+        into one structured incident record a responder can act on.
+      </p>
+
+      <p>
+        The chain is the product: <b>community evidence → incident intelligence → potential impact
+        analysis</b>, with provenance at every link. Most tools in this space stop at the second
+        step, or at the first. A pin on a map tells a district officer that something happened
+        somewhere. It does not tell them that four villages have just lost every mapped road route
+        to a hospital whose nearest alternative is thirty kilometres away.
+      </p>
+
+      <h3>The one-sentence version</h3>
+      <div class="callout">
+        During an event a district does not suffer from too few reports — it suffers from too many it
+        cannot verify. AapatVani takes what the community already sends and turns it into one
+        incident, with the copies and contradictions exposed and the road-access consequence
+        computed.
+      </div>
+
+      <h3>What makes it different</h3>
+      <table>
+        <tr>
+          <th style="width: 34%">Ordinary tools</th>
+          <th>What AapatVani does instead</th>
+        </tr>
+        <tr>
+          <td><b>Crisis-mapping platforms</b> collect reports and place pins, fast.</td>
+          <td>Reasons <i>over</i> the reports: groups them, excludes copies, flags contradictions, then computes what the blockage means for road access to services.</td>
+        </tr>
+        <tr>
+          <td><b>Hazard and satellite models</b> predict flood extent, runout, damage.</td>
+          <td>Deliberately predicts <b>no</b> hazard. It answers a different, answerable question: what does what communities report imply for service access?</td>
+        </tr>
+        <tr>
+          <td><b>Government portals</b> (Nepal's BIPAD and similar) are the official record.</td>
+          <td>Built to work <i>alongside</i> that world: community evidence, provenance-labelled, which a reviewer has confirmed before it is worth anything.</td>
+        </tr>
+        <tr>
+          <td><b>LLM summarisation</b> reads many reports and writes fluent prose.</td>
+          <td>The summary is falsifiable. Every model output is schema-validated, citation-checked, and <i>downgradeable</i> when it cannot be supported.</td>
+        </tr>
+      </table>
+
+      <h3>Three properties enforced in code, not policy</h3>
+      <ol>
+        <li>
+          <b>Provenance is mechanical.</b> The excerpt check, the alias map, the coordinate rule and
+          the downgrade path are all tested. A claim the model cannot support is not softened — it is
+          relabelled, and the label is visible on screen.
+        </li>
+        <li>
+          <b>Copies are a first-class failure mode.</b> Counting <i>independent witnesses</i> rather
+          than <i>reports</i> is a small idea with a large effect on whether a responder trusts what
+          they are reading. One forwarded message that looks like fifty confirmations is the most
+          common way community-sourced information misleads.
+        </li>
+        <li>
+          <b>The system abstains.</b> A report with no usable location is never guessed at. A place
+          outside the dataset is reported as <i>unchecked</i>, never as safe.
+        </li>
+      </ol>
+    </section>
+
+    <!-- ================================================================ 2 -->
+    <section>
+      <h2><span class="sec-num">02</span>The problem, and why Nepal</h2>
+
+      <p>
+        Nepal's monsoon runs roughly June to September. Every year it triggers thousands of
+        landslides across the middle hills. The characteristic failure is not the landslide itself —
+        it is that <b>a hillside road is the only road</b>. A single slip at one point on the Arniko
+        Highway can sever the connection between a dozen villages and their nearest health facility,
+        sometimes for days.
+      </p>
+
+      <p>
+        The information problem sits on top of the physical one. Reports arrive through whatever
+        channel is nearest to hand: a phone call to a relative, a Facebook post, a Viber message
+        forwarded four times, a photo with no place attached. A district officer then has to work out,
+        quickly and under pressure, which of these describe the same event, which are copies, which
+        contradict each other, and what it all means for the villages downstream.
+      </p>
+
+      <h3>Why Nepal specifically</h3>
+      <table>
+        <tr>
+          <th style="width: 30%">Condition</th>
+          <th>Why it makes this the right place to build</th>
+        </tr>
+        <tr>
+          <td><b>Single-road dependency</b></td>
+          <td>Hill settlements are connected by one mapped road. This makes the road-access question unusually decisive — the answer is often binary, not incremental.</td>
+        </tr>
+        <tr>
+          <td><b>High mobile penetration, low friction to report</b></td>
+          <td>A web page works. Nobody needs to install an application for an event that happens twice a year, and no account is required.</td>
+        </tr>
+        <tr>
+          <td><b>Language and literacy</b></td>
+          <td>Nepali is the working language of the affected districts, and typing Devanagari on a phone is a real barrier. Voice notes are not a nicety here; they are the difference between a person reporting and not.</td>
+        </tr>
+        <tr>
+          <td><b>Existing institutional context</b></td>
+          <td>Nepal already has BIPAD, the national disaster portal. The gap is not an official record — it is <i>community</i> evidence that has been checked. Working alongside an existing system is a better problem than filling a vacuum.</td>
+        </tr>
+        <tr>
+          <td><b>Open map data quality</b></td>
+          <td>OpenStreetMap coverage in Nepal is good enough to route over, and honest enough that its gaps can be reported as gaps rather than hidden.</td>
+        </tr>
+        <tr>
+          <td><b>Transferability</b></td>
+          <td>Every mechanism here — the road graph, the gazetteer, the hazard list, the region label — is configuration, not code. The same system applies to any road-constrained, monsoon-affected region.</td>
+        </tr>
+      </table>
+
+      <h3>The demo area</h3>
+      <p>
+        The prototype covers the <b>Araniko Highway corridor</b> in Sindhupalchok district:
+        Dolalghat–Chautara–Bahrabise–Tatopani–Kodari, inside Nepal's border. This is a real
+        OpenStreetMap extract, not a toy graph, and it contains a genuine, verifiable consequence:
+      </p>
+      <table>
+        <tr>
+          <th>If this stretch of the Arniko Highway is blocked</th>
+          <th>What the engine computes</th>
+        </tr>
+        <tr>
+          <td>Between Larcha and Tatopani</td>
+          <td>Tatopani, Namtan and Kodari lose <b>every mapped road route</b> to a health facility. The nearest alternative is 23–30 km away.</td>
+        </tr>
+        <tr>
+          <td>Near Ghumthang</td>
+          <td>20 settlements' routes to care grow by 14–15 km.</td>
+        </tr>
+        <tr>
+          <td>Near Khukundol</td>
+          <td>4 settlements' routes grow by 12 km.</td>
+        </tr>
+      </table>
+      <p class="footnote">
+        These numbers come from the shipped dataset and can be reproduced with <code>npm run bench</code>
+        and the impact panel in the running app.
+      </p>
+    </section>
+
+    <!-- ================================================================ 3 -->
+    <section>
+      <h2><span class="sec-num">03</span>What happens when someone reports</h2>
+
+      <p>
+        This is the whole pipeline, in order. Each stage names what it produces and who or what
+        decides.
+      </p>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="stage">1 · Submit</div>
+          <div class="who">Reporter</div>
+          <div>
+            A phone browser posts a form to <code>/api/reports</code>. The server checks origin, rate
+            limit and size, validates the fields, stores media to private storage, hashes each file,
+            reads EXIF, and writes the report with a reference code. <b>The report is saved before any
+            model is called</b>, so a Gemini outage can never lose a submission.
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="stage">2 · Extraction</div>
+          <div class="who">Gemini, then code</div>
+          <div>
+            Gemini reads the text, photos and voice note and returns structured JSON. The server then
+            checks it independently: schema validation, alias mapping, <b>excerpt verification against
+            the reporter's own words</b>, and gazetteer resolution for place names. Coordinates are
+            never accepted from the model.
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="stage">3 · Matching</div>
+          <div class="who">Code, then Gemini</div>
+          <div>
+            Candidate pairs are filtered by region, time and distance, with compatible hazards. Text
+            embeddings give a cross-lingual similarity score. Copies are detected by photo hash,
+            near-identical wording, and reporter token. Gemini then gives a pairwise verdict citing
+            claims — but <b>a score never merges anything</b>.
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="stage">4 · Review</div>
+          <div class="who">A person</div>
+          <div>
+            In the reviewer workspace the original sits beside what was read from it, with excerpts
+            highlighted on hover. Confirm, correct, reject or ask for more — per claim, and per
+            grouping. Every action writes to an append-only audit trail.
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="stage">5 · Impact</div>
+          <div class="who">Code</div>
+          <div>
+            When a claim describes a road blockage, the engine snaps it to a road segment, removes
+            that segment from the real graph, and re-runs multi-source shortest paths from every
+            health facility. Each settlement is classified <i>lost</i>, <i>longer</i> or
+            <i>unchanged</i>. Runs in ~11 ms.
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="stage">6 · Alert</div>
+          <div class="who">Gemini, then a person</div>
+          <div>
+            A draft is built from <b>confirmed facts only</b>. Every sentence cites its sources;
+            sentences with no valid citation, or a number not present in their sources, are removed
+            and counted. A named reviewer approves it. <b>The app never broadcasts.</b>
+          </div>
+        </div>
+      </div>
+
+      <h3>What comes out the other end</h3>
+      <div class="callout leaf">
+        Not "forty reports". Instead: <b>one landslide at Larcha. Three independent witnesses, one
+        forwarded copy excluded. One report disagrees about whether the road is open. If that segment
+        is blocked, four settlements lose every mapped route to a health facility — the nearest was
+        21 to 30 km away.</b>
+      </div>
+    </section>
+
+    <!-- ================================================================ 4 -->
+    <section>
+      <h2><span class="sec-num">04</span>The trust model</h2>
+
+      <p>
+        This is the part that makes the rest usable. Every claim, finding and map feature carries an
+        <b>origin</b> and a <b>review status</b>, and the interface never lets either be invisible.
+      </p>
+
+      <table>
+        <tr>
+          <th style="width: 26%">Origin</th>
+          <th style="width: 30%">What it means</th>
+          <th>What is stored with it</th>
+        </tr>
+        <tr>
+          <td><span class="pill p-rep">Reported</span></td>
+          <td>A community member said it.</td>
+          <td>The report ID and the verbatim excerpt, verified against the original.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-ai">AI interpretation</span></td>
+          <td>Gemini read it from text, a photo or audio.</td>
+          <td>Model ID, prompt version, and the cited excerpt or media item.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-com">Computed</span></td>
+          <td>Deterministic code over our datasets.</td>
+          <td>Dataset version, parameters and inputs.</td>
+        </tr>
+        <tr>
+          <td><span class="pill p-rev">Reviewer</span></td>
+          <td>A person entered or corrected it.</td>
+          <td>User ID, timestamp and note.</td>
+        </tr>
+      </table>
+
+      <p>
+        Review status runs <code>unreviewed</code> → <code>confirmed</code> · <code>edited</code> ·
+        <code>rejected</code> · <code>needs_info</code>. The word <b>Confirmed</b> appears in exactly
+        one situation: after a named person has acted. Everything else is
+        <span class="pill p-wait">awaiting review</span>.
+      </p>
+
+      <h3>The three rules the model is not trusted with</h3>
+      <ol>
+        <li>
+          <b>Gemini never sees or returns real record IDs.</b> It cites short aliases — <code>R1</code>
+          for the report, <code>M1</code> for a photo, <code>A1</code> for a voice note — which the
+          server maps back. An alias it does not recognise causes the claim to be <i>dropped</i>.
+        </li>
+        <li>
+          <b>Every quoted excerpt must appear in the original text, character for character.</b> If it
+          does not, the claim is downgraded to "AI interpretation, excerpt not verified" and flagged,
+          rather than quietly kept.
+        </li>
+        <li>
+          <b>Coordinates never come from the model.</b> They come only from a GPS fix, a dropped pin,
+          or a gazetteer match against real map data. A report with no usable location is deliberately
+          never distance-compared, rather than guessed at.
+        </li>
+      </ol>
+
+      <div class="callout warn">
+        <b>Privacy.</b> Photographs sent to the model have their EXIF block stripped first — the
+        reporter agreed to a machine reading their picture of a blocked road, not to their
+        coordinates going to a third party with it. The stored original is untouched, so a reviewer
+        still sees the true file. No account, name or phone number is ever required of a reporter.
+      </div>
+    </section>
+
+    <!-- ================================================================ 5 -->
+    <section>
+      <h2><span class="sec-num">05</span>Architecture: which service does what</h2>
+
+      <p>
+        One deployable. A modular Next.js 16 application on Cloud Run — no microservices, no
+        multi-agent orchestration.
+      </p>
+
+      <pre><code>  Community reporter (phone)              Reviewer (signed in)
+            │                                        │
+            ▼                                        ▼
+  ┌─ Next.js 16 on Cloud Run ──────────────────────────────────────┐
+  │  Public    /  ·  /report  ·  /report/[id]                      │
+  │  Reviewer  /dashboard · /reports · /incidents · /timeline      │
+  │            /activity  · /evaluation · /settings                │
+  │                                                                │
+  │  lib/ai         Gemini calls, prompts, response schemas        │
+  │  lib/evidence   alias mapping, citation + excerpt verification │
+  │  lib/matching   scoring, copy detection, contradictions        │
+  │  lib/geo        gazetteer, road graph, shortest paths          │
+  │  lib/impact     versioned road-access analysis                 │
+  │  lib/alerts     cited draft construction and approval          │
+  │  lib/db         Firestore  ·  or local JSON files              │
+  │  lib/storage    Cloud Storage · or local media directory       │
+  │  lib/auth       passcode sessions · or Firebase Auth           │
+  └──────┬─────────────────┬──────────────────┬────────────────────┘
+         ▼                 ▼                  ▼
+   Gemini API         Firestore          Cloud Storage
+   text · photo       reports, claims,   private photos
+   · voice            incidents, audit   and voice notes
+   embeddings</code></pre>
+
+      <h3>Service by service</h3>
+      <table>
+        <tr>
+          <th style="width: 24%">Service</th>
+          <th style="width: 20%">Role</th>
+          <th>Why this one</th>
+        </tr>
+        <tr>
+          <td><b>Cloud Run</b></td>
+          <td>The application</td>
+          <td>One container, scales to zero, no servers to manage. The hackathon requires deployment on Cloud Run, GCP or Firebase.</td>
+        </tr>
+        <tr>
+          <td><b>Gemini</b> (via the Gemini API)</td>
+          <td>Reading reports, comparing them, drafting</td>
+          <td>Multimodal — text, image and audio in one model — with structured JSON output and multilingual embeddings. Nepali is first-class.</td>
+        </tr>
+        <tr>
+          <td><b>Firestore</b></td>
+          <td>The record store</td>
+          <td>Append-only collections, scales without administration, and reachable <i>only</i> from the server through the Admin SDK.</td>
+        </tr>
+        <tr>
+          <td><b>Cloud Storage</b></td>
+          <td>Photos and voice notes</td>
+          <td>Private bucket. Media is streamed to signed-in reviewers through the app, never served directly.</td>
+        </tr>
+        <tr>
+          <td><b>Secret Manager</b></td>
+          <td>Session key and reviewer passcode</td>
+          <td>Never in plain environment variables. The runtime service account is granted access to those two secrets only.</td>
+        </tr>
+        <tr>
+          <td><b>Cloud Build + Artifact Registry</b></td>
+          <td>Image build and storage</td>
+          <td>Builds the container from the Dockerfile. No local Docker required.</td>
+        </tr>
+        <tr>
+          <td><b>OpenStreetMap</b></td>
+          <td>The geography</td>
+          <td>Pre-processed offline into a versioned JSON graph that ships with the app, so the analysis is deterministic and needs no network at runtime.</td>
+        </tr>
+      </table>
+
+      <h3>Design principles that shaped the build</h3>
+      <ul>
+        <li>
+          <b>Swappable backends.</b> <code>DATA_BACKEND=local|firestore</code>,
+          <code>MEDIA_BACKEND</code>, <code>AUTH_MODE=passcode|firebase</code>. The whole application
+          runs on a laptop with no cloud credentials and moves to Google Cloud with environment
+          variables only. This is why it could be built and tested for a week before the first
+          credential existed.
+        </li>
+        <li>
+          <b>Server-only data access.</b> Rules deny all client access to Firestore and Storage. Every
+          read is a session-checked route handler. Access control lives in one place.
+        </li>
+        <li>
+          <b>Save first, analyse second.</b> A report is stored and given a reference code before any
+          model call.
+        </li>
+        <li>
+          <b>Deterministic geography.</b> The same inputs always give the same road analysis. That is
+          tested, and it is what makes the impact figures reproducible.
+        </li>
+      </ul>
+    </section>
+
+    <!-- ================================================================ 6 -->
+    <section>
+      <h2><span class="sec-num">06</span>Running it</h2>
+
+      <h3>Locally, with no credentials at all</h3>
+      <pre><code>npm install
+npm run seed        # the demo scenario: 6 synthetic reports over real road geography
+npm run dev         # http://localhost:3000</code></pre>
+      <p>
+        Open <code>http://localhost:3000</code> for the public report form. Reviewers sign in at
+        <code>/login</code> with the passcode <code>demo-reviewer</code> (local development only).
+      </p>
+      <div class="callout">
+        <b>No credentials are needed for any of this.</b> Without a Gemini key the app still stores
+        reports and marks them "awaiting a person". Review, grouping, contradiction detection and the
+        road-impact analysis all work, because they are deterministic code rather than model calls.
+      </div>
+
+      <h3>The full command set</h3>
+      <table>
+        <tr>
+          <th style="width: 34%">Command</th>
+          <th>What it does</th>
+        </tr>
+        <tr><td><code>npm run dev</code></td><td>Development server on port 3000.</td></tr>
+        <tr><td><code>npm run build</code></td><td>Production build.</td></tr>
+        <tr><td><code>npm test</code></td><td>220 unit and end-to-end tests.</td></tr>
+        <tr><td><code>npm run typecheck</code></td><td>TypeScript, regenerating route types first.</td></tr>
+        <tr><td><code>npm run lint</code></td><td>ESLint.</td></tr>
+        <tr><td><code>npm run seed</code></td><td>Writes the demo scenario and runs matching over it.</td></tr>
+        <tr><td><code>npm run seed:reset</code></td><td>Clears the local store.</td></tr>
+        <tr><td><code>npm run seed:reset:cloud</code></td><td>Clears the deployed Firestore. Requires <code>--cloud</code> and refuses without it.</td></tr>
+        <tr><td><code>npm run eval</code></td><td>Measured results over the labelled scenarios.</td></tr>
+        <tr><td><code>npm run eval -- --mode oracle</code></td><td>The deterministic half, no model needed.</td></tr>
+        <tr><td><code>npm run eval -- --mode gemini</code></td><td>Real extraction; needs credentials.</td></tr>
+        <tr><td><code>npm run check:models</code></td><td>Verifies model IDs, structured output and embeddings against the live key.</td></tr>
+        <tr><td><code>npm run test:multimodal</code></td><td>Runs real extraction over a photo and a voice note.</td></tr>
+        <tr><td><code>npm run bench</code></td><td>Times the road analysis on the real corridor graph.</td></tr>
+        <tr><td><code>npm run data:fetch</code></td><td>Re-pulls the OSM extract from Overpass.</td></tr>
+      </table>
+
+      <h3>Configuration</h3>
+      <p>
+        Everything is environment-driven and documented in <code>.env.example</code>. With nothing
+        set, the app uses a local file store, local media and passcode sign-in. The switch to Google
+        Cloud is a set of variables:
+      </p>
+      <table>
+        <tr><th style="width: 32%">Variable</th><th>Effect</th></tr>
+        <tr><td><code>DATA_BACKEND</code></td><td><code>local</code> (JSON files) · <code>firestore</code></td></tr>
+        <tr><td><code>MEDIA_BACKEND</code></td><td><code>local</code> (directory) · <code>gcs</code></td></tr>
+        <tr><td><code>AUTH_MODE</code></td><td><code>passcode</code> (shared, signed cookie) · <code>firebase</code></td></tr>
+        <tr><td><code>STORAGE_BUCKET</code></td><td>The private media bucket</td></tr>
+        <tr><td><code>GEMINI_API_KEY</code></td><td>Developer API key, for local work</td></tr>
+        <tr><td><code>GEMINI_MODEL_*</code></td><td>Per-stage model overrides (extraction, reasoning, drafting, fallback, embedding)</td></tr>
+        <tr><td><code>GEMINI_DAILY_BUDGET</code></td><td>Hard daily request ceiling, enforced by the quota guard</td></tr>
+      </table>
+
+      <h3>The deployed prototype</h3>
+      <pre><code>https://aapatvani-5eehpwheiq-el.a.run.app
+
+Project    aapatvani-511617   ·   Region  asia-south1 (Mumbai)
+Runtime    Cloud Run, scale to zero, max 2 instances
+Data       Firestore + private Cloud Storage bucket
+Auth       passcode, session key in Secret Manager</code></pre>
+    </section>
+
+    <!-- ================================================================ 7 -->
+    <section>
+      <h2><span class="sec-num">07</span>What each user experiences</h2>
+
+      <h3>A community reporter</h3>
+      <p>
+        They open a web page on a phone. There is no application to install, no account, and no name
+        to give. The interface is in Nepali by default, with English one tap away.
+      </p>
+      <ul>
+        <li>They describe what happened — <b>by typing, by taking a photo, or by speaking</b>.</li>
+        <li>They pick a hazard from the region's own list, with a plain-language description beside each name, because "landslide" asks a frightened person to already know the right word.</li>
+        <li>They give a location three ways: a GPS fix, a pin dropped on a map, or simply <b>the name of the place</b>.</li>
+        <li>They say roughly when it happened.</li>
+      </ul>
+      <p>
+        They receive a reference code and a receipt page showing <b>what the system understood</b> —
+        their own words, the places recognised, the time interpreted. That page is theirs alone, gated
+        on a token their browser holds; it deliberately shows no reviewer notes, no grouping, and no
+        incident data.
+      </p>
+      <p class="footnote">
+        If their place name is not in our map data, the app says so plainly rather than showing
+        nothing: <i>"named by the reporter, not on our map"</i>, with the consequence stated — that
+        report was not compared with others by distance.
+      </p>
+
+      <h3>A reviewer</h3>
+      <p>
+        They sign in and land on a dashboard answering four questions in the order a shift runs:
+        how much is waiting, where things are, which incidents exist, and what arrived recently.
+      </p>
+      <ul>
+        <li><b>The review queue</b> and <b>report workspace</b>: the original beside what was read from it. Hovering a claim highlights its excerpt in the Nepali text.</li>
+        <li><b>The incident workspace</b>: membership, scored match suggestions with a visible feature breakdown, and contradictions — each with confirm / correct / reject per claim.</li>
+        <li><b>The impact panel</b>: run the road analysis, see the assumed blocked segment, the affected settlements and the facilities whose catchment changes, each with its own caveats beside it.</li>
+        <li><b>The alert panel</b>: a draft built only from confirmed claims, every sentence citing its source. Approving it records a name and states that nothing was sent.</li>
+        <li><b>The timeline</b>: the evidence chain drawn on a horizontal axis — above the line what the community reported, below it what the system and reviewers did about it.</li>
+      </ul>
+
+      <h3>What the interface never does</h3>
+      <ul>
+        <li>It never shows a colour without an icon and a word. Every state is legible without relying on colour vision.</li>
+        <li>It never says "safe". Being outside the analysis area is stated as <i>unchecked</i>, and every impact panel carries the line <i>"Places outside this analysis are not necessarily safe"</i>.</li>
+        <li>It never hides a decision behind a score. Confirm, dismiss, merge and separate are all explicit acts by a named person.</li>
+      </ul>
+    </section>
+
+    <!-- ================================================================ 8 -->
+    <section>
+      <h2><span class="sec-num">08</span>What exists today</h2>
+
+      <div class="grid2">
+        <div class="stat"><span class="n">220</span><span class="l">automated tests passing</span></div>
+        <div class="stat"><span class="n">11,340</span><span class="l">road junctions in the shipped graph</span></div>
+        <div class="stat"><span class="n">36</span><span class="l">health facilities, 4 of them hospitals</span></div>
+        <div class="stat"><span class="n">187</span><span class="l">settlements analysed per run</span></div>
+        <div class="stat"><span class="n">~11 ms</span><span class="l">road-access analysis, warm average</span></div>
+        <div class="stat"><span class="n">2,525 km</span><span class="l">of mapped road in the extract</span></div>
+      </div>
+
+      <h3>Built and verified</h3>
+      <table>
+        <tr><th style="width: 38%">Area</th><th>State</th></tr>
+        <tr><td>Public side — landing page, report form, receipt</td><td>Built. Nepali and English, photo, voice, three location modes.</td></tr>
+        <tr><td>Reviewer side — dashboard, queue, report and incident workspaces, settings</td><td>Built and exercised end to end on the seeded scenario.</td></tr>
+        <tr><td>Matching, copies, contradictions</td><td>Built. Deterministic rules plus a model verdict that cites claims.</td></tr>
+        <tr><td>Road-impact analysis</td><td>Built. ~11 ms warm on the real corridor graph, benchmarked by <code>npm run bench</code>.</td></tr>
+        <tr><td>Alert drafting and approval</td><td>Built. Citation and number checks enforced server-side.</td></tr>
+        <tr><td>Evaluation harness</td><td>Built. Oracle mode runs today; Gemini mode needs credentials.</td></tr>
+        <tr><td>Deployment</td><td>Live on Cloud Run, verified in a browser and by API.</td></tr>
+      </table>
+
+      <h3>Measured results</h3>
+      <p>
+        <b>Oracle mode</b> feeds the answer key in as if extraction had produced it, so it measures the
+        deterministic half of the pipeline exactly, with no model involved:
+      </p>
+      <table>
+        <tr><th>Metric</th><th>Result</th></tr>
+        <tr><td>Grouping precision / recall</td><td>100% / 100%</td></tr>
+        <tr><td>False merges</td><td>0</td></tr>
+        <tr><td>Copy detection precision / recall</td><td>100% / 100%</td></tr>
+        <tr><td>Contradiction recall</td><td>2 / 2</td></tr>
+        <tr><td>Correct abstentions</td><td>2 / 2</td></tr>
+        <tr><td>Impact scenarios correct</td><td>1 / 1</td></tr>
+      </table>
+      <div class="callout warn">
+        <b>Read this honestly.</b> These are five hand-written scenarios over real road geography. They
+        show the pipeline behaves as designed on cases we chose. They are <b>not</b> a measure of
+        real-world effectiveness, and the Gemini-mode run — the only one that can say anything about
+        <i>reading reports</i> — has not yet been published. No claim beyond designed behaviour should
+        be read from the table above.
+      </div>
+    </section>
+
+    <!-- ================================================================ 9 -->
+    <section>
+      <h2><span class="sec-num">09</span>What it deliberately does not do</h2>
+      <p>
+        Stating these is part of the design, not a disclaimer bolted on. A tool that is honest about
+        its edges is more useful than one that is confidently wrong at them.
+      </p>
+      <table>
+        <tr><th style="width: 40%">It does not</th><th>Because</th></tr>
+        <tr><td>Predict hazards, runout, flood extent, casualties or damage</td><td>Those are physical models needing data we do not have. It answers the service-access question instead, which is answerable from what communities send.</td></tr>
+        <tr><td>Broadcast anything</td><td>Every alert is a draft a person approves. The application has no sending capability at all.</td></tr>
+        <tr><td>Merge reports automatically</td><td>A similarity score is evidence for a reviewer, never a decision.</td></tr>
+        <tr><td>Guess a location</td><td>A report with no GPS, pin or gazetteer match is left unplaced and never distance-compared.</td></tr>
+        <tr><td>Model multiple simultaneous blockages</td><td>The analysis assumes one segment is blocked at a time. Real landslides often bury a longer stretch; this is a known limitation, not an oversight.</td></tr>
+        <tr><td>Treat a paraphrase as a copy</td><td>Copies are judged on identical media, near-identical wording, or the same device. A light rewrite escapes detection today.</td></tr>
+        <tr><td>Cover the whole country</td><td>The dataset is the Araniko corridor. Outside it the app declines to analyse and says so.</td></tr>
+        <tr><td>Replace official systems</td><td>BIPAD is the official record. This is community evidence that a reviewer has checked.</td></tr>
+      </table>
+
+      <h3>Known weaknesses, stated plainly</h3>
+      <ul>
+        <li><b>The evaluation set is small and hand-written.</b> Five scenarios designed by the team. The system has never met a genuinely messy real dataset where forwarding means a screenshot, a re-recording, or a translation chain.</li>
+        <li><b>One reviewer does not scale to five hundred reports.</b> The human-in-the-loop design is right for correctness and is the throughput bottleneck under a mass event.</li>
+        <li><b>Voice transcription is imperfect.</b> Claims are checked against the transcript, and the transcript can itself contain errors — the honest limit of verifying a citation against a model's own reading.</li>
+        <li><b>OSM coverage in rural Nepal is uneven.</b> The analysis reports weak map links as caveats and lists already-disconnected settlements as data gaps rather than as impact.</li>
+        <li><b>Model availability on a free tier is not guaranteed.</b> The app carries a fallback ladder and degrades to "awaiting a person" rather than losing a report, but the strongest models are not always reachable.</li>
+      </ul>
+    </section>
+
+    <!-- ================================================================ 10 -->
+    <section>
+      <h2><span class="sec-num">10</span>Scaling</h2>
+
+      <p>
+        The important property is this: <b>value does not scale with adoption.</b> Nobody needs fifty
+        villagers to download anything. One honest observation — one person saying the road is blocked
+        near Larcha — is enough to run the whole engine and produce a complete access analysis. This
+        is not a social network that needs critical mass; it is a machine that needs one report and a
+        road graph.
+      </p>
+
+      <h3>Technical scaling</h3>
+      <table>
+        <tr><th style="width: 30%">Layer</th><th>How it scales</th></tr>
+        <tr><td><b>Application</b></td><td>Cloud Run scales horizontally on requests. Stateless by design; no session affinity, no local state that matters.</td></tr>
+        <tr><td><b>Data</b></td><td>Firestore scales automatically. Records are append-only where it matters (audit, extractions), which keeps writes cheap and history intact.</td></tr>
+        <tr><td><b>Media</b></td><td>Cloud Storage, no practical ceiling. Streamed through an authorising route rather than served publicly.</td></tr>
+        <tr><td><b>Geography</b></td><td>The expensive part is the <i>offline preparation</i>, not the runtime. The graph is pre-built and shipped; analysis is ~11 ms regardless of traffic.</td></tr>
+        <tr><td><b>Model cost</b></td><td>The dominant per-report cost, and it is bounded: one extraction plus one embedding per report, plus one comparison per candidate pair that survives filtering.</td></tr>
+      </table>
+
+      <h3>Adding a region</h3>
+      <p>Everything geographic is configuration, not code:</p>
+      <ol>
+        <li>Run <code>scripts/prepare-region.ts</code> against an Overpass query for the new area. It produces the road graph, assets and gazetteer as versioned JSON.</li>
+        <li>Add a region config in <code>src/config/regions/</code> — its name, time zone, hazard list with local names, and dataset reference.</li>
+        <li>The app picks it up. Matching, impact analysis, the gazetteer and every screen read from the config.</li>
+      </ol>
+      <p class="footnote">
+        A Philippines configuration already exists in the codebase, deliberately marked "no geographic
+        dataset loaded, not validated" — the region switch works, the geography does not. It is a
+        placeholder that demonstrates the seam rather than a claim about that country.
+      </p>
+
+      <h3>What would genuinely need to change at national scale</h3>
+      <ul>
+        <li><b>The reviewer bottleneck.</b> Human confirmation is the point, but it must become a shift-based queue with assignment, not one person reading everything. Priority ordering by independent-source count and impact severity is the natural next step.</li>
+        <li><b>Multi-segment blockages.</b> Real events block long stretches and cut several roads at once. The engine would need to accept a set of blocked segments rather than one.</li>
+        <li><b>A country-scale road graph.</b> The current dataset is a corridor shipped in the image. Nationwide would mean a spatial store rather than a bundled JSON file.</li>
+        <li><b>Institutional integration.</b> The natural end state is feeding confirmed incidents into BIPAD and police/army channels, in their format, with the provenance attached.</li>
+        <li><b>Offline-first intake.</b> SMS, IVR and a store-and-forward mobile client for areas with no data coverage during an event.</li>
+      </ul>
+
+      <h3>Beyond Nepal</h3>
+      <p>
+        The mechanism generalises to any road-constrained, hazard-exposed region with usable map
+        data: hill districts in India, landslide-prone areas of the Philippines, mountain corridors
+        in Peru or Georgia. What changes is the dataset and the hazard list. What does not change is
+        the chain — community evidence, incident intelligence, road-access impact, with provenance
+        throughout — and that is the part worth carrying across borders.
+      </p>
+    </section>
+
+    <!-- ================================================================ 11 -->
+    <section>
+      <h2><span class="sec-num">11</span>Future enhancements</h2>
+
+      <table>
+        <tr>
+          <th style="width: 26%">Enhancement</th>
+          <th style="width: 12%">Effort</th>
+          <th>Value</th>
+        </tr>
+        <tr>
+          <td><b>Report back to the reporter</b></td>
+          <td>Small</td>
+          <td>The receipt page today says what the system understood. It could also say what happened next — your report was confirmed, the road is being cleared. This closes the loop that makes someone report again.</td>
+        </tr>
+        <tr>
+          <td><b>Multiple blocked segments</b></td>
+          <td>Medium</td>
+          <td>Removes the most significant modelling limitation. The graph engine already handles segment removal; it needs to accept a set.</td>
+        </tr>
+        <tr>
+          <td><b>Priority queue for reviewers</b></td>
+          <td>Medium</td>
+          <td>Orders work by independent sources and computed impact rather than arrival time. Directly addresses the scaling bottleneck.</td>
+        </tr>
+        <tr>
+          <td><b>Paraphrase-resistant copy detection</b></td>
+          <td>Medium</td>
+          <td>Current detection catches identical wording. Embedding-similarity thresholds with human confirmation would catch the translation-chain and light-rewrite cases that matter in practice.</td>
+        </tr>
+        <tr>
+          <td><b>Offline and low-bandwidth intake</b></td>
+          <td>Large</td>
+          <td>SMS and IVR channels, plus a store-and-forward client. During a real event, coverage is exactly what fails.</td>
+        </tr>
+        <tr>
+          <td><b>BIPAD integration</b></td>
+          <td>Large</td>
+          <td>Pushes confirmed incidents into the official record rather than sitting beside it. Requires institutional agreement more than code.</td>
+        </tr>
+        <tr>
+          <td><b>Historical calibration</b></td>
+          <td>Large</td>
+          <td>Replay past monsoon seasons against recorded events to measure real recall and precision, replacing the hand-written evaluation set with something that can fail honestly.</td>
+        </tr>
+        <tr>
+          <td><b>Seasonal and weather context</b></td>
+          <td>Medium</td>
+          <td>Rainfall and soil-moisture context to rank which reported slips are most likely to worsen — stated as context, never as prediction.</td>
+        </tr>
+      </table>
+
+      <div class="callout leaf">
+        <b>The one we would do first.</b> Reporting back to the reporter. It is the smallest change on
+        this list and the only one that affects whether anyone uses the system a second time. Every
+        other enhancement makes the machine better at its job; this one makes it worth someone's
+        effort to feed.
+      </div>
+    </section>
+
+    <!-- ================================================================ 12 -->
+    <section>
+      <h2><span class="sec-num">12</span>Reference</h2>
+
+      <h3>Data sources and licences</h3>
+      <table>
+        <tr><th style="width: 30%">Source</th><th style="width: 34%">Use</th><th>Licence</th></tr>
+        <tr>
+          <td><b>OpenStreetMap</b> via the Overpass API</td>
+          <td>Road network, health facilities, schools and settlements for the Araniko corridor</td>
+          <td>ODbL 1.0. Attribution shown on every map.</td>
+        </tr>
+        <tr>
+          <td><b>OpenStreetMap standard tiles</b></td>
+          <td>Basemap in the interface</td>
+          <td>© OpenStreetMap contributors. Light demo use; the provider is switchable.</td>
+        </tr>
+      </table>
+      <p>
+        Extract snapshot <b>2026-10-11</b>: 11,340 nodes, 11,613 edges, 2,525 km of road, 36 health
+        facilities (4 hospitals), 408 schools, 187 settlements, 622 gazetteer entries.
+      </p>
+      <div class="callout">
+        <b>The reports are synthetic.</b> They are written by the team and labelled
+        <code>synthetic</code> everywhere they appear. No real report and no real person's data is in
+        this project. The geography, by contrast, is entirely real — real roads, real facilities, real
+        distances.
+      </div>
+
+      <h3>Models</h3>
+      <table>
+        <tr><th style="width: 40%">Use</th><th>Model</th></tr>
+        <tr><td>Extraction (text, photo, audio), comparison, contradictions, drafting</td><td><code>gemini-3.8-flash</code></td></tr>
+        <tr><td>Fallback when the primary is unavailable or rate-limited</td><td><code>gemini-3.5-flash-lite</code></td></tr>
+        <tr><td>Text embeddings for cross-lingual matching</td><td><code>gemini-embedding-001</code>, 768 dimensions</td></tr>
+        <tr><td>Optional, hardest cases</td><td><code>gemini-3.1-pro-preview</code></td></tr>
+      </table>
+      <p class="footnote">
+        All model IDs live in one file and are overridable by environment variable. The application
+        records the model that actually answered on every extraction, alongside the prompt version and
+        the raw output, so any result can be traced to what produced it.
+      </p>
+
+      <h3>Repository layout</h3>
+      <pre><code>project.md              the living tracker: status, decisions, progress log
+docs/product-vision.md  the original brief
+docs/deploy.md          Cloud Run deployment, step by step
+src/app/                pages and API route handlers
+src/components/         UI, grouped by area
+src/config/             regions and model IDs, in one place each
+src/lib/domain/         the Zod schemas — the shared contract
+src/lib/ai/             Gemini calls, prompts, schemas, quota guard
+src/lib/evidence/       aliases, excerpt verification, metadata stripping
+src/lib/matching/       scoring, copy detection, contradictions
+src/lib/geo/            gazetteer, road graph, shortest paths
+src/lib/impact/         versioned road-access analysis
+src/lib/alerts/         cited drafts and approval
+data/regions/           the versioned OSM extract
+data/eval/              saved evaluation results
+scripts/                prepare-region, check-models, seed, eval, bench
+tests/                  Vitest unit and end-to-end tests</code></pre>
+
+      <h3>Deliverables</h3>
+      <table>
+        <tr><th style="width: 44%">Requirement</th><th>Where</th></tr>
+        <tr><td>Working prototype, deployed</td><td><code>https://aapatvani-5eehpwheiq-el.a.run.app</code></td></tr>
+        <tr><td>Source code and documentation, in English</td><td>This repository</td></tr>
+        <tr><td>Vision deck (PDF)</td><td>Submitted separately</td></tr>
+        <tr><td>Demonstration video, ~3 minutes</td><td>Public link, in the submission</td></tr>
+        <tr><td>Category</td><td>Social Good</td></tr>
+      </table>
+
+      <p class="footnote">
+        AapatVani AI · आपतवाणी · Google Cloud AI Builder Cup 2026 · Theme: Sustainability &amp; Social
+        Impact · Category: Social Good. Built on Next.js 16, Gemini, Firestore, Cloud Storage and
+        Cloud Run, over OpenStreetMap data © OpenStreetMap contributors (ODbL).
+      </p>
+    </section>
+  </body>
+</html>

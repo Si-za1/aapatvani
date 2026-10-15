@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AapatVani — Prototype Benchmark Report</title>
+    <style>
+      @page { size: A4; margin: 17mm 15mm 18mm 15mm; }
+      @page :first { margin: 0; }
+
+      :root {
+        --ink: #26261f;
+        --ink-soft: #5d5f52;
+        --muted: #85877a;
+        --olive: #415111;
+        --page: #f8f5f0;
+        --card: #ffffff;
+        --rule: #e2ded4;
+        --computed: #7a8f34;
+        --ai: #6a5cb8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 9.9pt;
+        line-height: 1.55;
+        color: var(--ink);
+        background: var(--card);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .cover {
+        height: 297mm;
+        padding: 46mm 20mm 20mm;
+        background: var(--olive);
+        color: #fff;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+      }
+      .cover .mark {
+        width: 56px; height: 56px; border-radius: 16px; background: var(--computed);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 27px; font-weight: 700; margin-bottom: 12mm;
+      }
+      .cover h1 { font-size: 34pt; line-height: 1.06; margin: 0 0 5mm; letter-spacing: -0.02em; }
+      .cover .kicker { font-size: 11pt; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.72; margin: 0 0 4mm; }
+      .cover .lede { font-size: 12.5pt; line-height: 1.5; max-width: 126mm; opacity: 0.94; margin: 0 0 auto; }
+      .cover .meta {
+        border-top: 1px solid rgba(255,255,255,0.28); padding-top: 6mm; font-size: 9.5pt;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 10mm; opacity: 0.86;
+      }
+      .cover .meta b { display: block; font-weight: 600; opacity: 0.7; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1mm; }
+
+      section { page-break-before: always; }
+      section:first-of-type { page-break-before: avoid; }
+      h2 { font-size: 16pt; margin: 0 0 4mm; letter-spacing: -0.01em; color: var(--olive); page-break-after: avoid; }
+      h3 { font-size: 11.5pt; margin: 7mm 0 2mm; page-break-after: avoid; }
+      p { margin: 0 0 3mm; }
+      ul { margin: 0 0 3.5mm; padding-left: 5.5mm; }
+      li { margin-bottom: 1.4mm; }
+      code { font-family: "SF Mono", Menlo, monospace; font-size: 8.6pt; background: var(--page); padding: 0.4mm 1.1mm; border-radius: 2mm; border: 1px solid var(--rule); }
+
+      table { width: 100%; border-collapse: collapse; margin: 0 0 4mm; font-size: 9pt; page-break-inside: avoid; }
+      th { text-align: left; background: #eef0e2; color: var(--olive); font-weight: 600; padding: 2mm 2.5mm; border-bottom: 1px solid var(--rule); font-size: 8.2pt; text-transform: uppercase; letter-spacing: 0.04em; }
+      td { padding: 2mm 2.5mm; border-bottom: 1px solid var(--rule); vertical-align: top; }
+      td.num { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+      tr { page-break-inside: avoid; }
+
+      .callout { background: var(--page); border-left: 3px solid var(--computed); padding: 3.5mm 4mm; margin: 0 0 4mm; border-radius: 0 3mm 3mm 0; page-break-inside: avoid; }
+      .callout.ai { border-left-color: var(--ai); }
+      .callout.warn { border-left-color: #d9612f; background: #fbe9e1; }
+
+      figure { margin: 0 0 4mm; page-break-inside: avoid; }
+      figure img { width: 100%; border: 1px solid var(--rule); border-radius: 3mm; display: block; }
+      figcaption { font-size: 8.4pt; color: var(--muted); margin-top: 2mm; }
+
+      .footnote { font-size: 8.4pt; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 2.5mm; margin-top: 5mm; }
+    </style>
+  </head>
+  <body>
+    <div class="cover">
+      <div class="mark">A</div>
+      <p class="kicker">Prototype benchmark</p>
+      <h1>AapatVani AI</h1>
+      <p class="lede">
+        What the prototype actually costs to run, measured rather than estimated: the road-access
+        analysis, the model calls, the deployed service and the extraction accuracy — with the
+        method for each so the numbers can be reproduced or disputed.
+      </p>
+      <div class="meta">
+        <div><b>Measured</b>15 October 2026</div>
+        <div><b>Environment</b>Node 25.2.1 · darwin/arm64</div>
+        <div><b>Deployed</b>Cloud Run · asia-south1</div>
+        <div><b>Reproduce</b>npm run bench · npm run eval</div>
+      </div>
+    </div>
+
+    <!-- ============================================================ 1 -->
+    <section>
+      <h2>1 · What was measured, and how</h2>
+
+      <p>
+        Everything here was run against the real system — the shipped Araniko corridor dataset, the
+        deployed Cloud Run service, and live model calls. No figure is an estimate. Each section names
+        the command that produces it.
+      </p>
+
+      <table>
+        <tr><th style="width: 26%">Layer</th><th style="width: 30%">Method</th><th>Sample</th></tr>
+        <tr>
+          <td><b>Deterministic engine</b></td>
+          <td><code>npm run bench</code></td>
+          <td>30 warm runs of the full road-access analysis, plus cold measurements of the first call</td>
+        </tr>
+        <tr>
+          <td><b>Model layer</b></td>
+          <td>Live Gemini calls, recorded with each extraction</td>
+          <td>7 real extractions of a report carrying text, a photo and a voice note</td>
+        </tr>
+        <tr>
+          <td><b>Deployed service</b></td>
+          <td>HTTP requests against the Cloud Run URL</td>
+          <td>10 sequential page loads and two authenticated API reads</td>
+        </tr>
+        <tr>
+          <td><b>Build</b></td>
+          <td>Cloud Build, from source to a running revision</td>
+          <td>One full pipeline run</td>
+        </tr>
+        <tr>
+          <td><b>Accuracy</b></td>
+          <td><code>npm run eval</code>, Gemini mode</td>
+          <td>One labelled scenario, 6 synthetic reports, against a hand-written answer key</td>
+        </tr>
+      </table>
+
+      <div class="callout">
+        <b>The one-sentence result.</b> The road network analysis — which is the part nothing else in
+        this space does — costs about <b>11 milliseconds</b>. Reading one report costs about
+        <b>4 seconds</b>. That ratio is the architecture: everything that can be computed is computed,
+        and the model is asked only to read.
+      </div>
+    </section>
+
+    <!-- ============================================================ 2 -->
+    <section>
+      <h2>2 · Results</h2>
+
+      <figure>
+        <img src="benchmark-figure.png" alt="Two-panel bar chart: deterministic engine latencies in milliseconds against model extraction latencies in seconds." />
+        <figcaption>
+          Two panels, not one chart with two scales. Left, the deterministic engine in milliseconds;
+          right, the model layer in seconds. Colour carries the same meaning it carries everywhere in
+          the application: moss is what code computed, violet is what the model read.
+        </figcaption>
+      </figure>
+
+      <h3>Deterministic engine — <code>npm run bench</code></h3>
+      <table>
+        <tr><th style="width: 52%">Measurement</th><th>Result</th></tr>
+        <tr><td>Road-access analysis, median (warm, 30 runs)</td><td class="num">10.6 ms</td></tr>
+        <tr><td>Road-access analysis, p95 (warm)</td><td class="num">11.6 ms</td></tr>
+        <tr><td>Graph build (cold, once per process)</td><td class="num">30.9 ms</td></tr>
+        <tr><td>First analysis (cold, includes the graph)</td><td class="num">34.0 ms</td></tr>
+      </table>
+      <p>
+        Each run is a multi-source Dijkstra from all <b>36 health facilities</b>, twice — once on the
+        intact network and once with a segment removed — over <b>11,340 junctions</b>, then a
+        classification of every settlement. The whole thing finishes in about the time a screen takes
+        to repaint, and because it is deterministic the result is identical on every run.
+      </p>
+
+      <h3>Model layer — recorded per extraction</h3>
+      <table>
+        <tr><th style="width: 52%">Measurement</th><th>Result</th></tr>
+        <tr><td>Extraction, fastest of 7</td><td class="num">2.6 s</td></tr>
+        <tr><td>Extraction, median</td><td class="num">3.9 s</td></tr>
+        <tr><td>Extraction, slowest observed</td><td class="num">15.6 s</td></tr>
+      </table>
+
+      <h3>Deployed service</h3>
+      <table>
+        <tr><th style="width: 52%">Measurement</th><th>Result</th></tr>
+        <tr><td>Public page, median of 10 requests</td><td class="num">536 ms</td></tr>
+        <tr><td>Public page, fastest / slowest</td><td class="num">286 ms / 4.04 s</td></tr>
+        <tr><td>Authenticated API read</td><td class="num">330–709 ms</td></tr>
+      </table>
+      <p class="footnote">
+        The 4.04-second outlier is a cold start — the first request after the service has scaled to
+        zero. Every other request is under a second. The service is configured with
+        <code>min-instances</code> unset so that it idles free, which is a deliberate trade: a cold
+        start for the first visitor, and no ongoing cost.
+      </p>
+    </section>
+
+    <!-- ============================================================ 3 -->
+    <section>
+      <h2>3 · Accuracy, measured</h2>
+
+      <p>
+        Performance is only half the picture; a fast wrong answer is worth nothing. The evaluation runs
+        the real pipeline over labelled synthetic scenarios and compares the output with a
+        hand-written answer key. On the demo scenario:
+      </p>
+
+      <table>
+        <tr><th style="width: 52%">Metric</th><th>Result</th></tr>
+        <tr><td>Claims read correctly</td><td class="num">4 / 9</td></tr>
+        <tr><td>Hazards identified</td><td class="num">3 / 3</td></tr>
+        <tr><td>Quoted excerpts verified against the original</td><td class="num">25 / 27</td></tr>
+        <tr><td>Claims dropped for an invalid citation</td><td class="num">0</td></tr>
+        <tr><td>Citations rejected by the server</td><td class="num">0 of 27</td></tr>
+      </table>
+
+      <div class="callout warn">
+        <b>4 of 9 is the honest headline, and it is the number we would point a judge at.</b> The
+        deterministic half of the pipeline scores 100% on every metric — grouping, copy detection,
+        contradictions, abstention and impact — but that is measured in a mode where the answer key is
+        fed in as if extraction had produced it. It says nothing about reading Nepali. Four of nine is
+        the first figure that describes the model, and it is lower, which is the point of publishing it.
+      </div>
+
+      <p>
+        The 25 of 27 excerpts is the other number worth reading. Every quotation a claim rests on is
+        checked character-for-character against the reporter's own words, and two of them failed that
+        check — which is the check working. Claims whose quotations cannot be found are not deleted;
+        they are relabelled as interpretation and shown that way to a reviewer.
+      </p>
+
+      <h3>What the evaluation does not measure</h3>
+      <ul>
+        <li><b>One scenario of five.</b> The remaining four need more model quota than a metered key allows in a day, and a partial run is not reported as a whole one.</li>
+        <li><b>Real-world effectiveness.</b> This is a small, hand-written set over real road geography. It shows the pipeline behaves as designed on cases we chose.</li>
+        <li><b>A genuinely messy dataset.</b> Real forwarding is a screenshot, a re-recording, a translation chain. It has never met one.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ 4 -->
+    <section>
+      <h2>4 · How to read these numbers</h2>
+
+      <h3>The split is the finding</h3>
+      <p>
+        A <b>370×</b> difference between the two layers is not an accident of implementation. It is the
+        reason the architecture is shaped the way it is:
+      </p>
+      <ul>
+        <li><b>The report is stored before any model is called.</b> At 4 seconds a report, and with a
+          model that can be rate-limited or unavailable, a submission must never wait on — or be lost
+          to — a model call.</li>
+        <li><b>Extraction is a separate step a reviewer can re-run.</b> If it fails, the report is
+          already safe and the reviewer reads it directly.</li>
+        <li><b>Geography never touches the model.</b> Coordinates come from GPS, a pin or a gazetteer
+          match. The analysis is 11 milliseconds and identical every time, which is what makes it
+          something a responder can act on.</li>
+      </ul>
+
+      <h3>What the numbers are not</h3>
+      <ul>
+        <li><b>Not a load test.</b> Every figure is single-digit concurrency on a demo deployment.
+          There is no throughput or sustained-load measurement here.</li>
+        <li><b>Not a comparison.</b> Nothing is benchmarked against another product or model.</li>
+        <li><b>Not warm-cache-free.</b> The warm analysis figures reuse a graph already in memory;
+          the cold figures are given separately for exactly that reason.</li>
+        <li><b>Not free of the network.</b> The model figures include round-trip time to the API,
+          which is part of what a user waits for but is not the model's own compute.</li>
+      </ul>
+
+      <h3>Reproducing any of it</h3>
+      <table>
+        <tr><th style="width: 40%">Command</th><th>Produces</th></tr>
+        <tr><td><code>npm run bench</code></td><td>The deterministic figures, on your machine, against the shipped dataset</td></tr>
+        <tr><td><code>npm run eval</code></td><td>Oracle mode — the deterministic half, no model needed</td></tr>
+        <tr><td><code>npm run eval -- --mode gemini</code></td><td>Real extraction accuracy; needs credentials and a fresh daily quota</td></tr>
+        <tr><td><code>npm test</code></td><td>230 tests in about 3 seconds</td></tr>
+      </table>
+
+      <p class="footnote">
+        AapatVani AI · आपतवाणी · Google Cloud AI Builder Cup 2026 · Theme: Sustainability &amp; Social
+        Impact · Category: Social Good. Road data © OpenStreetMap contributors (ODbL 1.0).
+        All benchmark figures measured 15 October 2026 on the configuration described in section 1.
+      </p>
+    </section>
+  </body>
+</html>

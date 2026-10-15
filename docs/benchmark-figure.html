@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AapatVani — Prototype Benchmark</title>
+    <style>
+      /* Palette validated with the dataviz skill's validator against this surface:
+         node scripts/validate_palette.js "#7a8f34,#6a5cb8" --mode light --surface "#f8f5f0"
+         All six checks pass — lightness band, chroma floor, CVD separation (ΔE 25.2 deutan),
+         normal-vision floor (ΔE 27.0) and contrast (≥3:1).
+         The two hues are the app's own meanings: moss is "computed", violet is "AI interpretation". */
+      :root {
+        --surface: #f8f5f0;
+        --card: #ffffff;
+        --ink: #26261f;
+        --ink-soft: #5d5f52;
+        --muted: #85877a;
+        --rule: #e2ded4;
+        --computed: #7a8f34;
+        --ai: #6a5cb8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        width: 1440px;
+        height: 748px;
+        background: var(--surface);
+        color: var(--ink);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        padding: 44px 52px 38px;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      header { margin-bottom: 26px; }
+      h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.02em; font-weight: 700; }
+      .sub { font-size: 14px; color: var(--ink-soft); margin: 0; }
+      .sub b { color: var(--ink); font-weight: 600; }
+
+      .legend { display: flex; gap: 22px; margin-top: 16px; font-size: 12.5px; color: var(--ink-soft); }
+      .legend span { display: inline-flex; align-items: center; gap: 7px; }
+      .dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+      .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; flex: 1; }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 16px;
+        padding: 22px 24px 18px;
+        display: flex;
+        flex-direction: column;
+      }
+      .panel h2 { font-size: 15px; margin: 0 0 3px; font-weight: 700; }
+      .panel .unit { font-size: 12px; color: var(--muted); margin: 0 0 20px; }
+
+      .row { margin-bottom: 19px; }
+      .row:last-of-type { margin-bottom: 0; }
+      .label { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; display: flex; justify-content: space-between; }
+      .value { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 14px; color: var(--ink); }
+      .track { height: 13px; background: #efece5; border-radius: 4px; overflow: hidden; }
+      /* 4px rounded data-end anchored to the baseline; the track supplies the recessed grid. */
+      .bar { height: 100%; border-radius: 4px; }
+      .c { background: var(--computed); }
+      .a { background: var(--ai); }
+
+      .note { margin-top: auto; padding-top: 16px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--rule); }
+
+      .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-top: 26px; }
+      .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 13px; padding: 13px 15px; }
+      .stat .n { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; display: block; margin-bottom: 3px; font-variant-numeric: tabular-nums; }
+      .stat .l { font-size: 11px; color: var(--muted); line-height: 1.35; }
+
+      footer { margin-top: 18px; font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Prototype benchmark</h1>
+      <p class="sub">
+        Where the time goes, and why the architecture splits where it does — <b>deterministic geography in code, reading in the model</b>.
+      </p>
+      <div class="legend">
+        <span><i class="dot" style="background: var(--computed)"></i> Deterministic code — computed, reproducible</span>
+        <span><i class="dot" style="background: var(--ai)"></i> Gemini — reading reports</span>
+      </div>
+    </header>
+
+    <div class="panels">
+      <section class="panel">
+        <h2>Deterministic engine</h2>
+        <p class="unit">milliseconds · real Araniko corridor graph</p>
+
+        <div class="row">
+          <div class="label"><span>Road-access analysis, median (warm, 30 runs)</span><span class="value">10.6 ms</span></div>
+          <div class="track"><div class="bar c" style="width: 31%"></div></div>
+        </div>
+        <div class="row">
+          <div class="label"><span>Road-access analysis, p95 (warm)</span><span class="value">11.6 ms</span></div>
+          <div class="track"><div class="bar c" style="width: 34%"></div></div>
+        </div>
+        <div class="row">
+          <div class="label"><span>Graph build (cold, once per process)</span><span class="value">30.9 ms</span></div>
+          <div class="track"><div class="bar c" style="width: 91%"></div></div>
+        </div>
+        <div class="row">
+          <div class="label"><span>First analysis (cold, includes the graph)</span><span class="value">34.0 ms</span></div>
+          <div class="track"><div class="bar c" style="width: 100%"></div></div>
+        </div>
+
+        <p class="note">
+          Multi-source Dijkstra from all 36 health facilities, before and after removing a segment, over
+          11,340 junctions — in about the time a screen takes to repaint.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Model layer</h2>
+        <p class="unit">seconds · one report, text + photo + voice</p>
+
+        <div class="row">
+          <div class="label"><span>Extraction, fastest of 7</span><span class="value">2.6 s</span></div>
+          <div class="track"><div class="bar a" style="width: 17%"></div></div>
+        </div>
+        <div class="row">
+          <div class="label"><span>Extraction, median</span><span class="value">3.9 s</span></div>
+          <div class="track"><div class="bar a" style="width: 25%"></div></div>
+        </div>
+        <div class="row">
+          <div class="label"><span>Extraction, slowest observed</span><span class="value">15.6 s</span></div>
+          <div class="track"><div class="bar a" style="width: 100%"></div></div>
+        </div>
+
+        <p class="note">
+          Same axis, different unit — deliberately not one chart. Roughly <b>370× the cost of the whole
+          road analysis</b>, for one report. This is why the report is stored before the model is called,
+          and why extraction is a separate step a reviewer can re-run.
+        </p>
+      </section>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="n">11,340</span><span class="l">road junctions in the shipped graph</span></div>
+      <div class="stat"><span class="n">185</span><span class="l">settlements analysed per run</span></div>
+      <div class="stat"><span class="n">230</span><span class="l">tests, in 3.2 s</span></div>
+      <div class="stat"><span class="n">4.5 min</span><span class="l">Cloud Build, image 104 MB</span></div>
+      <div class="stat"><span class="n">536 ms</span><span class="l">deployed page, median</span></div>
+      <div class="stat"><span class="n">4 / 9</span><span class="l">claims read correctly (measured)</span></div>
+    </div>
+
+    <footer>
+      <span>Measured 15 October 2026 · Node 25.2.1 · darwin/arm64 · <code>npm run bench</code> and <code>npm run eval</code></span>
+      <span>AapatVani AI · Google Cloud AI Builder Cup 2026</span>
+    </footer>
+  </body>
+</html>
