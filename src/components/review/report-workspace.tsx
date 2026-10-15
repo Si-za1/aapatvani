@@ -73,8 +73,18 @@ export function ReportWorkspace({
 
   // Highlight ranges come from the verified excerpt offsets, which point into the original text.
   const segments = useMemo(() => {
+    // Only offsets that point into `report.text`. An excerpt verified against the typed place name,
+    // the typed time or the voice-note transcript carries offsets into THAT string, and reusing them
+    // here highlighted whatever happened to sit at those positions in the report — a claim quoting
+    // the place "लार्चा" lit up "पहिरो", the word for landslide, as its evidence.
     const ranges = claims
-      .filter((claim) => claim.excerpt?.verified && claim.excerpt.start !== undefined && claim.excerpt.end !== undefined)
+      .filter(
+        (claim) =>
+          claim.excerpt?.verified &&
+          claim.excerpt.field === "text" &&
+          claim.excerpt.start !== undefined &&
+          claim.excerpt.end !== undefined,
+      )
       .map((claim) => ({ start: claim.excerpt!.start!, end: claim.excerpt!.end!, id: claim.id }));
     return segmentText(report.text, ranges);
   }, [claims, report.text]);

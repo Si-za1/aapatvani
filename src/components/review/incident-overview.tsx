@@ -25,6 +25,7 @@ import { HazardGlyph } from "@/components/av/hazard-icon";
 import { ReviewBadge } from "@/components/av/trust-labels";
 import { getRegion, hazardIcon, hazardLabel } from "@/config/regions";
 import type { Claim, ImpactAssessment, Incident, IncidentStatus, Report } from "@/lib/domain/schemas";
+import { describeLocation, incidentLocationView } from "@/lib/location-view";
 import { relativeTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
@@ -66,6 +67,9 @@ const STATUS: Record<IncidentStatus, { label: string; note: string; className: s
 
 export function IncidentOverview(props: OverviewProps) {
   const { incident, reports, claims, assessment, regionId, now, copyOf } = props;
+  // Where the incident is, in the four states a reviewer has to tell apart (§lib/location-view).
+  const where = incidentLocationView(incident, reports);
+  const whereText = describeLocation(where);
   const region = getRegion(regionId);
   const status = STATUS[incident.status];
   const at = Date.parse(now);
@@ -153,17 +157,13 @@ export function IncidentOverview(props: OverviewProps) {
                 </span>
               </Fact>
               <Fact label="Where">
-                {incident.location ? (
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-                    {incident.location.lat.toFixed(4)}, {incident.location.lng.toFixed(4)}
-                    <span className="text-xs text-muted-foreground">
-                      ±{incident.location.uncertaintyM} m, {incident.location.source.replace("_", " ")}
-                    </span>
+                <span className="inline-flex items-start gap-1.5">
+                  <MapPin className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                  <span className="flex flex-col gap-0.5">
+                    <span className={cn(where.kind === "named" && "font-medium")}>{whereText.headline}</span>
+                    <span className="text-xs text-muted-foreground">{whereText.qualifier}</span>
                   </span>
-                ) : (
-                  "Not established"
-                )}
+                </span>
               </Fact>
               <Fact label="First reported">{relativeTime(incident.firstReportedAt, at)}</Fact>
               <Fact label="Latest report">{relativeTime(incident.lastReportedAt, at)}</Fact>

@@ -16,9 +16,15 @@ export interface BlastRadiusParams {
   maxBlockSearchRadiusM: number;
   /** If no road is inside the search radius, the nearest road within this distance is used (with a warning). */
   maxNearestRoadM: number;
-  /** A route counts as "longer" when it grows by this factor and by at least longerRouteMinExtraM. */
-  longerRouteFactor: number;
+  /** A route counts as "longer" when the extra distance alone reaches this. */
   longerRouteMinExtraM: number;
+  /** …or when the route grows by at least this factor and the extra is at least longerRouteFloorM. */
+  longerRouteFactor: number;
+  /**
+   * The floor under the proportional test. Without it, a walk that doubles from 200 m to 400 m would
+   * be reported as harm, which buries the findings that matter.
+   */
+  longerRouteFloorM: number;
   /** Assets further than this from the nearest mapped road get a data-quality caveat. */
   weakSnapM: number;
   /** Baseline routes drawn on the map for at most this many places. */
@@ -32,6 +38,7 @@ export const DEFAULT_BLAST_RADIUS_PARAMS: BlastRadiusParams = {
   maxNearestRoadM: 1000,
   longerRouteFactor: 1.5,
   longerRouteMinExtraM: 2000,
+  longerRouteFloorM: 500,
   weakSnapM: 500,
   maxRoutes: 12,
 };
@@ -156,14 +163,26 @@ function editDistance(a: string, b: string): number {
   return dp[a.length][b.length];
 }
 
+/**
+ * True when a token is a word rather than a designation, so a misspelling is plausible.
+ * Road numbers are not words: "23dr033" and "23dr032" are two different roads, and an edit-distance
+ * rule that treats them as one silently blocks a road nobody reported. Across the shipped extract
+ * 1,040 of 3,003 distinct road-name pairs matched each other under the old rule.
+ */
+function isWordToken(token: string): boolean {
+  return /^[a-zऀ-ॿ]+$/.test(token);
+}
+
 /** True when a mentioned road name plausibly refers to the mapped road name (e.g. "Arniko" ≈ "Araniko"). */
 export function roadNamesMatch(mentioned: string, mapped: string): boolean {
   const a = normaliseRoadName(mentioned);
   const b = normaliseRoadName(mapped);
   if (!a || !b) return false;
   if (a === b || a.includes(b) || b.includes(a)) return true;
+  // Fuzzy only on words. "Bahrabise Budepa Road" still matches a misspelling of "Bahrabise";
+  // "23DR033" does not match "23DR032".
   return a.split(" ").some((ta) =>
-    b.split(" ").some((tb) => ta.length >= 5 && tb.length >= 5 && editDistance(ta, tb) <= 2),
+    b.split(" ").some((tb) => isWordToken(ta) && isWordToken(tb) && ta.length >= 5 && tb.length >= 5 && editDistance(ta, tb) <= 2),
   );
 }
 
@@ -207,7 +226,15 @@ function classifyAccess(
   const base = { target, beforeM: Math.round(b), beforeFacilityId: bf?.id, beforeFacilityName: bf?.name };
   if (!Number.isFinite(a)) return { ...base, status: "lost", afterM: null };
   const af = sources[after.nearestSource[node]];
-  const longer = a > b * p.longerRouteFactor && a - b >= p.longerRouteMinExtraM;
+  // Two ways a detour is worth reporting, and requiring BOTH of them (as this did) hid real harm in
+  // both directions. A settlement whose route to care grew 30.4 km to 44.9 km — fourteen and a half
+  // additional kilometres — fell out because the ratio was 1.48, just under the factor. A settlement
+  // whose route doubled from 1.3 km to 2.8 km fell out because the extra was under two kilometres.
+  // And because only affected settlements produce a row at all, both rendered identically to a place
+  // that was never affected. Either test passing is now enough, with a floor under the proportional
+  // one so that a 200 m walk becoming 400 m is not dressed up as impact.
+  const extra = a - b;
+  const longer = extra >= p.longerRouteMinExtraM || (a > b * p.longerRouteFactor && extra >= p.longerRouteFloorM);
   return {
     ...base,
     status: longer ? "longer" : "unchanged",
@@ -281,13 +308,14 @@ export function analyzeBlastRadius(input: BlastRadiusInput): BlastRadiusResult {
   if (blockage && blockage.claimIds.length > 0) {
     const searchM = Math.min(Math.max(uncertainty, p.blockSearchRadiusM), p.maxBlockSearchRadiusM);
     let hits = graph.edgesNear(incident.lat, incident.lng, searchM);
+    // Widen the search when nothing is in range, but KEEP every candidate. Slicing to one here meant
+    // the name filter could never see the roads inside the radius just searched: a report naming the
+    // Arniko Highway was given an unnamed track 547 m away while the highway sat at 973 m, inside the
+    // kilometre the fallback had looked at.
+    let widened = false;
     if (hits.length === 0) {
-      hits = graph.edgesNear(incident.lat, incident.lng, p.maxNearestRoadM).slice(0, 1);
-      if (hits.length) {
-        warnings.push(
-          `No mapped road lies within ${formatKm(searchM)} of the reported location. The nearest mapped road, ${formatKm(hits[0].distanceM)} away, is used instead.`,
-        );
-      }
+      hits = graph.edgesNear(incident.lat, incident.lng, p.maxNearestRoadM);
+      widened = hits.length > 0;
     }
     if (hits.length === 0) {
       status = "no_road_nearby";
@@ -297,10 +325,25 @@ export function analyzeBlastRadius(input: BlastRadiusInput): BlastRadiusResult {
         const name = graph.edgeName(h.edge);
         return name ? blockage.roadNames.some((m) => roadNamesMatch(m, name)) : false;
       });
-      let pool = named.length ? named : hits;
-      const bestRank = Math.min(...pool.map((h) => roadClassRank(graph.edgeClassName(h.edge))));
-      pool = pool.filter((h) => roadClassRank(graph.edgeClassName(h.edge)) === bestRank);
+      // A report that names a road has told us which road to block, so among candidates carrying
+      // that name DISTANCE decides. Road class is a tie-breaker for when nobody named anything.
+      // Applying the class rule inside the matched set let a more important near-miss displace the
+      // road actually reported — and because the "not matched" warning below only fires when nothing
+      // matches, the substitution was silent. In the shipped extract that affected 47 of 3,402 named
+      // edges at 300 m uncertainty and 159 at 1 km, and the whole analysis then described a road
+      // nobody had mentioned.
+      const pool = named.length
+        ? [...named].sort((a, b) => a.distanceM - b.distanceM)
+        : (() => {
+            const bestRank = Math.min(...hits.map((h) => roadClassRank(graph.edgeClassName(h.edge))));
+            return hits.filter((h) => roadClassRank(graph.edgeClassName(h.edge)) === bestRank);
+          })();
       const chosen = pool[0];
+      if (widened) {
+        warnings.push(
+          `No mapped road lies within ${formatKm(searchM)} of the reported location. The road nearest to it, ${formatKm(chosen.distanceM)} away, is used instead.`,
+        );
+      }
       if (blockage.roadNames.length && !named.length) {
         warnings.push(
           `The road named in the report (${blockage.roadNames.join(", ")}) was not matched to a mapped road nearby. The most important road near the location was used.`,

@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-10-14T19:02:18.068Z",
+  "mode": "gemini",
+  "model": "gemini-3.6-flash",
+  "promptVersions": {
+    "extraction": "extract-v1",
+    "compare": "compare-v1",
+    "alert": "alert-v1",
+    "explain": "explain-v1"
+  },
+  "aiConfigured": true,
+  "scenarios": [
+    {
+      "id": "larcha-main",
+      "name": "Araniko corridor landslide with a forwarded copy",
+      "mode": "gemini",
+      "reports": 6,
+      "grouping": {
+        "truePositives": 6,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": 1,
+        "recall": 1,
+        "falseMerges": [],
+        "missed": []
+      },
+      "copies": {
+        "truePositives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0,
+        "precision": 1,
+        "recall": 1
+      },
+      "contradictions": {
+        "found": 1,
+        "expected": 1,
+        "recall": 1,
+        "missed": []
+      },
+      "abstention": {
+        "correct": 1,
+        "total": 1
+      },
+      "impact": {
+        "ran": true,
+        "status": "ok",
+        "blockedRoadOk": true,
+        "blockedRoadFound": "Arniko Highway (NH34)",
+        "expectedLostAccess": [
+          "Tatopani"
+        ],
+        "foundLostAccess": [
+          "Larcha",
+          "Tatopani",
+          "Namtan",
+          "Kodāri"
+        ],
+        "ok": true
+      },
+      "extraction": {
+        "claims": {
+          "correct": 4,
+          "total": 9
+        },
+        "hazards": {
+          "correct": 3,
+          "total": 3
+        },
+        "excerptsVerified": {
+          "correct": 25,
+          "total": 27
+        },
+        "droppedClaims": 0,
+        "citationsChecked": 27,
+        "citationsRejected": 0
+      },
+      "notes": [
+        "Matches were found, but none of the other reports is in an incident yet; a new candidate incident was opened.",
+        "This report has no usable location (no GPS, no pin, no recognised place name), so it was not compared with other reports."
+      ]
+    }
+  ],
+  "totals": {
+    "grouping": {
+      "precision": 1,
+      "recall": 1,
+      "falseMerges": 0,
+      "missed": 0
+    },
+    "copies": {
+      "precision": 1,
+      "recall": 1
+    },
+    "contradictions": {
+      "found": 1,
+      "expected": 1,
+      "recall": 1
+    },
+    "abstention": {
+      "correct": 1,
+      "total": 1
+    },
+    "impact": {
+      "checked": 1,
+      "ok": 1
+    }
+  },
+  "caveat": "A small, hand-written set of scenarios over real road geography. It shows the pipeline behaves as designed on cases we chose; it is not a measure of real-world effectiveness, and no such claim should be read from it."
+}

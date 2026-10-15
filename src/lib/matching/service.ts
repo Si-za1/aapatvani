@@ -20,7 +20,7 @@ import { compareReports } from "@/lib/ai/compare";
 import { getDb, type Database } from "@/lib/db";
 import type { Contradiction, Extraction, Incident, Report, ReportStatus, Suggestion } from "@/lib/domain/schemas";
 import { stableId } from "@/lib/ids";
-import { addMember, createCandidateIncident, recomputeIncident } from "@/lib/incidents/service";
+import { addMember, createCandidateIncident, markMemberAsCopy, recomputeIncident } from "@/lib/incidents/service";
 import { candidateVerdict, orderedPair, pairContext, pairFeatures, type PairContext, type ReportPoint } from "./candidates";
 import {
   aiContradiction,
@@ -120,18 +120,20 @@ export async function runMatchingForReport(
 
     const side = await loadSide(db, other);
     const features = pairFeatures(own.context, side.context, region);
-    const verdict = candidateVerdict(own.context, side.context, region, features);
-    if (!verdict.candidate) {
-      skipped.push({ reportId: other.id, reason: verdict.reason });
-      continue;
-    }
 
     const lexical = shingleSimilarity(
       reportVerbatimText(report, own.extraction),
       reportVerbatimText(other, side.extraction),
     );
-    const semantic = cosineSimilarity(own.extraction?.embedding, side.extraction?.embedding);
-    const scored = scorePair({ ...features, semanticSimilarity: semantic }, lexical);
+
+    // Copy detection runs BEFORE the candidate filters, and it has to.
+    //
+    // A forwarded message is a copy of its original wherever it was sent from and whenever it
+    // arrived. Gating this behind the distance, time, region and hazard filters — as it was — meant
+    // a copy from another district, or one that arrived a day later, was never compared with its
+    // original at all, and counted as a second independent witness. `candidates.ts` already
+    // described copies as "found separately"; they were not. The two filters answer "might these be
+    // the same event?", which is a different question from "is this the same message?".
     const copy = detectCopy(report, other, lexical, features);
 
     if (copy.suspected) {
@@ -143,6 +145,15 @@ export async function runMatchingForReport(
         reasons: copy.reasons,
       });
     }
+
+    const verdict = candidateVerdict(own.context, side.context, region, features);
+    if (!verdict.candidate) {
+      skipped.push({ reportId: other.id, reason: verdict.reason });
+      continue;
+    }
+
+    const semantic = cosineSimilarity(own.extraction?.embedding, side.extraction?.embedding);
+    const scored = scorePair({ ...features, semanticSimilarity: semantic }, lexical);
 
     const [first, second] = orderedPair(report.id, other.id);
     const id = suggestionIdFor(report.id, other.id);
@@ -279,8 +290,34 @@ async function assignIncident(
     const incident = await db.incidents.get(other.incidentId);
     if (!incident || incident.status === "dismissed") continue;
 
-    // A copy joins the incident, but linked to the report it copies rather than standing alone.
-    const copy = copyLinks.get(otherId);
+    // Whether this report is a copy is a property of THIS report, not of whichever suggestion
+    // happened to score highest. Looking the link up by the winning suggestion alone meant a copy
+    // whose best-scoring match happened to be a third report lost its copy flag entirely and was
+    // counted as an independent witness — three where the truth was two.
+    const copy = links
+      .map((s) => s.reportIds.find((id) => id !== report.id))
+      .map((id) => (id ? copyLinks.get(id) : undefined))
+      // …and only when this report is the copy. Marking it unconditionally let the ORIGINAL be
+      // labelled a copy of itself — reachable whenever the copy finished extraction first, because
+      // the copy link is written from whichever side is being matched — which zeroed the
+      // independent-source count for the whole incident: "0 independent sources, and 2 of them
+      // copied another" for one witness and its forwarded copy.
+      .find((c) => c?.copyId === report.id);
+
+    // The other direction: this report is the ORIGINAL and the member we are joining is its copy —
+    // which happens whenever the copy was matched first. `addMember` returns early for a report that
+    // is already a member, so nothing would mark it, and it would keep counting as a second
+    // independent witness. Mark the copy instead of this report.
+    const otherIsTheCopy = copyLinks.get(otherId);
+    if (otherIsTheCopy?.copyId === otherId) {
+      await markMemberAsCopy({
+        incidentId: incident.id,
+        copyReportId: otherId,
+        originalId: report.id,
+        reasons: otherIsTheCopy.reasons,
+      });
+    }
+
     return addMember({
       incidentId: incident.id,
       report,

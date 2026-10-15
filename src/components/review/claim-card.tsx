@@ -22,7 +22,18 @@ export interface ClaimView {
   statementEn: string;
   origin: "reporter" | "ai" | "computed" | "reviewer";
   basis: string;
-  excerpt?: { text: string; verified: boolean; start?: number; end?: number };
+  /**
+   * `field` says WHICH string the offsets point into, and it is not decoration: an excerpt found in
+   * `placeText` or in the transcript carries offsets into that string, and applying them to the
+   * report text highlights unrelated words. Callers that draw highlights must filter on it.
+   */
+  excerpt?: {
+    text: string;
+    verified: boolean;
+    start?: number;
+    end?: number;
+    field?: "text" | "placeText" | "reportedTimeText" | "transcript";
+  };
   hazardCategory?: string;
   roadStatus?: string;
   roadName?: string;
@@ -122,7 +133,21 @@ export function ClaimCard({
             claim.excerpt.verified ? "bg-coral-tint text-coral-strong" : "bg-amber-tint text-amber-strong",
           )}
         >
-          <span className="font-medium">{claim.excerpt.verified ? "From the original: " : "Not found in the original: "}</span>
+          {/*
+            A quote from a voice note is checked against the model's own transcription, so "the
+            original" would overstate it: the model wrote the transcript and then confirmed the
+            quote against what it had written. The audio is kept, so the reviewer can settle it by
+            listening — the label should send them there rather than imply it is already settled.
+          */}
+          <span className="font-medium">
+            {claim.excerpt.verified
+              ? claim.excerpt.field === "transcript"
+                ? "Heard in the voice note, transcribed by AI: "
+                : "From the original: "
+              : claim.excerpt.field === "transcript"
+                ? "Not found in the transcript: "
+                : "Not found in the original: "}
+          </span>
           “{claim.excerpt.text}”
         </p>
       ) : null}

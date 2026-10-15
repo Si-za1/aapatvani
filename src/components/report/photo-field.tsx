@@ -119,15 +119,27 @@ export function PhotoField({
   return (
     <div className="flex flex-col gap-2">
       {photo ? (
-        <div className="flex gap-3 rounded-2xl border border-border bg-card p-3">
+        // `min-w-0` on the card is load-bearing, not tidiness: a flex item defaults to
+        // `min-width: auto`, so without it a long camera filename sets this column's minimum
+        // width, the card grows past its half of the grid, and it overlaps the voice note
+        // beside it. `truncate` only works once an ancestor is allowed to shrink.
+        <div className="flex min-w-0 gap-3 rounded-2xl border border-border bg-card p-3">
           {/* A local blob URL, never sent anywhere. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photo.previewUrl} alt="" className="size-20 shrink-0 rounded-xl object-cover" />
           <div className="flex min-w-0 flex-col gap-1">
-            <p className="truncate text-sm font-medium">{photo.file.name}</p>
+            <p className="truncate text-sm font-medium" title={photo.file.name}>
+              {photo.file.name}
+            </p>
             <p className="text-xs text-muted-foreground">{(photo.file.size / 1024 / 1024).toFixed(1)} MB</p>
-            {photo.transform ? <p className="text-xs text-amber-strong">{photo.transform}</p> : null}
-            <Button type="button" variant="ghost" size="sm" onClick={onRemove} className="mt-auto h-7 w-fit rounded-full px-2">
+            {photo.transform ? <p className="text-xs leading-relaxed text-amber-strong">{photo.transform}</p> : null}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onRemove}
+              className="mt-auto h-7 w-fit shrink-0 rounded-full px-2 text-muted-foreground hover:text-flame-strong"
+            >
               <X className="size-3.5" aria-hidden />
               {t("form.photoRemove")}
             </Button>

@@ -13,17 +13,36 @@
 // real Araniko corridor road network, and every record carries the `synthetic` label.
 
 import { getDb } from "@/lib/db";
-import { DEMO_SCENARIO_ID, getScenario } from "@/lib/eval/scenarios";
+import { DEMO_SCENARIO_ID, getScenario, type Scenario } from "@/lib/eval/scenarios";
 import { seedScenario } from "@/lib/eval/run";
 import { runMatchingForReport } from "@/lib/matching/service";
 
-const scenario = getScenario(process.env.SEED_SCENARIO ?? DEMO_SCENARIO_ID);
+const selected = getScenario(process.env.SEED_SCENARIO ?? DEMO_SCENARIO_ID);
+
+/**
+ * Shifts the scenario forward so its last report lands in the recent past.
+ *
+ * The scenario's timestamps are fixed (`BASE = 2026-07-14`) because the evaluation has to be
+ * deterministic — the same input must give the same output every run. On a live deployment that
+ * stops being a detail: the dashboard renders relative times, so a judge opening the demo sees an
+ * incident still "awaiting review" that was reported ninety-odd days ago, and reads the whole
+ * deployment as stale. Every report moves by the same offset, so the gaps between them — which is
+ * what the matching rules actually depend on — are untouched. Only the seed does this; the
+ * evaluation keeps running against the fixed dates.
+ */
+function recent(s: Scenario): Scenario {
+  const base = Date.parse(s.baseTime);
+  const lastOffsetMin = Math.max(...s.reports.map((r) => r.offsetMinutes));
+  const shiftMs = Date.now() - 45 * 60_000 - (base + lastOffsetMin * 60_000);
+  return { ...s, baseTime: new Date(base + shiftMs).toISOString() };
+}
 
 async function seed(): Promise<void> {
-  if (!scenario) {
+  if (!selected) {
     console.error(`No scenario called "${process.env.SEED_SCENARIO ?? DEMO_SCENARIO_ID}".`);
     process.exit(1);
   }
+  const scenario = recent(selected);
   const db = getDb();
 
   const existing = await db.reports.list({ where: [{ field: "regionId", op: "==", value: "np" }] });

@@ -33,6 +33,19 @@ export const REPORTER_COOKIE = "av_reporter";
 const PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
 const AUDIO_TYPES = new Set(["audio/webm", "audio/mp4", "audio/mpeg", "audio/ogg", "audio/wav", "audio/x-m4a", "video/webm"]);
 
+/**
+ * The media type without its parameters.
+ *
+ * A browser's `MediaRecorder` reports what it actually produced — `audio/webm;codecs=opus` — and
+ * the parameters are not part of the type. An exact-match allow-list treats them as if they were,
+ * so every voice note recorded in Chrome was rejected at submission with "Unsupported file type",
+ * which is a headline feature failing for the browsers most reporters use. Normalise before
+ * matching, and store the normalised value so everything downstream sees one string.
+ */
+function baseMimeType(raw: string): string {
+  return raw.split(";")[0]!.trim().toLowerCase();
+}
+
 export const submissionSchema = z
   .object({
     text: z.string().max(MAX_TEXT_LENGTH).default(""),
@@ -134,7 +147,7 @@ export async function createReport(form: FormData, reporterToken: string): Promi
   const store = getMediaStore();
 
   for (const file of files) {
-    const mime = file.type || "application/octet-stream";
+    const mime = baseMimeType(file.type) || "application/octet-stream";
     const isPhoto = PHOTO_TYPES.has(mime);
     const isAudio = AUDIO_TYPES.has(mime);
     if (!isPhoto && !isAudio) throw new SubmissionError(`Unsupported file type: ${mime}. Send a photo or a voice note.`);

@@ -195,6 +195,16 @@
   }
 }
 
+/* Everything that floats — menus, popovers, dialogs, sheets, tooltips — sits above the map.
+   Leaflet's panes run to z-index 700 and its zoom control to 800, all inside the page's stacking
+   context, while every overlay in this app used Tailwind's `z-50`. So a dropdown opened over a map
+   was painted *underneath* it: the profile menu's name and its "Your activity" row simply vanished
+   behind the tiles, which reads as broken content rather than as a z-index mistake. One utility,
+   above the map, used by every overlay. */
+@utility z-overlay {
+  z-index: 1100;
+}
+
 /* Leaflet: calm the OpenStreetMap basemap just enough to sit under our layers. The previous sepia
    pass pushed the whole map olive and fought the page palette; a light desaturation is enough to
    keep our markers the loudest thing on the map. */

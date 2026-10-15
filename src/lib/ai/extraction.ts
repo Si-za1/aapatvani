@@ -7,6 +7,7 @@ import { getHazard, type RegionConfig } from "@/config/regions";
 import type { Claim, ClaimBasis, Extraction, MediaItem, Origin, Report, ResolvedPlace } from "@/lib/domain/schemas";
 import { AliasRegistry } from "@/lib/evidence/aliases";
 import { canonicalText, locateExcerpt } from "@/lib/evidence/excerpt";
+import { stripMetadataForModel } from "@/lib/evidence/strip-metadata";
 import type { GazetteerEntry } from "@/lib/geo/dataset-types";
 import { resolvePlace, type PlaceMatch } from "@/lib/geo/gazetteer";
 import { newId } from "@/lib/ids";
@@ -119,8 +120,14 @@ export type ExtractionOutput = z.infer<ReturnType<typeof extractionSchema>>;
 // ---------------------------------------------------------------- prompt
 
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
+// `audio/webm` is what a browser records. It was missing from this list, so a voice note made in
+// the app was accepted by intake and then silently skipped on its way to the model — the media note
+// said "unsupported format" and no transcript was ever produced, which is the one thing a voice
+// note is for. `video/webm` is here for the same container arriving from a browser that labels it
+// that way.
 const AUDIO_TYPES = new Set([
   "audio/wav", "audio/x-wav", "audio/wave", "audio/mpeg", "audio/mp3", "audio/aac", "audio/ogg", "audio/flac", "audio/aiff", "audio/x-aiff",
+  "audio/webm", "video/webm", "audio/mp4", "audio/x-m4a",
 ]);
 /** Gemini inline requests must stay under ~20 MB in total. */
 const MAX_INLINE_BYTES = 18 * 1024 * 1024;
@@ -172,8 +179,10 @@ export function buildExtractionPrompt(input: ExtractionInput): {
   let budget = MAX_INLINE_BYTES;
 
   for (const { item, data } of input.media) {
-    const isPhoto = item.kind === "photo" && IMAGE_TYPES.has(item.mimeType);
-    const isAudio = item.kind === "audio" && AUDIO_TYPES.has(item.mimeType);
+    // Parameters are not part of the media type: `audio/webm;codecs=opus` is `audio/webm`.
+    const mimeType = item.mimeType.split(";")[0]!.trim().toLowerCase();
+    const isPhoto = item.kind === "photo" && IMAGE_TYPES.has(mimeType);
+    const isAudio = item.kind === "audio" && AUDIO_TYPES.has(mimeType);
     if (!isPhoto && !isAudio) {
       skipped.push(`${item.kind} (${item.mimeType}) was not sent to the model: unsupported format.`);
       continue;
@@ -185,7 +194,12 @@ export function buildExtractionPrompt(input: ExtractionInput): {
     budget -= data.length;
     const alias = isPhoto ? aliases.register("M", { kind: "photo", media: item }) : aliases.register("A", { kind: "audio", media: item });
     mediaLines.push(`- ${alias}: ${isPhoto ? "photo" : `voice note${item.durationSec ? ` (${Math.round(item.durationSec)} s)` : ""}`}`);
-    mediaParts.push({ text: `${alias} (${isPhoto ? "photo" : "voice note"}):` }, { inlineData: { mimeType: item.mimeType, data: data.toString("base64") } });
+    // A photo goes to the model without its EXIF block. The reporter agreed to a machine reading
+    // their picture; they did not agree to their coordinates going to a third party with it. The
+    // stored original keeps everything, so the reviewer still sees the true file and `readExif`
+    // has already captured what the contradiction rules use.
+    const outbound = isPhoto ? stripMetadataForModel(data, mimeType) : data;
+    mediaParts.push({ text: `${alias} (${isPhoto ? "photo" : "voice note"}):` }, { inlineData: { mimeType, data: outbound.toString("base64") } });
   }
 
   const reporterHazard = report.reporterHazard ? getHazard(region, report.reporterHazard)?.label ?? report.reporterHazard : undefined;
@@ -252,12 +266,27 @@ export function buildClaims(output: ExtractionOutput, ctx: BuildContext) {
   const { report, region, aliases } = ctx;
   const validation: Validation = { errors: [], warnings: [], droppedClaims: 0, unverifiedExcerpts: 0, citationsChecked: 0, citationsRejected: 0 };
   const claims: Claim[] = [];
-  const audio = aliases.entries().find(([, t]) => t.kind === "audio")?.[1] as Extract<AliasTarget, { kind: "audio" }> | undefined;
+  const audioTargets = aliases
+    .entries()
+    .filter(([, t]) => t.kind === "audio")
+    .map(([, t]) => t as Extract<AliasTarget, { kind: "audio" }>);
+  const audio = audioTargets[0];
 
   let transcript: Extraction["transcript"];
   if (output.transcript?.text.trim()) {
-    if (audio) transcript = { mediaId: audio.media.id, text: output.transcript.text.trim(), language: output.transcript.language };
-    else validation.warnings.push("The model returned a transcript but no voice note was sent; it was ignored.");
+    if (audio) {
+      transcript = { mediaId: audio.media.id, text: output.transcript.text.trim(), language: output.transcript.language };
+      // The schema carries one transcript, so with two recordings it can only be attributed to one
+      // of them. Saying which, rather than binding it silently, is the difference between a reviewer
+      // checking the right audio and a claim resting on the wrong recording.
+      if (audioTargets.length > 1) {
+        validation.warnings.push(
+          `This report carries ${audioTargets.length} voice notes and the model returns a single transcript. It is attributed to the first; listen to the others before relying on it.`,
+        );
+      }
+    } else {
+      validation.warnings.push("The model returned a transcript but no voice note was sent; it was ignored.");
+    }
   }
 
   const fields = [
@@ -567,7 +596,12 @@ export async function runExtraction(input: ExtractionInput, llm: Llm | null): Pr
   };
 
   // Embedding for cross-lingual matching. Optional: a failure here never fails the extraction.
-  const embedText = (extraction.translationEn ?? input.report.text).trim();
+  //
+  // The transcript is the fallback, and it is not a rare one: a report that arrives as a voice note
+  // and nothing else has no text to translate, so `translationEn` is empty and there is nothing to
+  // embed. Without this, exactly the reporters who cannot write get no embedding and are matched on
+  // distance and time alone (§8.2).
+  const embedText = (extraction.translationEn || input.report.text || extraction.transcript?.text || "").trim();
   if (embedText) {
     try {
       const { vector, model } = await llm.embed(embedText.slice(0, 8000));
