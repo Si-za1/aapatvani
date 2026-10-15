@@ -195,6 +195,11 @@ async function Landing() {
           {/* No build or render time is read here on purpose: anything that changes between
               renders is reported by Next.js as an unstable value during prerendering. */}
           <span>© AapatVani AI</span>
+          {/* For someone evaluating the system rather than reporting into it — a judge should not
+              have to sign in to find out how any of this works. */}
+          <Link href="/how-it-works" className="font-medium text-ink-soft underline">
+            How it works
+          </Link>
           <a href="https://www.openstreetmap.org/copyright" className="underline" rel="noreferrer" target="_blank">
             Map data © OpenStreetMap contributors
           </a>
