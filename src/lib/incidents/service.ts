@@ -141,6 +141,47 @@ export async function addMember(input: AddMemberInput): Promise<Incident> {
 }
 
 /**
+ * Records that a report ALREADY in the incident is a copy of another report in it.
+ *
+ * A copy link is discovered from whichever side happens to be matched, so when the original is
+ * matched *after* its copy the copy is already a member — and `addMember` returns early for a report
+ * that is already there, so nothing ever marked it. It went on counting as an independent witness:
+ * one report and its forwarded copy read as two corroborating accounts, which is the single number
+ * this product asks a responder to trust.
+ */
+export async function markMemberAsCopy(input: {
+  incidentId: string;
+  copyReportId: string;
+  originalId: string;
+  reasons: string[];
+}): Promise<Incident | null> {
+  const db = getDb();
+  const incident = await db.incidents.get(input.incidentId);
+  if (!incident) return null;
+  const member = incident.members.find((m) => m.reportId === input.copyReportId);
+  // Nothing to do if the report is not a member, or is already marked.
+  if (!member || member.copyOf) return incident;
+
+  await db.incidents.update(incident.id, {
+    members: incident.members.map((m) =>
+      m.reportId === input.copyReportId ? { ...m, copyOf: input.originalId, copyReasons: input.reasons } : m,
+    ),
+  });
+  await recomputeIncident(incident.id);
+  await recordAudit({
+    actor: systemActor(),
+    action: "incident.member_linked_as_copy",
+    targetType: "incident",
+    targetId: incident.id,
+    incidentId: incident.id,
+    reportId: input.copyReportId,
+    summary: "A report already in the incident was linked as a copy of another member.",
+    note: input.reasons.join(" "),
+  });
+  return db.incidents.get(incident.id);
+}
+
+/**
  * Recomputes the derived fields of an incident from its members. Independent sources exclude
  * copies; contradictions are counted from the flags currently open.
  */
