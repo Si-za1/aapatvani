@@ -120,8 +120,14 @@ export type ExtractionOutput = z.infer<ReturnType<typeof extractionSchema>>;
 // ---------------------------------------------------------------- prompt
 
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
+// `audio/webm` is what a browser records. It was missing from this list, so a voice note made in
+// the app was accepted by intake and then silently skipped on its way to the model — the media note
+// said "unsupported format" and no transcript was ever produced, which is the one thing a voice
+// note is for. `video/webm` is here for the same container arriving from a browser that labels it
+// that way.
 const AUDIO_TYPES = new Set([
   "audio/wav", "audio/x-wav", "audio/wave", "audio/mpeg", "audio/mp3", "audio/aac", "audio/ogg", "audio/flac", "audio/aiff", "audio/x-aiff",
+  "audio/webm", "video/webm", "audio/mp4", "audio/x-m4a",
 ]);
 /** Gemini inline requests must stay under ~20 MB in total. */
 const MAX_INLINE_BYTES = 18 * 1024 * 1024;
@@ -173,8 +179,10 @@ export function buildExtractionPrompt(input: ExtractionInput): {
   let budget = MAX_INLINE_BYTES;
 
   for (const { item, data } of input.media) {
-    const isPhoto = item.kind === "photo" && IMAGE_TYPES.has(item.mimeType);
-    const isAudio = item.kind === "audio" && AUDIO_TYPES.has(item.mimeType);
+    // Parameters are not part of the media type: `audio/webm;codecs=opus` is `audio/webm`.
+    const mimeType = item.mimeType.split(";")[0]!.trim().toLowerCase();
+    const isPhoto = item.kind === "photo" && IMAGE_TYPES.has(mimeType);
+    const isAudio = item.kind === "audio" && AUDIO_TYPES.has(mimeType);
     if (!isPhoto && !isAudio) {
       skipped.push(`${item.kind} (${item.mimeType}) was not sent to the model: unsupported format.`);
       continue;
@@ -190,8 +198,8 @@ export function buildExtractionPrompt(input: ExtractionInput): {
     // their picture; they did not agree to their coordinates going to a third party with it. The
     // stored original keeps everything, so the reviewer still sees the true file and `readExif`
     // has already captured what the contradiction rules use.
-    const outbound = isPhoto ? stripMetadataForModel(data, item.mimeType) : data;
-    mediaParts.push({ text: `${alias} (${isPhoto ? "photo" : "voice note"}):` }, { inlineData: { mimeType: item.mimeType, data: outbound.toString("base64") } });
+    const outbound = isPhoto ? stripMetadataForModel(data, mimeType) : data;
+    mediaParts.push({ text: `${alias} (${isPhoto ? "photo" : "voice note"}):` }, { inlineData: { mimeType, data: outbound.toString("base64") } });
   }
 
   const reporterHazard = report.reporterHazard ? getHazard(region, report.reporterHazard)?.label ?? report.reporterHazard : undefined;

@@ -172,6 +172,32 @@ describe("extraction checks", () => {
     expect(claims[1].origin).toBe("ai");
   });
 
+  it("sends a browser-recorded voice note, whose type carries parameters", async () => {
+    // Regression, and a headline feature failing quietly. `MediaRecorder` reports what it produced,
+    // `audio/webm;codecs=opus`, and the parameters are not part of the media type. Matching the raw
+    // string against an allow-list meant the app accepted the upload at intake and then skipped the
+    // audio on its way to the model, so no transcript was ever produced — the one thing a voice
+    // note exists for. The MIME type is normalised before it is matched, and `audio/webm` is in
+    // the list.
+    const browserAudio: MediaItem = { ...AUDIO, id: "med_WEBM0001", mimeType: "audio/webm;codecs=opus" };
+    const output = {
+      ...MODEL_OUTPUT,
+      transcript: { text: "तातोपानी जाने बाटो पहिरोले थुनियो", language: "ne" },
+      claims: [],
+      placeMentions: [],
+      timeMentions: [],
+      mediaNotes: [],
+    };
+    const report = makeReport({ text: "", media: [browserAudio] });
+    const { extraction } = await runExtraction(
+      input({ report, media: [{ item: browserAudio, data: Buffer.from([1, 2, 3]) }] }),
+      new FakeLlm([output]),
+    );
+
+    expect(extraction.validation.warnings.join(" ")).not.toContain("unsupported format");
+    expect(extraction.transcript?.text).toBe("तातोपानी जाने बाटो पहिरोले थुनियो");
+  });
+
   it("stores the embedding, and survives an embedding failure", async () => {
     const ok = await runExtraction(input(), new FakeLlm([MODEL_OUTPUT]));
     expect(ok.extraction.embedding).toEqual([0.6, 0.8]);
