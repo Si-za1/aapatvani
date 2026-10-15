@@ -97,6 +97,12 @@ async function Screen({ params }: { params: PageProps<"/incidents/[id]">["params
         hazards: report.reporterHazard ? [report.reporterHazard] : [],
         claimCount: own.length,
         unreviewedClaims: own.filter((c) => c.review.status === "unreviewed").length,
+        media: report.media.map((item) => ({
+          id: item.id,
+          kind: item.kind,
+          mimeType: item.mimeType,
+          ...(item.durationSec !== undefined ? { durationSec: item.durationSec } : {}),
+        })),
       },
     ];
   });

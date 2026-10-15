@@ -11,7 +11,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Check, ChevronDown, CircleX, Copy, Merge, Split, TriangleAlert } from "lucide-react";
+import { Check, ChevronDown, CircleX, Copy, Merge, Mic, Split, TriangleAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,13 @@ export interface MemberView {
   hazards: string[];
   claimCount: number;
   unreviewedClaims: number;
+  /**
+   * The media the report carries. A photograph of the blocked road and a voice note saying so ARE
+   * the evidence for the claims built from them, and the report workspace has always shown them —
+   * the incident did not, so a reviewer deciding whether an incident stands was reading summaries of
+   * evidence they could not see.
+   */
+  media: Array<{ id: string; kind: "photo" | "audio"; mimeType: string; durationSec?: number }>;
 }
 
 export interface SuggestionView {
@@ -162,6 +169,48 @@ export function IncidentWorkspace({
               <p className="line-clamp-2 text-sm text-muted-foreground" lang={member.uiLanguage}>
                 {member.text || "(no text)"}
               </p>
+
+              {/* The evidence itself. A photograph of the blocked road and a voice note saying so are
+                  what the claims were built from, and they were only visible in the report workspace —
+                  so a reviewer deciding whether this incident stands was reading summaries of evidence
+                  they could not see. Served through the session-checked media route, never a public URL. */}
+              {member.media.length > 0 ? (
+                <div className="flex flex-wrap items-start gap-2.5">
+                  {member.media.map((item) =>
+                    item.kind === "photo" ? (
+                      <a
+                        key={item.id}
+                        href={`/api/media/${member.reportId}/${item.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        title="Open the full photograph"
+                        className="block transition-opacity hover:opacity-90"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`/api/media/${member.reportId}/${item.id}`}
+                          alt="Photograph attached to this report"
+                          className="size-[92px] rounded-xl border border-border object-cover"
+                        />
+                      </a>
+                    ) : (
+                      // `min-w-0` because an <audio> element carries a ~300 px intrinsic width that a
+                      // flex box treats as a floor, which would widen the card past its column.
+                      <div key={item.id} className="flex min-w-0 flex-col gap-1">
+                        <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                          <Mic className="size-3" aria-hidden />
+                          Voice note{item.durationSec ? ` · ${Math.round(item.durationSec)} s` : ""}
+                        </span>
+                        <audio
+                          src={`/api/media/${member.reportId}/${item.id}`}
+                          controls
+                          className="h-8 w-full min-w-0 max-w-[260px]"
+                        />
+                      </div>
+                    ),
+                  )}
+                </div>
+              ) : null}
 
               {member.copyReasons?.length ? (
                 <p className="rounded-lg bg-stone-tint px-2.5 py-1.5 text-xs text-stone-strong">{member.copyReasons.join(" ")}</p>
