@@ -106,4 +106,29 @@ describe("road name matching", () => {
     expect(roadNamesMatch("Prithvi Highway", "Arniko Highway (NH34)")).toBe(false);
     expect(roadNamesMatch("", "Arniko Highway")).toBe(false);
   });
+
+  it("does not fuzzy-match route designations, which are exact identifiers", () => {
+    // Regression. "23dr033" and "23dr032" are two different roads one character apart, and the old
+    // rule treated them as the same road — across the shipped extract 1,040 of 3,003 distinct
+    // road-name pairs matched each other this way.
+    expect(roadNamesMatch("23DR033", "23DR032")).toBe(false);
+    expect(roadNamesMatch("23DR011", "23DR012")).toBe(false);
+    expect(roadNamesMatch("23dr024", "23dr035")).toBe(false);
+  });
+
+  it("still tolerates a misspelling of an actual word", () => {
+    expect(roadNamesMatch("Bahrabise Road", "Bahrabis Road")).toBe(true);
+    expect(roadNamesMatch("Araniko", "Arniko")).toBe(true);
+    expect(roadNamesMatch("Araniko Rajmarg", "Arniko Highway (NH34)")).toBe(true);
+  });
+
+  it("matches two roads that genuinely share a name word", () => {
+    // Deliberate, and worth stating because it looks like the bug above and is not. "Budepa - Latu"
+    // and "Bahrabise - Budepa - Ghorthali" are both real roads through Budepa, and a reporter naming
+    // one may mean either. The name rule is allowed to be generous here. What stops the wrong one
+    // being blocked is the rule applied after it: among candidates that match the name, the NEAREST
+    // wins. This test asserts the name rule; the choice rule is asserted by the analysis tests above,
+    // which is why tightening the name rule alone was not the fix.
+    expect(roadNamesMatch("Budepa - Latu Road (23DR033)", "Bahrabise - Budepa - Ghorthali Road (23DR032)")).toBe(true);
+  });
 });
