@@ -9,9 +9,10 @@ import { getRegion, hazardLabel } from "@/config/regions";
 import type { HazardIcon } from "@/config/regions/types";
 import { requireReviewer } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import type { Report } from "@/lib/domain/schemas";
+import type { Claim, Report } from "@/lib/domain/schemas";
 import { getEnv } from "@/lib/env";
 import { getReviewerPrefs } from "@/lib/prefs";
+import { rankForReview, type QueueItem } from "@/lib/review/queue-order";
 import { isWithinHours, relativeTime } from "@/lib/time";
 
 // The review queue, as cards grouped by what kind of incident they describe.
@@ -19,6 +20,10 @@ import { isWithinHours, relativeTime } from "@/lib/time";
 // Cards rather than rows: a report is a piece of writing with a place attached, and a table row
 // reduces all of that to a line of metadata. Grouping by hazard is how a reviewer actually thinks
 // about a shift, because what needs checking depends on the kind of event.
+//
+// Within a group the order is by consequence rather than arrival — see lib/review/queue-order.ts.
+// Each card says why it sits where it does, so the ordering is something a reviewer can disagree
+// with rather than something that simply happens to them.
 
 export const metadata: Metadata = { title: "Reports" };
 
@@ -48,10 +53,22 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
   const region = getRegion(env.defaultRegionId);
 
   const db = getDb();
-  const [all, claims] = await Promise.all([db.reports.list({}), db.claims.list({})]);
+  const [all, claims, incidents, impacts] = await Promise.all([
+    db.reports.list({}),
+    db.claims.list({}),
+    db.incidents.list({}),
+    db.impacts.list({}),
+  ]);
 
-  const claimsByReport = new Map<string, number>();
-  for (const claim of claims) claimsByReport.set(claim.reportId, (claimsByReport.get(claim.reportId) ?? 0) + 1);
+  const claimsByReport = new Map<string, Claim[]>();
+  for (const claim of claims) claimsByReport.set(claim.reportId, [...(claimsByReport.get(claim.reportId) ?? []), claim]);
+
+  // What the queue is ordered by: consequence, then disagreement, then corroboration.
+  const queueContext = {
+    claimsByReport,
+    incidentsById: new Map(incidents.map((incident) => [incident.id, incident])),
+    impactedIncidentIds: new Set(impacts.filter((a) => a.candidates.length > 0).map((a) => a.incidentId)),
+  };
 
   // No status in the URL means "whatever this reviewer set as their default", which is why the
   // absence of the parameter and the word "all" are different things.
@@ -65,14 +82,16 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
   else if (statusFilter === "unread") reports = reports.filter((r) => r.status === "ai_unavailable" || r.status === "received");
   if (hazardFilter) reports = reports.filter((r) => r.reporterHazard === hazardFilter);
   if (windowHours) reports = reports.filter((r) => isWithinHours(r.submittedAt, windowHours));
-  reports = [...reports].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
+  // Ordered by consequence, then grouped. The grouping is unchanged; the ranking decides the order
+  // inside each group.
+  const queue = rankForReview(reports, queueContext);
 
   // Grouped by the kind of incident. Reports that stated no hazard get their own group last, since
   // "we do not know what this is" is itself a reason to look at something.
-  const groups = new Map<string, Report[]>();
-  for (const report of reports) {
-    const key = report.reporterHazard ?? "__unstated";
-    groups.set(key, [...(groups.get(key) ?? []), report]);
+  const groups = new Map<string, QueueItem[]>();
+  for (const item of queue) {
+    const key = item.report.reporterHazard ?? "__unstated";
+    groups.set(key, [...(groups.get(key) ?? []), item]);
   }
   const ordered = [...groups.entries()].sort(([a], [b]) => (a === "__unstated" ? 1 : b === "__unstated" ? -1 : 0));
 
@@ -117,9 +136,9 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
                 </div>
 
                 <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {group.map((report) => {
+                  {group.map(({ report, reason }) => {
                     const tone = STATUS_TONE[report.status];
-                    const claimCount = claimsByReport.get(report.id) ?? 0;
+                    const claimCount = claimsByReport.get(report.id)?.length ?? 0;
                     return (
                       <li key={report.id}>
                         <Link
@@ -132,6 +151,15 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/reports">["s
                               {tone.label}
                             </span>
                           </div>
+
+                          {/* Why this card sits where it does. A queue that reorders silently is a
+                              queue a reviewer learns to distrust; the reason is the ordering's
+                              provenance, so it is shown on the card rather than in a tooltip. */}
+                          {reason ? (
+                            <span className="w-fit rounded-full bg-sand px-2 py-0.5 text-[10px] font-semibold tracking-wide text-ink-soft uppercase">
+                              {reason}
+                            </span>
+                          ) : null}
 
                           <p className="line-clamp-3 text-sm leading-relaxed" lang={report.uiLanguage}>
                             {report.text || "(no text: the report is the attachment)"}
