@@ -27,6 +27,10 @@ export const GET = (request: Request, ctx: RouteContext<"/api/reports/[id]/recei
         statementEn: claim.statementEn,
         origin: claim.origin,
         verified: claim.excerpt?.verified ?? false,
+        // Where the quoted words were found. A quote attributed to a voice note is checked against
+        // the model's own transcription, not against something the reporter typed, and the receipt
+        // must not present those two as the same evidence.
+        excerptField: claim.excerpt?.field,
       }));
 
     return ok({

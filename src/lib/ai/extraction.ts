@@ -266,12 +266,27 @@ export function buildClaims(output: ExtractionOutput, ctx: BuildContext) {
   const { report, region, aliases } = ctx;
   const validation: Validation = { errors: [], warnings: [], droppedClaims: 0, unverifiedExcerpts: 0, citationsChecked: 0, citationsRejected: 0 };
   const claims: Claim[] = [];
-  const audio = aliases.entries().find(([, t]) => t.kind === "audio")?.[1] as Extract<AliasTarget, { kind: "audio" }> | undefined;
+  const audioTargets = aliases
+    .entries()
+    .filter(([, t]) => t.kind === "audio")
+    .map(([, t]) => t as Extract<AliasTarget, { kind: "audio" }>);
+  const audio = audioTargets[0];
 
   let transcript: Extraction["transcript"];
   if (output.transcript?.text.trim()) {
-    if (audio) transcript = { mediaId: audio.media.id, text: output.transcript.text.trim(), language: output.transcript.language };
-    else validation.warnings.push("The model returned a transcript but no voice note was sent; it was ignored.");
+    if (audio) {
+      transcript = { mediaId: audio.media.id, text: output.transcript.text.trim(), language: output.transcript.language };
+      // The schema carries one transcript, so with two recordings it can only be attributed to one
+      // of them. Saying which, rather than binding it silently, is the difference between a reviewer
+      // checking the right audio and a claim resting on the wrong recording.
+      if (audioTargets.length > 1) {
+        validation.warnings.push(
+          `This report carries ${audioTargets.length} voice notes and the model returns a single transcript. It is attributed to the first; listen to the others before relying on it.`,
+        );
+      }
+    } else {
+      validation.warnings.push("The model returned a transcript but no voice note was sent; it was ignored.");
+    }
   }
 
   const fields = [

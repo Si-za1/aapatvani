@@ -112,6 +112,9 @@ const en = {
   "receipt.notFound": "We could not find that report on this device. If you have your reference code, keep it, a reviewer can find your report with it.",
   "receipt.loading": "Loading your report…",
   "receipt.origin.reporter": "Your words",
+  // Said in the voice note. The reporter's own account, but the words shown are what a machine
+  // heard, so this says that rather than claiming they are the reporter's own text.
+  "receipt.origin.transcript": "Heard in your voice note",
   "receipt.origin.ai": "Read by AI",
   "receipt.origin.computed": "From map data",
   "receipt.origin.reviewer": "Checked by a reviewer",
@@ -219,6 +222,7 @@ const ne: Record<PublicStringKey, string> = {
   "receipt.notFound": "यो यन्त्रमा त्यो रिपोर्ट भेटिएन। तपाईंसँग सन्दर्भ कोड छ भने राख्नुहोस्, समीक्षकले त्यसैबाट रिपोर्ट भेट्टाउन सक्छन्।",
   "receipt.loading": "तपाईंको रिपोर्ट लोड हुँदैछ…",
   "receipt.origin.reporter": "तपाईंका शब्द",
+  "receipt.origin.transcript": "तपाईंको आवाजमा सुनियो",
   "receipt.origin.ai": "एआईले पढेको",
   "receipt.origin.computed": "नक्साको डाटाबाट",
   "receipt.origin.reviewer": "समीक्षकले जाँचेको",

@@ -23,6 +23,8 @@ interface ReceiptClaim {
   statementEn: string;
   origin: "reporter" | "ai" | "computed" | "reviewer";
   verified: boolean;
+  /** "transcript" when the quoted words came from the AI transcription of a voice note. */
+  excerptField?: "text" | "placeText" | "reportedTimeText" | "transcript";
 }
 
 interface ReceiptData {
@@ -158,7 +160,13 @@ export function Receipt({ reportId, locale }: { reportId: string; locale: Locale
         ) : (
           <ul className="flex flex-col gap-2">
             {claims.map((claim) => {
-              const origin = ORIGIN_STYLE[claim.origin] ?? ORIGIN_STYLE.ai;
+              // A claim taken from a voice note is still the reporter's own account — they did say
+              // it — but the words shown here are what a machine heard, not a transcript anyone has
+              // checked. Saying "your words" for those would be a claim the app cannot support.
+              const origin =
+                claim.excerptField === "transcript"
+                  ? { className: "bg-coral-tint text-coral-strong", key: "transcript" as const }
+                  : (ORIGIN_STYLE[claim.origin] ?? ORIGIN_STYLE.ai);
               const statement = locale === "ne" && claim.statement ? claim.statement : claim.statementEn;
               return (
                 <li key={claim.id} className="flex flex-col gap-1.5 rounded-2xl border border-border bg-card p-3.5">

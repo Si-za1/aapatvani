@@ -207,6 +207,35 @@ describe("extraction checks", () => {
     expect(failing.extraction.validation.warnings.join(" ")).toContain("Embedding failed");
   });
 
+  it("says which voice note a transcript belongs to when there is more than one", async () => {
+    // The schema carries a single transcript, so with two recordings it can only be attributed to
+    // one. Binding it silently let a claim rest on the wrong recording with nothing on screen to say
+    // so; the warning is what sends a reviewer to the other audio.
+    const second: MediaItem = { ...AUDIO, id: "med_AUDIO0002", storagePath: "y.wav" };
+    const output = {
+      ...MODEL_OUTPUT,
+      transcript: { text: "तातोपानी जाने बाटो पहिरोले थुनियो", language: "ne" },
+      claims: [],
+      placeMentions: [],
+      timeMentions: [],
+      mediaNotes: [],
+    };
+    const report = makeReport({ text: "", media: [AUDIO, second] });
+    const { extraction } = await runExtraction(
+      input({
+        report,
+        media: [
+          { item: AUDIO, data: Buffer.from([1]) },
+          { item: second, data: Buffer.from([2]) },
+        ],
+      }),
+      new FakeLlm([output]),
+    );
+
+    expect(extraction.validation.warnings.join(" ")).toContain("2 voice notes");
+    expect(extraction.transcript?.mediaId).toBe("med_AUDIO0001");
+  });
+
   it("embeds a voice-only report from its transcript, which is all it has", async () => {
     // Regression: there is no text to translate, so `translationEn` comes back empty and the old
     // fallback chain ran out at `report.text`, which is also empty. The report got no embedding and
