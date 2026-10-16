@@ -64,14 +64,10 @@ export function ProfileMenu({ reviewer }: { reviewer: Reviewer }) {
         <DropdownMenuSeparator />
         {/* Not styled as destructive: flame is the critical-warning colour in this palette, and
             signing out is not a warning. The icon and the word carry it. */}
-        <DropdownMenuItem
-          disabled={pending}
-          onSelect={(event) => {
-            event.preventDefault();
-            void signOut();
-          }}
-          className="flex items-center gap-2"
-        >
+        {/* No preventDefault here. Keeping the menu open under the navigation meant the only
+            feedback for pressing Sign out was a menu that did not move, which reads as a dead
+            button; letting it close is the immediate signal that the press registered. */}
+        <DropdownMenuItem disabled={pending} onSelect={() => void signOut()} className="flex items-center gap-2">
           <LogOut className="size-4" aria-hidden />
           {pending ? "Signing out…" : "Sign out"}
         </DropdownMenuItem>

@@ -20,7 +20,10 @@ export function useSignOut() {
         body: "{}",
       });
     } finally {
-      router.push("/login");
+      // Out to the public homepage, not to the sign-in screen. A reviewer who has just finished a
+      // shift is done with this app, not queuing to get back in, and landing on a password box reads
+      // as "you were disconnected" rather than "you are finished".
+      router.push("/");
       router.refresh();
     }
   }
