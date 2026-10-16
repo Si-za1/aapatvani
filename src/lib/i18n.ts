@@ -27,6 +27,7 @@ const en = {
   "app.noPersonalData": "You do not need to give your name or phone number.",
 
   "landing.cta": "Report an incident",
+  "landing.howItWorks": "How it works",
   "landing.responder": "I am a responder",
   "landing.responderHint": "Sign in to review reports and see possible impacts.",
   "hazard.landslide.blurb": "A hillside has given way and the road is covered.",
@@ -134,6 +135,7 @@ const ne: Record<PublicStringKey, string> = {
   "app.noPersonalData": "तपाईंले नाम वा फोन नम्बर दिनु पर्दैन।",
 
   "landing.cta": "घटना रिपोर्ट गर्नुहोस्",
+  "landing.howItWorks": "यो कसरी काम गर्छ",
   "landing.responder": "म उद्धारकर्ता हुँ",
   "landing.responderHint": "रिपोर्ट हेर्न र सम्भावित असर देख्न साइन इन गर्नुहोस्।",
   "hazard.landslide.blurb": "पहाड खसेर बाटो छोपिएको छ।",

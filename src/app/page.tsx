@@ -97,15 +97,27 @@ async function Landing() {
               {t("app.intro")}
             </p>
 
-            <Link
-              href="/report"
-              className="group inline-flex w-fit items-center gap-3 rounded-full bg-primary py-2 pr-2 pl-6 text-base font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
-            >
-              <span lang={locale}>{t("landing.cta")}</span>
-              <span className="grid size-9 place-items-center rounded-full bg-leaf text-leaf-strong transition-transform group-hover:translate-x-0.5">
-                <ArrowRight className="size-4" aria-hidden />
-              </span>
-            </Link>
+            {/* The two things a first-time visitor wants: do the thing, or find out what the thing
+                is before doing it. "How it works" sat in the footer, where nobody who is deciding
+                whether to trust this would look. */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+              <Link
+                href="/report"
+                className="group inline-flex w-fit items-center gap-3 rounded-full bg-primary py-2 pr-2 pl-6 text-base font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
+              >
+                <span lang={locale}>{t("landing.cta")}</span>
+                <span className="grid size-9 place-items-center rounded-full bg-leaf text-leaf-strong transition-transform group-hover:translate-x-0.5">
+                  <ArrowRight className="size-4" aria-hidden />
+                </span>
+              </Link>
+              <Link
+                href="/how-it-works"
+                className="inline-flex items-center gap-1.5 text-[clamp(0.85rem,1.7vh,0.95rem)] font-medium text-ink-soft underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
+                lang={locale}
+              >
+                {t("landing.howItWorks")}
+              </Link>
+            </div>
           </div>
 
           {/* Below the button: what can actually be reported. Each icon sits in its own soft badge
@@ -191,7 +203,7 @@ async function Landing() {
       {/* A wide gap rather than a tight line: the footer is a different kind of information from the
           page above it, and the space is what says so. */}
       <footer className="flex flex-col gap-3 px-6 pb-[clamp(0.4rem,1.2vh,1.5rem)] sm:px-[var(--pad)]">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center text-xs text-muted-foreground">
           {/* No build or render time is read here on purpose: anything that changes between
               renders is reported by Next.js as an unstable value during prerendering. */}
           <span>© AapatVani AI</span>
