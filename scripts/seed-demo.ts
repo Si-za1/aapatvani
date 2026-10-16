@@ -12,12 +12,74 @@
 // the measured results can never describe different situations. Everything is synthetic, over the
 // real Araniko corridor road network, and every record carries the `synthetic` label.
 
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { getDb } from "@/lib/db";
+import type { MediaItem } from "@/lib/domain/schemas";
 import { DEMO_SCENARIO_ID, getScenario, type Scenario } from "@/lib/eval/scenarios";
 import { seedScenario } from "@/lib/eval/run";
+import { newId, sha256Hex } from "@/lib/ids";
 import { runMatchingForReport } from "@/lib/matching/service";
+import { getMediaStore } from "@/lib/storage";
 
 const selected = getScenario(process.env.SEED_SCENARIO ?? DEMO_SCENARIO_ID);
+
+const MEDIA_DIR = path.join(process.cwd(), "data", "eval", "media");
+const ILLUSTRATION = "Illustration synthesised for this prototype. Not a photograph of a real event.";
+const SYNTHETIC_SPEECH = "Speech synthesised on this device for this prototype.";
+
+/**
+ * Fixture media, by scenario report key.
+ *
+ * The scenario itself carries no media — `lib/eval/scenarios.ts` is shared with the evaluation, and
+ * the evaluation deliberately sends none, so attaching files there would change what is measured.
+ * The demo needs them anyway: a photograph and a voice note ARE the evidence for the claims built
+ * from them, and a reviewer screen that only ever shows text is not the screen a judge should see.
+ *
+ * R3 is a forwarded copy of R1, so it carries the SAME photograph. That is not decoration — a shared
+ * photo hash is one of the ways a copy is caught, so the copy in the demo is now caught twice, by
+ * its wording and by its file.
+ */
+const DEMO_MEDIA: Record<string, Array<{ file: string; kind: "photo" | "audio"; mimeType: string; attribution: string }>> = {
+  R1: [{ file: "landslide-larcha.png", kind: "photo", mimeType: "image/png", attribution: ILLUSTRATION }],
+  R2: [{ file: "voice-browser-recorded.webm", kind: "audio", mimeType: "audio/webm", attribution: SYNTHETIC_SPEECH }],
+  R3: [{ file: "landslide-larcha.png", kind: "photo", mimeType: "image/png", attribution: ILLUSTRATION }],
+};
+
+/**
+ * Writes the fixture files into the configured media store and points each report at them.
+ *
+ * Runs BEFORE matching, because copy detection compares photo hashes — attaching the media
+ * afterwards would leave the forwarded copy undetected by its file and quietly change what the demo
+ * shows.
+ */
+async function attachDemoMedia(reportIdByKey: Map<string, string>): Promise<void> {
+  const db = getDb();
+  const store = getMediaStore();
+  for (const [key, specs] of Object.entries(DEMO_MEDIA)) {
+    const reportId = reportIdByKey.get(key);
+    if (!reportId) continue;
+    const media: MediaItem[] = [];
+    for (const spec of specs) {
+      const data = readFileSync(path.join(MEDIA_DIR, spec.file));
+      const mediaId = newId("med");
+      const extension = spec.file.split(".").pop() ?? "bin";
+      const objectPath = `reports/${reportId}/${mediaId}.${extension}`;
+      await store.put(objectPath, data, spec.mimeType);
+      media.push({
+        id: mediaId,
+        kind: spec.kind,
+        mimeType: spec.mimeType,
+        sizeBytes: data.length,
+        sha256: sha256Hex(data),
+        storagePath: objectPath,
+        originalName: spec.file,
+        attribution: spec.attribution,
+      });
+    }
+    await db.reports.update(reportId, { media });
+  }
+}
 
 /**
  * Shifts the scenario forward so its last report lands in the recent past.
@@ -51,6 +113,9 @@ async function seed(): Promise<void> {
   }
 
   const { reportIdByKey } = await seedScenario(scenario, db);
+
+  // Before matching, so a shared photo hash counts towards copy detection.
+  await attachDemoMedia(reportIdByKey);
 
   // Matching runs in submission order, exactly as it would for live reports arriving.
   const ordered = [...scenario.reports].sort((a, b) => a.offsetMinutes - b.offsetMinutes);
