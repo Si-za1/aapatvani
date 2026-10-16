@@ -28,6 +28,26 @@ const en = {
 
   "landing.cta": "Report an incident",
   "landing.howItWorks": "How it works",
+
+  // The how-it-works page. `{brand}` is a placeholder rather than a split around it, because the
+  // two languages put the name in different places — English leads with "How", Nepali names the
+  // thing first — and an empty "lead" string for Nepali would break the dictionary's own rule that
+  // no string is empty.
+  "how.title": "How {brand} works",
+  "how.lede":
+    "A community report becomes a decision in four steps. One of them asks a model, and none of them lets a machine decide.",
+  "how.stepLabel": "Step {n}",
+  "how.step1.title": "A report arrives",
+  "how.step1.body": "Nepali or English, typed, photographed or spoken. No account, no name, no phone number.",
+  "how.step2.title": "The model reads it",
+  "how.step2.body": "It turns the report into claims, and quotes the exact words it read each one from.",
+  "how.step3.title": "Code checks and computes",
+  "how.step3.body":
+    "Every quote is verified against the original. Reports are grouped, copies excluded, and road access worked out.",
+  "how.step4.title": "A person decides",
+  "how.step4.body": "Every claim is confirmed, corrected or rejected. Nothing is published without a named reviewer.",
+  "how.sendReport": "Send a report",
+  "how.back": "Back",
   "landing.responder": "I am a responder",
   "landing.responderHint": "Sign in to review reports and see possible impacts.",
   "hazard.landslide.blurb": "A hillside has given way and the road is covered.",
@@ -136,6 +156,22 @@ const ne: Record<PublicStringKey, string> = {
 
   "landing.cta": "घटना रिपोर्ट गर्नुहोस्",
   "landing.howItWorks": "यो कसरी काम गर्छ",
+  "how.title": "{brand} कसरी काम गर्छ",
+  "how.lede":
+    "समुदायको रिपोर्ट चार चरणमा निर्णय बन्छ। एउटा चरणले मात्र मोडेलसँग सोध्छ, र कुनैले पनि मेसिनलाई निर्णय गर्न दिँदैन।",
+  "how.stepLabel": "चरण {n}",
+  "how.step1.title": "रिपोर्ट आउँछ",
+  "how.step1.body": "नेपाली वा अंग्रेजी, लेखेर, फोटो वा आवाजमा। खाता, नाम वा फोन नम्बर चाहिँदैन।",
+  "how.step2.title": "मोडेलले पढ्छ",
+  "how.step2.body": "यसले रिपोर्टलाई दाबीमा बदल्छ, र हरेक दाबी कुन शब्दबाट पढ्यो त्यही शब्द उद्धृत गर्छ।",
+  "how.step3.title": "कोडले जाँच्छ र गणना गर्छ",
+  "how.step3.body":
+    "हरेक उद्धरण मूल पाठसँग जाँचिन्छ। रिपोर्टहरू समूहबद्ध हुन्छन्, प्रतिलिपि छुट्याइन्छ, र सडक पहुँच गणना गरिन्छ।",
+  "how.step4.title": "व्यक्तिले निर्णय गर्छ",
+  "how.step4.body":
+    "हरेक दाबी पुष्टि, सुधार वा अस्वीकार गरिन्छ। नाम उल्लेख गरिएको समीक्षकबिना केही पनि प्रकाशित हुँदैन।",
+  "how.sendReport": "रिपोर्ट पठाउनुहोस्",
+  "how.back": "पछाडि",
   "landing.responder": "म उद्धारकर्ता हुँ",
   "landing.responderHint": "रिपोर्ट हेर्न र सम्भावित असर देख्न साइन इन गर्नुहोस्।",
   "hazard.landslide.blurb": "पहाड खसेर बाटो छोपिएको छ।",
