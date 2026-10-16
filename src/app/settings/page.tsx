@@ -15,10 +15,17 @@ import { formatDate } from "@/lib/time";
 
 // Settings.
 //
-// Two real preferences, and then everything a person might reasonably want to know about the
-// deployment they are signed in to: which area is actually covered, what the data is, where it is
-// kept, and what this tool refuses to do. It is the page a judge lands on to check whether the
-// thing is honest, so it says the uncomfortable parts too.
+// Three things, and no more: what you can change, who you are signed in as, and what this
+// deployment is actually made of.
+//
+// It used to be five cards. Store, Media and Sign-in named the backends a reviewer never chooses
+// between; road kilometres, junction counts and settlement counts were dataset trivia dressed as
+// facts about the deployment; and a paragraph explained that a session check happens on the server,
+// which is not a setting and not something the reader can act on. A settings page carrying a
+// description of its own architecture teaches people to stop reading it.
+//
+// What remains is what a reviewer can act on, plus the two honesty facts that a judge or a
+// responder should be able to check: the reports are synthetic, and the map has known gaps.
 
 export const metadata: Metadata = { title: "Settings" };
 
@@ -39,10 +46,7 @@ async function Screen() {
 
   return (
     <AppShell current="/settings" reviewer={reviewer}>
-      <PageHeader
-        title="Settings"
-        description="Your preferences, and what this deployment is made of. Nothing here changes what you are allowed to see."
-      />
+      <PageHeader title="Settings" description="Your two defaults, your account, and where the data comes from." />
 
       <div className="grid items-start gap-5 lg:grid-cols-2">
         <div className="flex flex-col gap-5">
@@ -50,29 +54,6 @@ async function Screen() {
             <PreferencesForm initial={prefs} />
           </SectionCard>
 
-          <SectionCard title="This deployment">
-            <dl className="flex flex-col divide-y divide-border/70 text-sm">
-              <Row label="Area covered" value={manifest?.name ?? region.name} />
-              {manifest ? (
-                <Row label="Map snapshot" value={`${formatDate(manifest.snapshot, "UTC")} · OpenStreetMap`} />
-              ) : null}
-              <Row
-                label="Reports"
-                value={
-                  <span className="inline-flex items-center gap-2">
-                    <DataLabelBadge label={env.defaultDataLabel} />
-                    <span className="text-xs text-muted-foreground">over real geography</span>
-                  </span>
-                }
-              />
-              <Row label="Store" value={env.dataBackend === "firestore" ? "Firestore" : "Local file store"} />
-              <Row label="Media" value={env.mediaBackend === "gcs" ? "Cloud Storage" : "Local disk"} />
-              <Row label="Sign-in" value={env.authMode === "firebase" ? "Firebase Authentication" : "Shared passcode"} />
-            </dl>
-          </SectionCard>
-        </div>
-
-        <div className="flex flex-col gap-5">
           <SectionCard title="Your account">
             <div className="flex items-center gap-3">
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-leaf text-base font-bold text-leaf-strong">
@@ -85,29 +66,30 @@ async function Screen() {
                 </span>
               </span>
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">
-              {reviewer.mode === "firebase"
-                ? "Signed in with Firebase Authentication. Reviewer pages are reachable only with a valid session, and the check happens on the server for every request."
-                : "Signed in with the shared passcode for this deployment. Reviewer pages are reachable only with a valid session, and the check happens on the server for every request."}
-            </p>
             <SignOutRow />
           </SectionCard>
+        </div>
 
-          {manifest ? (
-            <SectionCard title="What the map is made of">
-              <dl className="flex flex-col divide-y divide-border/70 text-sm">
-                <Row
-                  label="Road network"
-                  value={`${manifest.stats.roadKm.toLocaleString("en-GB")} km · ${manifest.stats.nodes.toLocaleString("en-GB")} junctions`}
-                />
-                <Row
-                  label="Health facilities"
-                  value={`${manifest.stats.healthFacilities} mapped, ${manifest.stats.hospitals} of them hospitals`}
-                />
-                <Row label="Settlements" value={`${manifest.stats.settlements} named places`} />
-                <Row
-                  label="Licence"
-                  value={
+        <SectionCard title="Where this data comes from">
+          <dl className="flex flex-col divide-y divide-border/70 text-sm">
+            <Row label="Area covered" value={manifest?.name ?? region.name} />
+            <Row
+              label="Reports"
+              value={
+                <span className="inline-flex items-center gap-2">
+                  <DataLabelBadge label={env.defaultDataLabel} />
+                  <span className="text-xs font-normal text-muted-foreground">over real geography</span>
+                </span>
+              }
+            />
+            {manifest ? (
+              <Row
+                label="Map data"
+                value={
+                  <span className="inline-flex flex-wrap items-center justify-end gap-2">
+                    <span className="text-xs font-normal text-muted-foreground">
+                      OpenStreetMap · {formatDate(manifest.snapshot, "UTC")}
+                    </span>
                     <a
                       href="https://www.openstreetmap.org/copyright"
                       target="_blank"
@@ -117,26 +99,28 @@ async function Screen() {
                       {manifest.license}
                       <ExternalLink className="size-3" aria-hidden />
                     </a>
-                  }
-                />
-              </dl>
+                  </span>
+                }
+              />
+            ) : null}
+          </dl>
 
-              <div className="mt-4 flex flex-col gap-2">
-                <p className="text-xs font-semibold">Known gaps in this data</p>
-                <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
-                  {manifest.knownLimitations.slice(0, 4).map((limitation) => (
-                    <li key={limitation} className="flex gap-2">
-                      <span aria-hidden className="text-border">
-                        •
-                      </span>
-                      {limitation}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </SectionCard>
+          {manifest ? (
+            <div className="mt-4 flex flex-col gap-2 border-t border-border/70 pt-4">
+              <p className="text-xs font-semibold">Known gaps in this map</p>
+              <ul className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+                {manifest.knownLimitations.slice(0, 4).map((limitation) => (
+                  <li key={limitation} className="flex gap-2">
+                    <span aria-hidden className="text-border">
+                      •
+                    </span>
+                    {limitation}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : null}
-        </div>
+        </SectionCard>
       </div>
     </AppShell>
   );
