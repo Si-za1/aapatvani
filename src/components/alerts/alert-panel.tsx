@@ -144,8 +144,8 @@ export function AlertPanel({
 
       {!canRunModel ? (
         <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
-          Gemini is not configured on this deployment, so a draft cannot be written. The citations, the confirmation
-          rule and the approval record behind this panel are built and tested.
+          Automatic drafting is not available here, so a draft cannot be written. The citations, the confirmation rule
+          and the approval record behind this panel are built and tested.
         </p>
       ) : !readiness.ready ? (
         <p className="flex items-start gap-2 rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">

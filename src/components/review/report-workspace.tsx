@@ -213,7 +213,7 @@ export function ReportWorkspace({
 
         {!canRunModel ? (
           <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
-            Gemini is not configured on this deployment, so these buttons will not read anything new. Everything else on
+            Automatic reading is not available here, so these buttons will not read anything new. Everything else on
             this page works.
           </p>
         ) : null}

@@ -272,8 +272,8 @@ export function IncidentWorkspace({
 
         {!canRunModel ? (
           <p className="rounded-2xl bg-amber-tint px-4 py-3 text-sm text-amber-strong">
-            Gemini is not configured, so these suggestions were made on computed features alone, distance, time, wording
-            and hazard. The comparison half is absent rather than guessed.
+            Automatic reading is not available here, so these suggestions were made on computed features alone —
+            distance, time, wording and hazard. The comparison half is absent rather than guessed.
           </p>
         ) : null}
 

@@ -59,11 +59,6 @@ async function Screen() {
           next="/dashboard"
         />
 
-        <p className="text-xs text-muted-foreground">
-          {env.authMode === "firebase"
-            ? "Accounts are managed in Firebase Authentication."
-            : "This deployment uses a shared passcode. Set AUTH_MODE=firebase with a Firebase project to use real accounts."}
-        </p>
       </Card>
 
       <Button asChild variant="ghost" className="rounded-full">

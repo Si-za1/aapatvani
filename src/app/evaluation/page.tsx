@@ -37,7 +37,7 @@ async function Screen() {
     <AppShell current="/evaluation" reviewer={reviewer}>
       <PageHeader
         title="Evaluation"
-        description="Measured results from the labelled scenarios, produced by npm run eval. Reproduce them with that command."
+        description="Measured results from labelled scenarios: what this pipeline gets right, and where it does not."
       >
         {runs.length > 0 ? (
           <span className="text-xs text-muted-foreground">
@@ -52,7 +52,7 @@ async function Screen() {
             <BarChart3 className="size-6 text-muted-foreground" aria-hidden />
             <span className="text-sm font-medium">No results yet</span>
             <span className="text-sm text-muted-foreground">
-              Run <code className="rounded bg-sand px-1.5 py-0.5">npm run eval</code> to measure the scenarios.
+              The evaluation runs the pipeline over labelled scenarios and saves what it measures.
             </span>
           </p>
         ) : (
@@ -76,10 +76,9 @@ async function Screen() {
                 ) : (
                   <>
                     No model was called. The expected claims were fed in as if extraction had produced them, which
-                    measures the deterministic half of the pipeline, grouping, copy detection, contradictions and road
-                    impact, exactly. It says nothing about how well Gemini reads a report; run{" "}
-                    <code className="rounded bg-sand px-1.5 py-0.5">npm run eval -- --mode gemini</code> for that once
-                    credentials exist.
+                    measures the deterministic half of the pipeline — grouping, copy detection, contradictions and
+                    road impact — exactly. It says nothing about how well the model reads a report; that needs a run
+                    against a live model.
                   </>
                 )}
               </p>

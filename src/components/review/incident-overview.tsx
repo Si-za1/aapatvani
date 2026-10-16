@@ -334,7 +334,7 @@ export function IncidentOverview(props: OverviewProps) {
         ) : (
           <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <TriangleAlert className="size-3.5 text-amber" aria-hidden />
-            No reviewer has confirmed this incident. Nothing on this deployment says Confirmed until one does.
+            No reviewer has confirmed this incident. Nothing here is marked Confirmed until one does.
           </p>
         )}
       </SectionCard>

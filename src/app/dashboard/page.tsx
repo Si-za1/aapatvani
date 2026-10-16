@@ -118,8 +118,7 @@ async function Screen({ searchParams }: { searchParams: PageProps<"/dashboard">[
               <strong className="font-semibold">
                 {stats.aiUnavailable} report{stats.aiUnavailable === 1 ? " has" : "s have"}
               </strong>{" "}
-              not been read automatically. On this deployment that means Gemini is not configured, so a reviewer
-              reads them directly. Nothing is lost, it is simply slower.
+              not been read automatically, so a reviewer reads them directly. Nothing is lost, it is simply slower.
             </span>
           </p>
         ) : null}
