@@ -109,10 +109,22 @@ export async function AppShell({
         <div className="sticky top-[3.25rem] z-30 border-b border-border/70 bg-background/85 backdrop-blur-sm lg:top-0">
           <div className={cn(COLUMN, "flex items-center justify-between gap-4 py-2.5")}>
             {/* Where this deployment is looking, and whether what it is looking at is real.
-                Both are constant, so they live in the chrome rather than on any one page. */}
+                Both are constant, so they live in the chrome rather than on any one page.
+
+                The country is named first because it is the dimension that grows: the corridor is
+                what this deployment covers, but "Nepal" is the unit a second region would add. It
+                is shown as a fact rather than as a selector, because there is nothing to select
+                yet and a dropdown with one live option is a control that advertises its own
+                absence. */}
             <p className="hidden min-w-0 items-center gap-2 text-xs text-muted-foreground sm:flex">
               <MapPin className="size-3.5 shrink-0" aria-hidden />
-              <span className="truncate">{manifest?.name ?? region.name}</span>
+              <span className="truncate">
+                {region.name}
+                <span aria-hidden className="px-1.5 text-border">
+                  ·
+                </span>
+                {manifest?.name ?? region.name}
+              </span>
               <span aria-hidden className="text-border">
                 |
               </span>
