@@ -68,12 +68,20 @@ async function Landing() {
           </span>
         </span>
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Reachable at every width. It used to be `hidden sm:inline-flex`, which removed the
+              only route to the reviewer sign-in below 640 px — on a phone, where a responder is
+              most likely to be, the door was invisible. The label is what does not fit beside the
+              brand and the language toggle, so the label is what collapses; the icon stays, with
+              the label kept as its accessible name. */}
           <Link
             href="/login"
-            className="hidden items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent sm:inline-flex"
+            aria-label={t("landing.responder")}
+            className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent sm:px-4"
           >
             <Users className="size-4" aria-hidden />
-            {t("landing.responder")}
+            <span className="hidden sm:inline" lang={locale}>
+              {t("landing.responder")}
+            </span>
           </Link>
           <LanguageToggle locale={locale} />
         </div>
