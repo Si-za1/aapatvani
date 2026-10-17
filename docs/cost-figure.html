@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AapatVani implementation cost</title>
+    <style>
+      /* Same visual language as the app: warm page, near-white cards, deep olive, and the logo mark
+         the pages themselves use. The previous version borrowed a pricing page's slider, which was
+         the main thing wrong with it: a static image showing a draggable control invites a reader to
+         drag it, and every number below it then has to be guessed at rather than read. */
+      :root {
+        --page: #f8f5f0;
+        --panel: #efece5;
+        --card: #ffffff;
+        --tile: #f4f1ea;
+        --ink: #26261f;
+        --ink-soft: #5d5f52;
+        --muted: #85877a;
+        --rule: #e2ded4;
+        --olive: #415111;
+        --moss: #7a8f34;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 900px;
+        background: var(--page);
+        color: var(--ink);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 34px 40px 24px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .mark { width: 46px; height: 46px; color: var(--olive); margin-bottom: 14px; }
+
+      .badge {
+        background: #e9e5dc;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 7px 16px;
+        border-radius: 99px;
+        margin-bottom: 18px;
+      }
+      h1 { font-size: 38px; font-weight: 700; letter-spacing: -0.025em; margin: 0 0 10px; text-align: center; }
+      .sub { font-size: 15px; color: var(--ink-soft); margin: 0 0 26px; text-align: center; max-width: 560px; line-height: 1.5; }
+
+      .panel {
+        width: 900px;
+        background: var(--panel);
+        border-radius: 28px;
+        padding: 26px 30px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .panel h2 { font-size: 18px; font-weight: 700; margin: 0 0 18px; }
+
+      .inner {
+        width: 100%;
+        background: var(--card);
+        border-radius: 22px;
+        padding: 22px 24px 20px;
+        box-shadow: 0 1px 3px rgb(38 38 31 / 0.06);
+      }
+
+      .scales { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .scale {
+        border: 1px solid var(--rule);
+        border-radius: 16px;
+        padding: 18px 16px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: center;
+        text-align: center;
+      }
+      .scale.now { background: var(--tile); }
+      .scale .who { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); }
+      .scale .vol { font-size: 11.5px; color: var(--muted); margin-bottom: 6px; }
+      .scale .amt { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+      .scale .per { font-size: 11.5px; color: var(--muted); }
+
+      .splithead {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--ink-soft);
+        margin: 22px 0 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .splithead::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+
+      .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .part { border-radius: 16px; padding: 16px 18px; display: flex; align-items: baseline; gap: 12px; }
+      .part.big { background: #eef0e2; }
+      .part.small { background: var(--tile); }
+      .part .pct { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+      .part .what { display: flex; flex-direction: column; gap: 2px; }
+      .part .what b { font-size: 13.5px; font-weight: 600; }
+      .part .what span { font-size: 11.5px; color: var(--ink-soft); }
+
+      .trust { display: flex; justify-content: center; gap: 30px; margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--rule); }
+      .trust span { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-soft); }
+      .trust i { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--moss); display: inline-grid; place-items: center; font-style: normal; font-size: 9px; color: var(--moss); }
+
+      .fine { font-size: 11px; color: var(--muted); margin: 22px 0 0; text-align: center; max-width: 800px; line-height: 1.55; }
+    </style>
+  </head>
+  <body>
+    <!-- The app's own mark, drawn with currentColor as the pages draw it. -->
+    <svg class="mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M12 55 L32 13 L52 55" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="32" cy="41" r="7.2" fill="currentColor" />
+    </svg>
+
+    <span class="badge">Free tier today &middot; paid per report at scale</span>
+    <h1>What AapatVani costs to run</h1>
+    <p class="sub">
+      The cost tracks reports, not users. Nothing runs between reports, so an idle deployment costs
+      nothing and a district can leave it switched on.
+    </p>
+
+    <div class="panel">
+      <h2>At three scales</h2>
+
+      <div class="inner">
+        <div class="scales">
+          <div class="scale now">
+            <span class="who">This demo</span>
+            <span class="vol">~50 reports a month</span>
+            <span class="amt">$0</span>
+            <span class="per">free tier</span>
+          </div>
+          <div class="scale">
+            <span class="who">One district</span>
+            <span class="vol">500 reports a month</span>
+            <span class="amt">~$2</span>
+            <span class="per">per month</span>
+          </div>
+          <div class="scale">
+            <span class="who">National</span>
+            <span class="vol">10,000 reports a month</span>
+            <span class="amt">~$42</span>
+            <span class="per">per month</span>
+          </div>
+        </div>
+
+        <p class="splithead">Where the $42 goes, at 10,000 reports a month</p>
+
+        <div class="split">
+          <div class="part big">
+            <span class="pct">99%</span>
+            <span class="what">
+              <b>Gemini, reading reports</b>
+              <span>$41.64 &middot; one extraction and one embedding each</span>
+            </span>
+          </div>
+          <div class="part small">
+            <span class="pct">1%</span>
+            <span class="what">
+              <b>Everything else</b>
+              <span>$0.22 &middot; Cloud Run, Firestore and Cloud Storage</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="trust">
+          <span><i>&#10003;</i> No fixed monthly cost</span>
+          <span><i>&#10003;</i> Scales to zero when idle</span>
+          <span><i>&#10003;</i> Paid per report, not per seat</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="fine">
+      Estimate. Assumes Gemini Flash list pricing, and one extraction, one embedding and one comparison
+      per report; a measured extraction is 1,734 tokens in and 833 out. Cloud Run and Firestore stay
+      inside their free tiers at every scale shown, so the infrastructure cost is Cloud Storage alone.
+    </p>
+  </body>
+</html>
